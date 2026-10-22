@@ -522,4 +522,211 @@ struct LogServiceTests {
         #expect(streaks.lastDrinkingDay == LogicalDay(year: 2026, month: 10, day: 16))
         #expect(streaks.currentStreakDays == 2)
     }
+
+    @Test("Preset management: add, update, hide/unhide, reorder, HU validation, and past drinks unchanged")
+    func presetManagementAndPastDrinksPreservation() throws {
+        let t0 = Self.makeDate(year: 2026, month: 10, day: 22, hour: 12, minute: 0, timeZone: Self.berlin)
+        let harness = try makeTestHarness(now: t0, timeZone: Self.berlin)
+        let clock = harness.clock
+        let service = harness.service
+
+        try service.seedDefaultPresetsIfNeeded()
+        let initialPresets = try service.presets()
+        let beer = try #require(initialPresets.first(where: { $0.key == "beer" }))
+
+        // Log a drink before editing the preset
+        let pastDrink = try service.log(preset: beer, source: .phone)
+        #expect(pastDrink.name == "beer")
+        #expect(pastDrink.hu == Decimal(1))
+        #expect(pastDrink.volumeMl == 500)
+        #expect(pastDrink.abvPercent == Decimal(5))
+        #expect(pastDrink.grams == Decimal(20))
+
+        // Invalid HU rejected on addPreset and updatePreset
+        #expect(throws: LogServiceError.invalidHU) {
+            _ = try service.addPreset(
+                name: "Bad",
+                symbolName: "mug",
+                hu: Self.dec("0.25"),
+                volumeMl: 250,
+                abvPercent: Decimal(5)
+            )
+        }
+        #expect(throws: LogServiceError.invalidHU) {
+            try service.updatePreset(
+                beer,
+                name: "Beer",
+                symbolName: "mug.fill",
+                hu: Decimal(0),
+                volumeMl: 500,
+                abvPercent: Decimal(5)
+            )
+        }
+
+        // Update default preset: keeps its key, bumps updatedAt, leaves past drink untouched
+        let t1 = t0.addingTimeInterval(60)
+        clock.currentNow = t1
+        try service.updatePreset(
+            beer,
+            name: "Helles",
+            symbolName: "mug",
+            hu: Self.dec("1.5"),
+            volumeMl: 500,
+            abvPercent: Self.dec("5.2")
+        )
+        #expect(beer.key == "beer")
+        #expect(beer.name == "Helles")
+        #expect(beer.name != beer.key)
+        #expect(beer.symbolName == "mug")
+        #expect(beer.hu == Self.dec("1.5"))
+        #expect(beer.volumeMl == 500)
+        #expect(beer.abvPercent == Self.dec("5.2"))
+        #expect(beer.grams == Self.dec("20.8"))
+        #expect(beer.updatedAt == t1)
+
+        // Past drink snapshot is completely unchanged
+        #expect(pastDrink.name == "beer")
+        #expect(pastDrink.hu == Decimal(1))
+        #expect(pastDrink.volumeMl == 500)
+        #expect(pastDrink.abvPercent == Decimal(5))
+        #expect(pastDrink.grams == Decimal(20))
+
+        // Add custom preset
+        let t2 = t1.addingTimeInterval(60)
+        clock.currentNow = t2
+        let custom = try service.addPreset(
+            name: "Mass 1l",
+            symbolName: "mug.fill",
+            hu: Decimal(2),
+            volumeMl: 1000,
+            abvPercent: Decimal(5)
+        )
+        #expect(custom.key == nil)
+        #expect(custom.name == "Mass 1l")
+        #expect(custom.hu == Decimal(2))
+        #expect(custom.grams == Decimal(40))
+        #expect(custom.sortOrder == 6)
+        #expect(custom.updatedAt == t2)
+
+        // Hide and unhide preset
+        let t3 = t2.addingTimeInterval(60)
+        clock.currentNow = t3
+        try service.setPresetHidden(beer, true)
+        #expect(beer.isHidden)
+        #expect(beer.updatedAt == t3)
+        #expect(!((try service.presets()).contains(where: { $0.id == beer.id })))
+        #expect((try service.presets(includeHidden: true)).contains(where: { $0.id == beer.id }))
+
+        let t4 = t3.addingTimeInterval(60)
+        clock.currentNow = t4
+        try service.setPresetHidden(beer, false)
+        #expect(!beer.isHidden)
+        #expect(beer.updatedAt == t4)
+        #expect((try service.presets()).contains(where: { $0.id == beer.id }))
+
+        // Move custom preset from last (index 6) to first (offset 0)
+        let t5 = t4.addingTimeInterval(60)
+        clock.currentNow = t5
+        try service.movePresets(fromOffsets: IndexSet(integer: 6), toOffset: 0)
+        let reordered = try service.presets(includeHidden: true)
+        #expect(reordered.first?.id == custom.id)
+        #expect(reordered.map(\.sortOrder) == Array(0..<7))
+        #expect(reordered.allSatisfy { $0.updatedAt == t5 })
+    }
+
+    @Test(
+        "changeDayBoundary recomputes logicalDayKey in each drink's time zone, bumps updatedAt only on changed drinks, and preserves healthSyncVersion"
+    )
+    func changeDayBoundaryWith0130DSTAndTimeZone() throws {
+        let t0 = Self.makeDate(year: 2026, month: 10, day: 22, hour: 12, minute: 0, timeZone: Self.berlin)
+        let harness = try makeTestHarness(now: t0, timeZone: Self.berlin)
+        let clock = harness.clock
+        let service = harness.service
+        try service.seedDefaultPresetsIfNeeded()
+        let beer = try #require(try service.presets().first(where: { $0.key == "beer" }))
+
+        // 1. 01:30 drink in Berlin on 2026-10-22 (with default boundary 07:00 -> logical day 2026-10-21)
+        let t0130 = Self.makeDate(year: 2026, month: 10, day: 22, hour: 1, minute: 30, timeZone: Self.berlin)
+        clock.currentNow = t0130
+        let drink0130 = try service.log(preset: beer, at: t0130, source: .phone)
+        drink0130.healthSyncedVersion = 0
+        #expect(drink0130.logicalDay == LogicalDay(year: 2026, month: 10, day: 21))
+
+        // 2. Evening drink at 20:00 on 2026-10-22 (logical day 2026-10-22 under both 07:00 and 01:00 boundaries)
+        let t2000 = Self.makeDate(year: 2026, month: 10, day: 22, hour: 20, minute: 0, timeZone: Self.berlin)
+        clock.currentNow = t2000
+        let drink2000 = try service.log(preset: beer, at: t2000, source: .phone)
+        drink2000.healthSyncedVersion = 0
+        #expect(drink2000.logicalDay == LogicalDay(year: 2026, month: 10, day: 22))
+
+        // 3. Spring DST drink in Berlin: Sunday 2026-03-29 01:30 -> 2026-03-28 at boundary 07, moves to 2026-03-29 at boundary 01
+        let tSpringDST = Self.makeDate(year: 2026, month: 3, day: 29, hour: 1, minute: 30, timeZone: Self.berlin)
+        clock.currentNow = tSpringDST
+        let drinkSpringDST = try service.log(preset: beer, at: tSpringDST, source: .watch)
+        #expect(drinkSpringDST.logicalDay == LogicalDay(year: 2026, month: 3, day: 28))
+
+        // 4. Time-zone-stored drink in America/New_York:
+        // Logged at 2026-07-05 03:30 New York time (which is 09:30 in Berlin!).
+        // With boundary 07:00, in New York 03:30 < 07:00 -> logical day 2026-07-04.
+        // When boundary changes to 05:00, in New York 03:30 < 05:00 -> STILL 2026-07-04.
+        // When boundary changes to 01:00, in New York 03:30 >= 01:00 -> moves to 2026-07-05.
+        clock.currentTimeZone = Self.newYork
+        let tNY0330 = Self.makeDate(year: 2026, month: 7, day: 5, hour: 3, minute: 30, timeZone: Self.newYork)
+        clock.currentNow = tNY0330
+        let drinkNY = try service.log(preset: beer, at: tNY0330, source: .phone)
+        #expect(drinkNY.timeZoneIdentifier == "America/New_York")
+        #expect(drinkNY.logicalDay == LogicalDay(year: 2026, month: 7, day: 4))
+
+        // Switch device back to Berlin
+        clock.currentTimeZone = Self.berlin
+        let boundaryChangeTime1 = Self.makeDate(
+            year: 2026, month: 10, day: 23, hour: 10, minute: 0, timeZone: Self.berlin)
+        clock.currentNow = boundaryChangeTime1
+
+        // Invalid boundary hours throw
+        #expect(throws: LogServiceError.invalidDayBoundaryHour) {
+            try service.changeDayBoundary(to: -1)
+        }
+        #expect(throws: LogServiceError.invalidDayBoundaryHour) {
+            try service.changeDayBoundary(to: 24)
+        }
+
+        // First change boundary from 07 -> 05:
+        // All 01:30 and 03:30 NY drinks remain before 05:00 in their own zones, so NO drink changes!
+        try service.changeDayBoundary(to: 5)
+        #expect(try service.settings().dayBoundaryHour == 5)
+        #expect(try service.settings().updatedAt == boundaryChangeTime1)
+        #expect(drink0130.updatedAt == t0130)
+        #expect(drink2000.updatedAt == t2000)
+        #expect(drinkSpringDST.updatedAt == tSpringDST)
+        #expect(drinkNY.updatedAt == tNY0330)
+
+        // Now change boundary from 05 -> 01:
+        // drink0130, drinkSpringDST, and drinkNY move forward by 1 day; drink2000 is unchanged!
+        let boundaryChangeTime2 = boundaryChangeTime1.addingTimeInterval(300)
+        clock.currentNow = boundaryChangeTime2
+        try service.changeDayBoundary(to: 1)
+
+        #expect(try service.settings().dayBoundaryHour == 1)
+        #expect(try service.settings().updatedAt == boundaryChangeTime2)
+
+        #expect(drink0130.logicalDay == LogicalDay(year: 2026, month: 10, day: 22))
+        #expect(drink0130.updatedAt == boundaryChangeTime2)
+        #expect(drink0130.healthSyncVersion == 0)
+        #expect(drink0130.healthSyncedVersion == 0)
+
+        #expect(drinkSpringDST.logicalDay == LogicalDay(year: 2026, month: 3, day: 29))
+        #expect(drinkSpringDST.updatedAt == boundaryChangeTime2)
+        #expect(drinkSpringDST.healthSyncVersion == 0)
+
+        #expect(drinkNY.logicalDay == LogicalDay(year: 2026, month: 7, day: 5))
+        #expect(drinkNY.updatedAt == boundaryChangeTime2)
+        #expect(drinkNY.healthSyncVersion == 0)
+
+        // Unchanged evening drink did NOT bump updatedAt or healthSyncVersion
+        #expect(drink2000.logicalDay == LogicalDay(year: 2026, month: 10, day: 22))
+        #expect(drink2000.updatedAt == t2000)
+        #expect(drink2000.healthSyncVersion == 0)
+        #expect(drink2000.healthSyncedVersion == 0)
+    }
 }
