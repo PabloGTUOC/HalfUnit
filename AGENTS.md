@@ -121,6 +121,15 @@ XcodeGen globs source folders, so **adding a file to an existing folder needs no
 - No networking except CloudKit via SwiftData. No analytics, crash SDKs, ads or remote config.
 - Keep `PrivacyInfo.xcprivacy` accurate (e.g. `UserDefaults` required-reason entry). Never log drink data with `print`; use `Logger` with `privacy: .private` for anything user-related.
 
+## Roles and approval
+
+- **Lead developer / architect: Claude Code.** Splits work into tasks, writes the task specs, answers questions, reviews every change and is the only one who merges to `main` and pushes.
+- **Coder: Antigravity (Agy).** Started by the lead as a supervised Orca worker, one task at a time, each in its own worktree and branch.
+- Coders commit only to their task branch. Never push, merge, rebase `main`, open PRs or change another worktree.
+- Send questions to the lead through the Orca `ask` command in your task preamble, never to the project owner. If the spec is unclear or contradicts `PRODUCT.md`, ask; don't guess.
+- A task is finished when its branch passes the Definition of done and you have sent `worker_done` with the summary. The lead then reviews: it either merges or sends follow-up changes on the same branch.
+- Only the lead goes to the project owner, and only for product decisions or doubts it can't settle from `PRODUCT.md` and `AGENTS.md`.
+
 ## Working in parallel (Orca worktrees)
 
 - One agent = one task = one branch = one worktree. Branch names: `agent/<area>-<short-desc>` (e.g. `agent/stats-period-counts`).
