@@ -7,9 +7,14 @@ import SwiftUI
 @main
 struct HalfUnitApp: App {
     private static let logger = Logger(subsystem: "es.opinasdeque.halfunit", category: "Persistence")
+    static let isHealthSyncEnabled = true
+
+    @Environment(\.scenePhase) private var scenePhase
 
     private let modelContainer: ModelContainer
     private let logService: LogService
+    private let healthSync: HealthSync
+    private let dayBoundaryScheduler: DayBoundaryScheduler
 
     init() {
         let container = Self.makeModelContainer()
@@ -18,22 +23,70 @@ struct HalfUnitApp: App {
             now: Date.init,
             timeZone: { TimeZone.autoupdatingCurrent }
         )
+        let health = HealthSync(
+            context: container.mainContext,
+            client: HealthKitStoreClient.shared,
+            isEnabled: { Self.isHealthSyncEnabled }
+        )
+        let scheduler = DayBoundaryScheduler(
+            now: Date.init,
+            timeZone: { TimeZone.autoupdatingCurrent }
+        )
 
         do {
             try service.seedDefaultPresetsIfNeeded()
         } catch {
-            Self.logger.error("Failed to seed default presets: \(error.localizedDescription, privacy: .public)")
+            Self.logger.error("Failed to seed default presets: \(error.localizedDescription, privacy: .private)")
         }
 
         self.modelContainer = container
         self.logService = service
+        self.healthSync = health
+        self.dayBoundaryScheduler = scheduler
+
+        Task { @MainActor in
+            await Self.reconcileAndPurgeTombstones(logService: service, healthSync: health)
+        }
     }
 
     var body: some Scene {
         WindowGroup {
-            RootTabView(logService: logService)
+            RootTabView(
+                logService: logService,
+                healthSync: healthSync,
+                dayBoundaryScheduler: dayBoundaryScheduler
+            )
         }
         .modelContainer(modelContainer)
+        .onChange(of: scenePhase) { _, newPhase in
+            guard newPhase == .active else {
+                return
+            }
+            Task { @MainActor in
+                await Self.reconcileAndPurgeTombstones(logService: logService, healthSync: healthSync)
+            }
+        }
+    }
+
+    @MainActor
+    static func reconcileAndPurgeTombstones(
+        logService: LogService,
+        healthSync: HealthSync
+    ) async {
+        await reconcileHealth(healthSync: healthSync)
+        do {
+            _ = try logService.purgeTombstones()
+        } catch {
+            logger.error("Failed to purge tombstones: \(error.localizedDescription, privacy: .private)")
+        }
+    }
+
+    @MainActor
+    static func reconcileHealth(healthSync: HealthSync) async {
+        let status = await healthSync.reconcile()
+        if case .failed(let reason) = status {
+            logger.error("Health sync reconcile failed: \(reason, privacy: .public)")
+        }
     }
 
     private static func makeModelContainer() -> ModelContainer {

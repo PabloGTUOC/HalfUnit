@@ -65,7 +65,7 @@ public final class HealthSync {
         rerunRequested = false
 
         var status = await performSinglePass()
-        if rerunRequested {
+        while rerunRequested {
             rerunRequested = false
             status = await performSinglePass()
         }
