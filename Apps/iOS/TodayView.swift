@@ -1,10 +1,14 @@
+import CoreData
 import Foundation
 import HalfUnitCore
 import OSLog
+import SwiftData
 import SwiftUI
+import UIKit
 
 struct TodayView: View {
     private static let logger = Logger(subsystem: "es.opinasdeque.halfunit", category: "TodayView")
+    private static let externalChangeDebounceDuration: Duration = .milliseconds(300)
 
     private struct UndoBannerState: Equatable {
         let drink: Drink
@@ -15,16 +19,27 @@ struct TodayView: View {
         }
     }
 
+    private struct BoundaryScheduleToken: Equatable {
+        let boundaryHour: Int
+        let revision: Int
+    }
+
     let logService: LogService
+    let healthSync: HealthSync
+    let dayBoundaryScheduler: DayBoundaryScheduler
 
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(\.locale) private var locale
+    @Environment(\.scenePhase) private var scenePhase
 
     @State private var presets: [Preset] = []
     @State private var screenSnapshot: TodayScreenSnapshot?
     @State private var undoBanner: UndoBannerState?
     @State private var logHapticTrigger = 0
     @State private var isShowingSettings = false
+    @State private var dayBoundaryHour = LogicalDay.defaultBoundaryHour
+    @State private var boundaryScheduleRevision = 0
+    @State private var externalChangeReloadTask: Task<Void, Never>?
 
     private var gridColumns: [GridItem] {
         if dynamicTypeSize.isAccessibilitySize {
@@ -77,6 +92,49 @@ struct TodayView: View {
             .sensoryFeedback(.success, trigger: logHapticTrigger)
             .task {
                 reloadState()
+            }
+            .task(id: BoundaryScheduleToken(boundaryHour: dayBoundaryHour, revision: boundaryScheduleRevision)) {
+                await runDayBoundaryScheduleLoop(boundaryHour: dayBoundaryHour)
+            }
+            .onChange(of: scenePhase) { _, newPhase in
+                guard newPhase == .active else {
+                    return
+                }
+                reloadAndRescheduleBoundary()
+            }
+            .onReceive(
+                NotificationCenter.default.publisher(for: .NSCalendarDayChanged)
+                    .receive(on: RunLoop.main)
+            ) { _ in
+                reloadAndRescheduleBoundary()
+            }
+            .onReceive(
+                NotificationCenter.default.publisher(for: UIApplication.significantTimeChangeNotification)
+                    .receive(on: RunLoop.main)
+            ) { _ in
+                reloadAndRescheduleBoundary()
+            }
+            .onReceive(
+                NotificationCenter.default.publisher(for: .NSSystemTimeZoneDidChange)
+                    .receive(on: RunLoop.main)
+            ) { _ in
+                reloadAndRescheduleBoundary()
+            }
+            .onReceive(
+                NotificationCenter.default.publisher(for: ModelContext.didSave)
+                    .receive(on: RunLoop.main)
+            ) { _ in
+                scheduleExternalChangeReload()
+            }
+            .onReceive(
+                NotificationCenter.default.publisher(for: .NSPersistentStoreRemoteChange)
+                    .receive(on: RunLoop.main)
+            ) { _ in
+                scheduleExternalChangeReload()
+            }
+            .onDisappear {
+                externalChangeReloadTask?.cancel()
+                externalChangeReloadTask = nil
             }
             .task(id: undoBanner?.drink.id) {
                 guard undoBanner != nil else {
@@ -253,14 +311,61 @@ struct TodayView: View {
             try logService.seedDefaultPresetsIfNeeded()
             presets = try logService.presets()
             screenSnapshot = try TodayScreenSnapshot.load(from: logService, locale: locale)
+            let currentSettings = try logService.settings()
+            dayBoundaryHour = currentSettings.dayBoundaryHour
         } catch {
-            Self.logger.error("Failed to load Today state: \(error.localizedDescription, privacy: .public)")
+            Self.logger.error("Failed to load Today state: \(error.localizedDescription, privacy: .private)")
+        }
+    }
+
+    private func reloadAndRescheduleBoundary() {
+        reloadState()
+        boundaryScheduleRevision += 1
+    }
+
+    private func scheduleExternalChangeReload() {
+        externalChangeReloadTask?.cancel()
+        externalChangeReloadTask = Task { @MainActor in
+            do {
+                try await Task.sleep(for: Self.externalChangeDebounceDuration)
+            } catch {
+                return
+            }
+            guard !Task.isCancelled else {
+                return
+            }
+            reloadState()
+        }
+    }
+
+    private func runDayBoundaryScheduleLoop(boundaryHour: Int) async {
+        var referenceDate = dayBoundaryScheduler.now()
+        while !Task.isCancelled {
+            let nextBoundary = dayBoundaryScheduler.nextBoundaryDate(
+                after: referenceDate,
+                boundaryHour: boundaryHour
+            )
+            let delay = max(0.05, nextBoundary.timeIntervalSince(dayBoundaryScheduler.now()))
+            do {
+                try await Task.sleep(for: .seconds(delay))
+            } catch {
+                return
+            }
+            guard !Task.isCancelled else {
+                return
+            }
+            reloadState()
+            referenceDate = max(dayBoundaryScheduler.now(), nextBoundary)
         }
     }
 
     private func logPreset(_ preset: Preset) {
         do {
-            let drink = try logService.log(preset: preset, source: .phone)
+            let (drink, _) = try Self.logAndReconcile(
+                preset: preset,
+                logService: logService,
+                healthSync: healthSync
+            )
             logHapticTrigger += 1
             let localizedDrinkName = PresetPresentation.localizedName(for: preset, locale: locale)
             let format = AppLocalization.string("undo.banner.logged", locale: locale)
@@ -270,19 +375,52 @@ struct TodayView: View {
             }
             reloadState()
         } catch {
-            Self.logger.error("Failed to log drink: \(error.localizedDescription, privacy: .public)")
+            Self.logger.error("Failed to log drink: \(error.localizedDescription, privacy: .private)")
         }
     }
 
     private func undoLastDrink(_ drink: Drink) {
         do {
-            try logService.undo(drink)
+            _ = try Self.undoAndReconcile(
+                drink: drink,
+                logService: logService,
+                healthSync: healthSync
+            )
             withAnimation {
                 undoBanner = nil
             }
             reloadState()
         } catch {
-            Self.logger.error("Failed to undo drink: \(error.localizedDescription, privacy: .public)")
+            Self.logger.error("Failed to undo drink: \(error.localizedDescription, privacy: .private)")
+        }
+    }
+
+    @MainActor
+    @discardableResult
+    static func logAndReconcile(
+        preset: Preset,
+        logService: LogService,
+        healthSync: HealthSync
+    ) throws -> (drink: Drink, reconcileTask: Task<HealthSync.Status, Never>) {
+        let drink = try logService.log(preset: preset, source: .phone)
+        let task = Task { @MainActor in
+            await HalfUnitApp.reconcileHealth(healthSync: healthSync)
+            return healthSync.lastStatus
+        }
+        return (drink, task)
+    }
+
+    @MainActor
+    @discardableResult
+    static func undoAndReconcile(
+        drink: Drink,
+        logService: LogService,
+        healthSync: HealthSync
+    ) throws -> Task<HealthSync.Status, Never> {
+        try logService.undo(drink)
+        return Task { @MainActor in
+            await HalfUnitApp.reconcileHealth(healthSync: healthSync)
+            return healthSync.lastStatus
         }
     }
 }

@@ -555,4 +555,79 @@ struct HealthSyncTests {
         #expect(pairs.count == Set(pairs).count)
         #expect(allSamples.map(\.syncVersion) == [1, 2, 3])
     }
+
+    @Test(
+        "Three overlapping reconcile() calls loop until all in-flight and follow-up changes reach the store without duplicate (identifier, version) pairs"
+    )
+    func threeOverlappingReconcileCallsProcessAllChangesWithoutDuplicates() async throws {
+        let logTime = Self.makeDate(year: 2026, month: 10, day: 22, hour: 21, minute: 30)
+        let harness = try makeHarness(now: logTime)
+        try harness.logService.seedDefaultPresetsIfNeeded()
+        let presets = try harness.logService.presets()
+        let beer = try #require(presets.first(where: { $0.key == "beer" }))
+        let wine = try #require(presets.first(where: { $0.key == "wineGlass" }))
+
+        let firstDrink = try harness.logService.log(preset: beer, source: .phone)
+        harness.client.shouldSuspendNextSave = true
+
+        // Call 1 starts pass 1 and suspends inside save() with firstDrink syncVersion 1.
+        let call1 = Task {
+            await harness.healthSync.reconcile()
+        }
+        await harness.client.waitForSaveToSuspend()
+
+        // While pass 1 is suspended, edit firstDrink (version -> 1) and trigger overlapping call 2.
+        harness.clock.currentNow = logTime.addingTimeInterval(30)
+        try harness.logService.edit(
+            firstDrink,
+            DrinkEdit(hu: Self.dec("1.5"), volumeMl: .set(750), abvPercent: .set(Decimal(5)))
+        )
+        let call2 = Task {
+            await harness.healthSync.reconcile()
+        }
+        await Task.yield()
+
+        // Arm suspension for pass 2 before releasing pass 1.
+        harness.client.shouldSuspendNextSave = true
+        harness.client.resumeSuspendedSave()
+        await harness.client.waitForSaveToSuspend()
+
+        // While pass 2 (follow-up pass) is suspended, edit firstDrink again (version -> 2),
+        // log a second drink, and trigger overlapping call 3.
+        harness.clock.currentNow = logTime.addingTimeInterval(60)
+        try harness.logService.edit(
+            firstDrink,
+            DrinkEdit(hu: Decimal(2), volumeMl: .clear, abvPercent: .clear)
+        )
+        let secondDrink = try harness.logService.log(preset: wine, source: .phone)
+        let call3 = Task {
+            await harness.healthSync.reconcile()
+        }
+        await Task.yield()
+
+        harness.client.resumeSuspendedSave()
+
+        let status1 = await call1.value
+        let status2 = await call2.value
+        let status3 = await call3.value
+        #expect(status1 == .upToDate)
+        #expect(status2 == .upToDate)
+        #expect(status3 == .upToDate)
+
+        #expect(firstDrink.healthSyncedVersion == 2)
+        #expect(secondDrink.healthSyncedVersion == 0)
+        #expect(harness.client.savedBatches.count == 3)
+
+        let allSamples = harness.client.savedBatches.flatMap { $0 }
+        let pairs = allSamples.map { "\($0.syncIdentifier)#\($0.syncVersion)" }
+        #expect(pairs.count == Set(pairs).count)
+        #expect(
+            Set(pairs) == [
+                "\(firstDrink.id.uuidString)#1",
+                "\(firstDrink.id.uuidString)#2",
+                "\(firstDrink.id.uuidString)#3",
+                "\(secondDrink.id.uuidString)#1",
+            ]
+        )
+    }
 }

@@ -12,6 +12,7 @@ struct HalfUnitAppTests {
     private static let germanLocale = Locale(identifier: "de_DE")
     private static let berlinTimeZone = TimeZone(identifier: "Europe/Berlin")!
     private static let tokyoTimeZone = TimeZone(identifier: "Asia/Tokyo")!
+    private static let newYorkTimeZone = TimeZone(identifier: "America/New_York")!
 
     @Test("Preset keys map to catalog keys, localized names, and valid SF Symbols")
     func presetPresentationMappings() {
@@ -232,6 +233,173 @@ struct HalfUnitAppTests {
         #expect(afterUndoSnapshot.todayTotalText == "Total: 1 HU")
     }
 
+    @Test(
+        "DayBoundaryScheduler computes next boundary for 07:00 boundary, 01:30 now, Europe/Berlin DST week, and time-zone change"
+    )
+    func dayBoundarySchedulerCases() {
+        let currentNow = LockIsolated(Self.makeDate(2026, 10, 22, 21, 15, in: Self.berlinTimeZone))
+        let currentZone = LockIsolated(Self.berlinTimeZone)
+        let scheduler = DayBoundaryScheduler(
+            now: { currentNow.value },
+            timeZone: { currentZone.value }
+        )
+
+        // 1. Standard 07:00 boundary: evening 21:15 -> next morning 07:00, 06:59 -> 07:00, exact 07:00 -> next day 07:00
+        let fromEvening = scheduler.nextBoundaryDate(boundaryHour: 7)
+        #expect(fromEvening == Self.makeDate(2026, 10, 23, 7, 0, in: Self.berlinTimeZone))
+
+        currentNow.setValue(Self.makeDate(2026, 10, 23, 6, 59, in: Self.berlinTimeZone))
+        let fromJustBefore = scheduler.nextBoundaryDate(boundaryHour: 7)
+        #expect(fromJustBefore == Self.makeDate(2026, 10, 23, 7, 0, in: Self.berlinTimeZone))
+
+        currentNow.setValue(Self.makeDate(2026, 10, 23, 7, 0, in: Self.berlinTimeZone))
+        let fromExactBoundary = scheduler.nextBoundaryDate(boundaryHour: 7)
+        #expect(fromExactBoundary == Self.makeDate(2026, 10, 24, 7, 0, in: Self.berlinTimeZone))
+
+        // 2. 01:30 "now": still on logical day 2026-10-22, so next boundary is 2026-10-23 07:00 (5.5 h later)
+        let lateNightNow = Self.makeDate(2026, 10, 23, 1, 30, in: Self.berlinTimeZone)
+        currentNow.setValue(lateNightNow)
+        let fromLateNight = scheduler.nextBoundaryDate(boundaryHour: 7)
+        #expect(fromLateNight == Self.makeDate(2026, 10, 23, 7, 0, in: Self.berlinTimeZone))
+        #expect(fromLateNight.timeIntervalSince(lateNightNow) == 5.5 * 3600)
+
+        // 3. Europe/Berlin DST week (spring forward on Sunday 2026-03-29: 02:00 CET -> 03:00 CEST)
+        let satMorningBeforeSpringDST = Self.makeDate(2026, 3, 28, 7, 0, in: Self.berlinTimeZone)
+        currentNow.setValue(satMorningBeforeSpringDST)
+        let sunMorningAfterSpringDST = scheduler.nextBoundaryDate(boundaryHour: 7)
+        #expect(sunMorningAfterSpringDST == Self.makeDate(2026, 3, 29, 7, 0, in: Self.berlinTimeZone))
+        // Spring forward removes 1 hour -> 23 hours between Saturday 07:00 CET and Sunday 07:00 CEST
+        #expect(sunMorningAfterSpringDST.timeIntervalSince(satMorningBeforeSpringDST) == 23 * 3600)
+
+        let sun0130SpringDST = Self.makeDate(2026, 3, 29, 1, 30, in: Self.berlinTimeZone)
+        currentNow.setValue(sun0130SpringDST)
+        let sunBoundaryFrom0130 = scheduler.nextBoundaryDate(boundaryHour: 7)
+        #expect(sunBoundaryFrom0130 == Self.makeDate(2026, 3, 29, 7, 0, in: Self.berlinTimeZone))
+        #expect(sunBoundaryFrom0130.timeIntervalSince(sun0130SpringDST) == 4.5 * 3600)
+
+        // Rescheduling after Sunday 07:00 CEST fires advances to Monday 2026-03-30 07:00 CEST (24 h)
+        let monMorningAfterSpringDST = scheduler.nextBoundaryDate(
+            after: sunBoundaryFrom0130,
+            boundaryHour: 7
+        )
+        #expect(monMorningAfterSpringDST == Self.makeDate(2026, 3, 30, 7, 0, in: Self.berlinTimeZone))
+        #expect(monMorningAfterSpringDST.timeIntervalSince(sunBoundaryFrom0130) == 24 * 3600)
+
+        // Europe/Berlin autumn DST week (fall back on Sunday 2026-10-25: 03:00 CEST -> 02:00 CET)
+        let satMorningBeforeAutumnDST = Self.makeDate(2026, 10, 24, 7, 0, in: Self.berlinTimeZone)
+        currentNow.setValue(satMorningBeforeAutumnDST)
+        let sunMorningAfterAutumnDST = scheduler.nextBoundaryDate(boundaryHour: 7)
+        #expect(sunMorningAfterAutumnDST == Self.makeDate(2026, 10, 25, 7, 0, in: Self.berlinTimeZone))
+        // Fall back adds 1 hour -> 25 hours between Saturday 07:00 CEST and Sunday 07:00 CET
+        #expect(sunMorningAfterAutumnDST.timeIntervalSince(satMorningBeforeAutumnDST) == 25 * 3600)
+
+        // 4. Time-zone change at the same instant:
+        // 2026-03-30 23:30 in Europe/Berlin (21:30 UTC) is 2026-03-31 06:30 in Asia/Tokyo
+        // and 2026-03-30 17:30 in America/New_York.
+        let sharedInstant = Self.makeDate(2026, 3, 30, 23, 30, in: Self.berlinTimeZone)
+        currentNow.setValue(sharedInstant)
+        currentZone.setValue(Self.berlinTimeZone)
+        #expect(
+            scheduler.nextBoundaryDate(boundaryHour: 7)
+                == Self.makeDate(2026, 3, 31, 7, 0, in: Self.berlinTimeZone)
+        )
+
+        // In Tokyo it is 06:30 on March 31 (still before 07:00 boundary), so next boundary is 30 minutes later at 07:00 Tokyo time.
+        currentZone.setValue(Self.tokyoTimeZone)
+        let tokyoBoundary = scheduler.nextBoundaryDate(boundaryHour: 7)
+        #expect(tokyoBoundary == Self.makeDate(2026, 3, 31, 7, 0, in: Self.tokyoTimeZone))
+        #expect(tokyoBoundary.timeIntervalSince(sharedInstant) == 1800)
+
+        // In New York it is 17:30 on March 30, so next boundary is March 31 07:00 New York time.
+        currentZone.setValue(Self.newYorkTimeZone)
+        let newYorkBoundary = scheduler.nextBoundaryDate(boundaryHour: 7)
+        #expect(newYorkBoundary == Self.makeDate(2026, 3, 31, 7, 0, in: Self.newYorkTimeZone))
+    }
+
+    @Test(
+        "TodayView log/undo reconciles with Health, and launch/foreground maintenance reconciles before purging tombstones"
+    )
+    @MainActor
+    func healthSyncWiringForLogUndoAndTombstonePurgeOrder() async throws {
+        let container = try ModelContainerFactory.make(inMemory: true)
+        let t0 = Self.makeDate(2026, 10, 22, 20, 0, in: Self.berlinTimeZone)
+        let currentNow = LockIsolated(t0)
+        let currentZone = LockIsolated(Self.berlinTimeZone)
+
+        let service = LogService(
+            context: container.mainContext,
+            now: { currentNow.value },
+            timeZone: { currentZone.value }
+        )
+        let client = InMemoryHealthStoreClient()
+        let healthSync = HealthSync(
+            context: container.mainContext,
+            client: client,
+            isEnabled: { HalfUnitApp.isHealthSyncEnabled }
+        )
+
+        try service.seedDefaultPresetsIfNeeded()
+        let beerPreset = try #require(try service.presets().first(where: { $0.key == "beer" }))
+
+        // 1. Log on Today triggers reconcile -> writes sample to Health
+        let (loggedDrink, logReconcileTask) = try TodayView.logAndReconcile(
+            preset: beerPreset,
+            logService: service,
+            healthSync: healthSync
+        )
+        let logStatus = await logReconcileTask.value
+        #expect(logStatus == .upToDate)
+        #expect(client.savedSamples.count == 1)
+        #expect(client.savedSamples.first?.syncIdentifier == loggedDrink.id.uuidString)
+        #expect(loggedDrink.healthSyncedVersion == 0)
+
+        // 2. Undo within 5 seconds removes drink from active store AND from Apple Health
+        currentNow.setValue(t0.addingTimeInterval(3))
+        let undoReconcileTask = try TodayView.undoAndReconcile(
+            drink: loggedDrink,
+            logService: service,
+            healthSync: healthSync
+        )
+        let undoStatus = await undoReconcileTask.value
+        #expect(undoStatus == .upToDate)
+        #expect(try service.drinks().isEmpty)
+        #expect(client.deletedIdentifiers == [loggedDrink.id.uuidString])
+        #expect(loggedDrink.healthSyncedVersion == nil)
+
+        // 3. Launch/foreground maintenance runs reconcile() BEFORE purgeTombstones():
+        // Create a drink synced 31 days ago and deleted 31 days ago (before reconcile ran).
+        let (oldDrink, oldLogTask) = try TodayView.logAndReconcile(
+            preset: beerPreset,
+            logService: service,
+            healthSync: healthSync
+        )
+        _ = await oldLogTask.value
+        #expect(oldDrink.healthSyncedVersion == 0)
+
+        try service.delete(oldDrink)
+        // Advance clock by 31 days so the tombstone is eligible for purgeTombstones().
+        currentNow.setValue(t0.addingTimeInterval(31 * 86_400))
+
+        await HalfUnitApp.reconcileAndPurgeTombstones(logService: service, healthSync: healthSync)
+
+        // Because reconcile() ran BEFORE purgeTombstones(), oldDrink was first deleted from Health
+        // and then purged from SwiftData.
+        #expect(client.deletedIdentifiers.contains(oldDrink.id.uuidString))
+        let allRemainingDrinks = try service.drinks(includeDeleted: true)
+        #expect(!allRemainingDrinks.contains(where: { $0.id == oldDrink.id }))
+
+        // 4. With Health denied or unavailable, Today logging and maintenance still work normally.
+        client.authorization = .denied
+        let (deniedDrink, deniedTask) = try TodayView.logAndReconcile(
+            preset: beerPreset,
+            logService: service,
+            healthSync: healthSync
+        )
+        let deniedStatus = await deniedTask.value
+        #expect(deniedStatus == .notAuthorized)
+        #expect(try service.drinks().map(\.id) == [deniedDrink.id])
+    }
+
     private static func makeDate(
         _ year: Int,
         _ month: Int,
@@ -273,5 +441,29 @@ private final class LockIsolated<Value: Sendable>: @unchecked Sendable {
         lock.lock()
         defer { lock.unlock() }
         storage = newValue
+    }
+}
+
+private final class InMemoryHealthStoreClient: HealthStoreClient, @unchecked Sendable {
+    var isAvailable = true
+    var authorization: HealthWriteAuthorization = .authorized
+    private(set) var savedSamples: [HealthDrinkSample] = []
+    private(set) var deletedIdentifiers: [String] = []
+
+    func writeAuthorization() async -> HealthWriteAuthorization {
+        guard isAvailable else {
+            return .unavailable
+        }
+        return authorization
+    }
+
+    func requestWriteAuthorization() async throws {}
+
+    func save(_ samples: [HealthDrinkSample]) async throws {
+        savedSamples.append(contentsOf: samples)
+    }
+
+    func deleteSamples(withSyncIdentifiers ids: [String]) async throws {
+        deletedIdentifiers.append(contentsOf: ids)
     }
 }
