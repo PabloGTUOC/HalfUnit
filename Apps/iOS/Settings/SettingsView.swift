@@ -5,6 +5,7 @@ import OSLog
 import SwiftData
 import SwiftUI
 import UniformTypeIdentifiers
+import WidgetKit
 
 struct SettingsView: View {
     private static let logger = Logger(subsystem: "es.opinasdeque.halfunit", category: "SettingsView")
@@ -410,6 +411,7 @@ struct SettingsView: View {
                 volumeMl: volumeMl,
                 abvPercent: abvPercent
             )
+            WidgetCenter.shared.reloadAllTimelines()
             reloadState()
         } catch {
             Self.logger.error("Failed to add preset: \(error.localizedDescription, privacy: .private)")
@@ -440,6 +442,7 @@ struct SettingsView: View {
             if preset.isHidden != draft.isHidden {
                 try logService.setPresetHidden(preset, draft.isHidden)
             }
+            WidgetCenter.shared.reloadAllTimelines()
             reloadState()
         } catch {
             Self.logger.error("Failed to update preset: \(error.localizedDescription, privacy: .private)")
@@ -453,6 +456,7 @@ struct SettingsView: View {
                 return
             }
             try logService.setPresetHidden(preset, !item.isHidden)
+            WidgetCenter.shared.reloadAllTimelines()
             reloadState()
         } catch {
             Self.logger.error("Failed to toggle preset visibility: \(error.localizedDescription, privacy: .private)")
@@ -462,6 +466,7 @@ struct SettingsView: View {
     private func movePresets(fromOffsets: IndexSet, toOffset: Int) {
         do {
             try logService.movePresets(fromOffsets: fromOffsets, toOffset: toOffset)
+            WidgetCenter.shared.reloadAllTimelines()
             reloadState()
         } catch {
             Self.logger.error("Failed to reorder presets: \(error.localizedDescription, privacy: .private)")
@@ -471,6 +476,7 @@ struct SettingsView: View {
     private func updateDayBoundary(to hour: Int) {
         do {
             try logService.changeDayBoundary(to: hour)
+            WidgetCenter.shared.reloadAllTimelines()
             reloadState()
         } catch {
             Self.logger.error("Failed to change day boundary: \(error.localizedDescription, privacy: .private)")
@@ -480,6 +486,7 @@ struct SettingsView: View {
     private func updateDisplayUnit(_ unit: DisplayUnit) {
         do {
             try logService.updateDisplayUnit(unit)
+            WidgetCenter.shared.reloadAllTimelines()
             reloadState()
         } catch {
             Self.logger.error("Failed to update display unit: \(error.localizedDescription, privacy: .private)")

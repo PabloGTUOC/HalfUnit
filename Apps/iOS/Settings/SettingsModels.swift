@@ -3,6 +3,7 @@ import HalfUnitCore
 import SwiftData
 import SwiftUI
 import UniformTypeIdentifiers
+import WidgetKit
 
 enum SettingsPresetSymbol: String, CaseIterable, Identifiable, Sendable {
     case mug = "mug"
@@ -384,6 +385,7 @@ enum SettingsActions {
     ) async throws {
         try BackupCodec.restore(from: data, into: context)
         _ = try logService.dedupeDrinks()
+        WidgetCenter.shared.reloadAllTimelines()
         await HalfUnitApp.reconcileHealth(healthSync: healthSync)
     }
 }

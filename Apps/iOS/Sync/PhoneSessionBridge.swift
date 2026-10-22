@@ -4,6 +4,7 @@ import OSLog
 import SwiftData
 import UIKit
 import WatchConnectivity
+import WidgetKit
 
 @MainActor
 protocol PhoneSessionTransport: AnyObject {
@@ -131,6 +132,7 @@ final class PhoneSessionBridge: NSObject {
         }
 
         await HalfUnitApp.reconcileHealth(healthSync: healthSync)
+        WidgetCenter.shared.reloadAllTimelines()
         pushCurrentStateContext()
     }
 
