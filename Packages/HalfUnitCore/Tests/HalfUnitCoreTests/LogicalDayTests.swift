@@ -209,4 +209,30 @@ struct LogicalDayTests {
         let monday = LogicalDay(year: 2026, month: 10, day: 19)
         #expect(saturday.days(to: monday) == 2)
     }
+
+    @Test("Weekday ISO numbering Monday=1 through Sunday=7 for known dates")
+    func weekdayISONumbering() {
+        let monday = LogicalDay(year: 2026, month: 10, day: 19)
+        let tuesday = LogicalDay(year: 2026, month: 10, day: 20)
+        let wednesday = LogicalDay(year: 2026, month: 10, day: 21)
+        let thursday = LogicalDay(year: 2026, month: 10, day: 22)
+        let friday = LogicalDay(year: 2026, month: 10, day: 23)
+        let saturday = LogicalDay(year: 2026, month: 10, day: 24)
+        let sunday = LogicalDay(year: 2026, month: 10, day: 25)
+
+        #expect(monday.weekday == .monday)
+        #expect(monday.weekday.rawValue == 1)
+        #expect(tuesday.weekday == .tuesday)
+        #expect(tuesday.weekday.rawValue == 2)
+        #expect(wednesday.weekday == .wednesday)
+        #expect(wednesday.weekday.rawValue == 3)
+        #expect(thursday.weekday == .thursday)
+        #expect(thursday.weekday.rawValue == 4)
+        #expect(friday.weekday == .friday)
+        #expect(friday.weekday.rawValue == 5)
+        #expect(saturday.weekday == .saturday)
+        #expect(saturday.weekday.rawValue == 6)
+        #expect(sunday.weekday == .sunday)
+        #expect(sunday.weekday.rawValue == 7)
+    }
 }
