@@ -49,11 +49,13 @@ The app uses a simple scale in steps of 0.5 "HU" (Half Unit points), and stores 
 | Shot | 4 cl, 40% | 1 | 13 | 1.3 |
 | Long drink / double | 8 cl spirit, 40% | 2 | 26 | 2.6 |
 
+The scale is 1 HU ≈ 20 g (0.5 HU ≈ 10 g).
+
 **Rules**
 
 - Every preset has editable defaults (name, icon, HU, volume, ABV); grams are recalculated from volume and ABV.
-- The user can add custom presets (e.g. "Mass 1 l" = 4 HU, 40 g).
-- A shot is rated 1 HU by owner choice, although by grams it is closer to 0.6. Keep it, but show grams on the detail screen.
+- The user can add custom presets (e.g. "Mass 1 l" = 2 HU, 40 g).
+- Two presets are rated above their grams by owner choice: a shot is 1 HU (≈ 0.65 by grams) and a long drink / double is 2 HU (≈ 1.3 by grams). Keep them, but show grams on the detail screen. Stats in grams, standard drinks and Health always use the real grams.
 - Only alcoholic drinks are logged; the smallest entry is 0.5 HU. Non-alcoholic drinks are not tracked.
 - Display unit is selectable in Settings: HU (default), grams, German standard drinks (10 g) or UK units (8 g).
 
@@ -69,20 +71,20 @@ Version 1 has four features: quick logging, the days-without counter, drinking-d
 - One tap logs the drink with the current time; haptic confirmation plus a 5-second **Undo** banner.
 - Long-press a button to log at a different time ("earlier tonight", or a date and time picker) for drinks logged the next morning.
 - Tapping the same button several times adds several drinks; today's total updates instantly.
-- Optional fields, editable later: note, ABV, volume, location (off by default).
+- Optional fields, editable later: note, ABV, volume. (Location is not in version 1.)
 
 ### F2 – Days without alcohol
 
 - Headline: **"24 days without alcohol"**, plus "Last drink: Sun 28 Sep, Beer".
 - Formula: today's logical date minus the logical date of the last drinking day. Example: last drink Saturday night, today Monday = 2 days. If there is a drink today, the counter shows "Today" and the previous streak length.
 - **Day boundary:** a logical day runs 07:00 to 06:59 (configurable). A beer at 01:30 belongs to the previous evening, so a night out never counts as two drinking days.
-- Shows longest streak ever and longest streak this year.
+- Shows longest streak ever and longest streak this year. A streak is a run of alcohol-free logical days (see Calculations).
 - Milestone moments at 7, 14, 30, 60, 90, 180 and 365 days (gentle, optional).
 
 ### F3 – Drinking-day statistics
 
 - Fixed periods: last 7 days, 30 days, 3 months, 12 months, 2 years, plus a custom date range.
-- For each period: drinking days (e.g. "18 of 90 days"), % of days, alcohol-free days, total HU and grams, average HU per drinking day, heaviest day.
+- For each period: drinking days (e.g. "18 of 91 days"), % of days, alcohol-free days, total HU and grams, average HU per drinking day, heaviest day.
 - Comparison with the previous period of the same length (e.g. "−4 drinking days vs previous 3 months").
 - Calendar heatmap (one square per day, shade = HU) and a weekly bar chart of HU.
 - Breakdown by drink type and by weekday ("Fridays are 41% of your drinking days").
@@ -110,7 +112,7 @@ The watch app is a standalone logger: it works without the iPhone nearby and syn
 - Writes to the watch's local store immediately, so the entry exists even if the phone is off; the iPhone writes it to Apple Health once it syncs.
 - Shows only today's drinks and the streak; no charts.
 - Works offline; entries sync to the iPhone through the shared iCloud store.
-- Supports the Action button on Apple Watch Ultra and a Smart Stack widget (see Widgets).
+- The streak complication also appears in the Smart Stack. Interactive Smart Stack buttons and the Action button on Apple Watch Ultra come in version 1.1 (see Widgets).
 - Minimum: watchOS 26.
 
 ## iPhone screens
@@ -148,15 +150,16 @@ Every drink is mirrored to Apple Health as an "Alcoholic Beverages" sample; the 
 - Delete = delete the sample matched by sync identifier.
 - If permission is denied, the app works fully and shows a small "Not syncing to Health" note in Settings.
 
-**Read rules (optional, off by default)**
+**Read rules (version 1.1, optional, off by default)**
 
 - "Include drinks from other apps": an anchored query reads alcohol samples from other sources and shows them in History marked "From Health". They count in stats and the streak.
-- Read access is also used once at onboarding to import past history, if the user agrees.
+- Read access is also used once to import past history, if the user agrees.
+- Version 1 requests write access only, so it needs only `NSHealthUpdateUsageDescription`.
 
 **Setup for the developer**
 
 - Enable the HealthKit capability on the iOS target (the watch target only if read features need it later).
-- Info.plist: `NSHealthUpdateUsageDescription` (write) and `NSHealthShareUsageDescription` (read), each with a one-line plain reason.
+- Info.plist: `NSHealthUpdateUsageDescription` (write, version 1) and `NSHealthShareUsageDescription` (read, added in 1.1), each with a one-line plain reason.
 - Check `HKHealthStore.isHealthDataAvailable()` first; use one shared `HKHealthStore`.
 - HealthKit never reveals whether read permission was denied, so the UI must not depend on it.
 
@@ -166,15 +169,15 @@ Not in scope: blood alcohol content (`bloodAlcoholContent`) and any intoxication
 
 The fastest log is the one that skips opening the app, so every surface reuses one shared "Log drink" App Intent.
 
-| Surface | Shows | Action |
-| --- | --- | --- |
-| Watch complication (circular, rectangular, corner) | Days without alcohol | Tap opens the logger grid |
-| Watch Smart Stack widget | Streak + today's HU | Interactive buttons for the 2 most used presets |
-| iPhone Home Screen widget (small, medium) | Streak; medium adds last drink and 3 preset buttons | Interactive log buttons (no app launch) |
-| iPhone Lock Screen widget | "24 d" | Tap opens Today |
-| Control Center control | Preset icon | Logs the chosen preset |
-| Siri and Shortcuts | — | "Log a beer in Half Unit", "How many days without alcohol?" |
-| Action button (iPhone, Watch Ultra) | — | Runs a chosen preset or opens the logger |
+| Surface | Version | Shows | Action |
+| --- | --- | --- | --- |
+| Watch complication (circular, rectangular, corner) | 1.0 | Days without alcohol | Tap opens the logger grid |
+| iPhone Home Screen widget (small, medium) | 1.0 | Streak; medium adds last drink and 3 preset buttons | Interactive log buttons (no app launch) |
+| Siri and Shortcuts | 1.0 | — | "Log a beer in Half Unit", "How many days without alcohol?" |
+| Watch Smart Stack widget (interactive) | 1.1 | Streak + today's HU | Interactive buttons for the 2 most used presets |
+| iPhone Lock Screen widget | 1.1 | "24 d" | Tap opens Today |
+| Control Center control | 1.1 | Preset icon | Logs the chosen preset |
+| Action button (iPhone, Watch Ultra) | 1.1 | — | Runs a chosen preset or opens the logger |
 
 - Widgets read from the shared App Group store and refresh after every log and at the day boundary.
 - App Intents: `LogDrinkIntent(preset, time?)`, `GetStreakIntent`, `GetStatsIntent(period)`.
@@ -189,6 +192,7 @@ Three entities cover version 1; all statistics are computed from Drink rows, nev
 | --- | --- | --- |
 | id | UUID | Also the HealthKit sync identifier |
 | timestamp | Date | Actual time of the drink |
+| timeZoneIdentifier | String | Time zone where the drink was logged; used to compute logicalDate |
 | logicalDate | Date (day) | Derived from timestamp and day-boundary hour; stored for fast queries |
 | presetId | UUID? | Null for one-off custom drinks |
 | name | String | Snapshot of preset name at log time |
@@ -199,21 +203,21 @@ Three entities cover version 1; all statistics are computed from Drink rows, nev
 | note | String? | Optional |
 | source | Enum | watch, phone, widget, siri, healthImport |
 | healthSyncVersion | Int | Increments on each edit |
-| isDeleted | Bool | Tombstone, so deletes sync and remove the Health sample |
+| deletedAt | Date? | Tombstone: set on delete so deletes sync and remove the Health sample; purged 30 days later. (Not `isDeleted`, which SwiftData reserves.) |
 | createdAt, updatedAt | Date | Conflict resolution |
 
 **Preset:** id, name, icon (SF Symbol), hu, volumeMl, abvPercent, sortOrder, isHidden.
 
-**Settings:** dayBoundaryHour (default 7), displayUnit, healthReadEnabled, remindersEnabled, appLockEnabled.
+**AppSettings:** dayBoundaryHour (default 7), displayUnit, healthReadEnabled (unused until 1.1, default off), remindersEnabled, appLockEnabled. Named `AppSettings` because `Settings` clashes with SwiftUI.
 
 **Calculations**
 
-- Drinking day = a logicalDate with at least one non-deleted drink.
-- Days without alcohol = today's logicalDate − most recent drinking day.
-- Period stats = rolling window ending today, e.g. 3 months = the last 91 logical days including today; 12 months = 365; 2 years = 730.
-- Longest streak = largest gap between consecutive drinking days (and from the first log date).
+- Drinking day = a logicalDate with at least one drink whose deletedAt is empty.
+- Days without alcohol = today's logicalDate − most recent drinking day (today counts as alcohol-free until a drink is logged).
+- Period stats = rolling window ending today: 7 days, 30 days, 3 months = the last 91 logical days including today, 12 months = 365, 2 years = 730.
+- Streaks count alcohol-free days. Between drinking days A and B: B − A − 1 (drinks on the 1st and 5th = 3 days). Before the first drinking day: first drinking day − first-use day. Current: as Days without alcohol. Longest streak = the largest of these.
 - When a period is longer than the time since first use, it only counts tracked days, shown as "18 of 40 tracked days".
-- Recompute when the time zone changes; logicalDate uses the time zone where the drink was logged.
+- logicalDate uses the time zone stored with each drink (timeZoneIdentifier). Changing the device time zone changes only which logical day is "today"; it never moves past drinks.
 
 **Sync**
 
@@ -297,7 +301,9 @@ The MVP is F1–F4 on iPhone and Watch, Apple Health write, one complication and
 
 - Interactive widgets for all presets, Control Center control, Lock Screen widget.
 - Optional goals: "max X drinking days per week" or "dry month", with progress ring.
-- Read drinks from other apps via Health; import from CSV.
+- Read drinks from other apps via Health and one-time Health history import; import from CSV.
+- Optional location on drinks (needs location permission).
+- Interactive Watch Smart Stack widget and Action button support.
 - Monthly summary notification; year-in-review screen.
 - iPad layout and Mac for Insights.
 - Localisation: Spanish.
@@ -313,8 +319,13 @@ The MVP is F1–F4 on iPhone and Watch, Apple Health write, one complication and
 - Distribution: public and free on the App Store from day 1.
 - Stack: all native Swift (no Flutter / cross-platform).
 - The iPhone app is the only writer to Apple Health.
+- Long drink / double stays at 2 HU (owner choice, like the shot); a 1 l Mass is 2 HU.
+- Version 1 widgets: one Watch complication and one iPhone Home Screen widget, plus Siri and Shortcuts. Lock Screen widget, Control Center control, interactive Smart Stack and Action button move to 1.1.
+- Version 1 only writes to Apple Health; reading and import move to 1.1.
+- Location on drinks moves to 1.1.
 
 **Still open**
 
 - [ ] Final check that "Half Unit" is free on the App Store and as a domain for the privacy page.
 - [ ] Launch languages beyond English and German (Spanish?).
+- [ ] Bundle ID prefix (`BUNDLE_ID_PREFIX`, e.g. a reverse domain you own). Needed before the Xcode project and entitlements are set up.

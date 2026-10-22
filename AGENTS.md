@@ -19,7 +19,7 @@ A native iPhone + Apple Watch app that logs alcoholic drinks in one tap and show
 | Persistence | SwiftData in an App Group container |
 | Sync | SwiftData + CloudKit private database; WatchConnectivity as fast path |
 | Health | HealthKit — **written only by the iOS app** |
-| Widgets / Siri | WidgetKit, App Intents, ControlWidget |
+| Widgets / Siri | WidgetKit, App Intents (ControlWidget in 1.1) |
 | Tests | Swift Testing (`import Testing`) for logic; XCTest only for UI tests |
 | Project file | **XcodeGen** (`project.yml`). The `.xcodeproj` is generated and git-ignored |
 | Lint / format | `swift format` (ships with the Xcode toolchain) |
@@ -42,7 +42,7 @@ halfunit/
 ├── Packages/HalfUnitCore/
 │   ├── Package.swift
 │   ├── Sources/HalfUnitCore/
-│   │   ├── Model/                # @Model Drink, Preset, AppSettings
+│   │   ├── Model/                # @Model Drink, Preset, AppSettings (not `Settings`: clashes with SwiftUI)
 │   │   ├── Domain/               # LogicalDay, Units (HU/grams/std drinks), default presets
 │   │   ├── Logging/              # LogService: log, edit, delete, undo
 │   │   ├── Stats/                # StatsEngine: pure functions, no SwiftData imports
@@ -55,8 +55,8 @@ halfunit/
 │   ├── iOS/                      # App entry, Today, Insights, History, Settings, Onboarding
 │   └── watchOS/                  # Logger grid, today list
 ├── Extensions/
-│   ├── WidgetsiOS/               # Home Screen + Lock Screen widgets, Control
-│   └── WidgetsWatch/             # Complications + Smart Stack widget
+│   ├── WidgetsiOS/               # Home Screen widget (v1); Lock Screen widget, Control (1.1)
+│   └── WidgetsWatch/             # Streak complication (v1); interactive Smart Stack widget (1.1)
 ├── Resources/
 │   ├── Localizable.xcstrings     # String Catalog: en (base), de
 │   └── PrivacyInfo.xcprivacy     # privacy manifest
@@ -88,12 +88,15 @@ XcodeGen globs source folders, so **adding a file to an existing folder needs no
 - Inject time: every service takes a `Clock`/`now: () -> Date`, a `Calendar` and a `TimeZone`. Never call `Date()` inside logic.
 - HU is `Decimal`, always a multiple of 0.5, minimum 0.5. Grams = `volumeMl × abv/100 × 0.8`. Standard drinks for Health = `grams / 10`. Keep these three conversions in `Units.swift` only.
 - `StatsEngine` is pure: input = array of value-type drink snapshots + settings + today; output = structs. No SwiftData, no HealthKit, no UI imports. This is where most tests live.
-- Periods: 3 m = 91 logical days incl. today, 12 m = 365, 2 y = 730. When the period exceeds tracked history, report "x of n tracked days".
+- Rounding: store grams and standard drinks unrounded (`Decimal`); write the unrounded standard-drink value to Health. Round only for display: grams to whole numbers, standard drinks and UK units to 1 decimal, HU as stored.
+- Each drink stores `timeZoneIdentifier` (the zone where it was logged); its `logicalDate` is computed in that zone, not the device's current zone.
+- Periods: 7 d = 7 logical days incl. today, 30 d = 30, 3 m = 91, 12 m = 365, 2 y = 730. When the period exceeds tracked history, report "x of n tracked days".
+- Streaks count alcohol-free logical days. Current streak = today − last drinking day (today counts). Past streak between drinking days A and B = B − A − 1. Streak before the first drinking day = first drinking day − first-use day. Longest streak = max of all of these.
 
 ### Persistence and sync (`Model/`, `Sync/`)
 - SwiftData + CloudKit constraints apply: **no `@Attribute(.unique)`**, every stored property optional or with a default value, all relationships optional. Plan model changes with a `VersionedSchema` + `SchemaMigrationPlan` from v1.
 - The store lives in the App Group container so app, widgets and intents share it.
-- Deletes are tombstones (`isDeleted = true`), purged after 30 days. Conflicts: last writer wins by `updatedAt`.
+- Deletes are tombstones (`deletedAt` set to the delete time), purged 30 days after `deletedAt`. Never name a property `isDeleted`: it clashes with `PersistentModel.isDeleted`. Conflicts: last writer wins by `updatedAt`.
 - WatchConnectivity: watch → phone uses `transferUserInfo` (queued, survives restarts); phone → watch uses `updateApplicationContext` for streak/today state. CloudKit remains the durable path.
 - CloudKit: agents use the **Development** environment only. Never deploy the schema to Production.
 
@@ -102,7 +105,7 @@ XcodeGen globs source folders, so **adding a file to an existing folder needs no
 - Type: `numberOfAlcoholicBeverages`, unit `.count()`, value = standard drinks, start = end = drink timestamp.
 - Metadata: `HKMetadataKeySyncIdentifier` = drink UUID string, `HKMetadataKeySyncVersion` = `healthSyncVersion`. Edit = save with same identifier and higher version. Delete = delete by sync identifier.
 - All HealthKit calls go through a `HealthStoreClient` protocol so tests use a fake. Never require Health permission for any other feature to work.
-- Info.plist strings: `NSHealthUpdateUsageDescription`, `NSHealthShareUsageDescription` — plain, one line, localized.
+- v1 only writes to Health: request share (write) authorization only, with `NSHealthUpdateUsageDescription`. Reading other apps' drinks is 1.1; add `NSHealthShareUsageDescription` then. Strings are plain, one line, localized.
 
 ### UI
 - Today screen: streak card first, then the 6 preset buttons, then today's list. One tap logs; show a 5 s Undo banner; haptic on success.
@@ -112,7 +115,7 @@ XcodeGen globs source folders, so **adding a file to an existing folder needs no
 - Copy is neutral and factual. Never moralising, never red for drinking days, no medical claims, no BAC estimates.
 
 ### Widgets and intents
-- One `LogDrinkIntent` used by app shortcuts, widgets, controls and the Action button. Widgets call `WidgetCenter.shared.reloadAllTimelines()` after each log, and timelines refresh at the day boundary.
+- One `LogDrinkIntent` used by app shortcuts and widgets in v1, and by the Control Center control and Action button in 1.1. Widgets call `WidgetCenter.shared.reloadAllTimelines()` after each log, and timelines refresh at the day boundary.
 
 ### Privacy
 - No networking except CloudKit via SwiftData. No analytics, crash SDKs, ads or remote config.
