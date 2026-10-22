@@ -37,6 +37,20 @@ struct UnitsTests {
     }
 
     @Test(
+        "Estimated grams from HU (0.5 HU = 10 g, 1 HU = 20 g)",
+        arguments: [
+            ("0.5", "10"),
+            ("1", "20"),
+            ("1.5", "30"),
+            ("2", "40"),
+            ("4", "80"),
+        ]
+    )
+    func estimatedGramsFromHU(hu: String, expectedGrams: String) {
+        #expect(Units.estimatedGrams(hu: Self.dec(hu)) == Self.dec(expectedGrams))
+    }
+
+    @Test(
         "isValidHU validates positive multiples of 0.5",
         arguments: [
             ("0", false),
