@@ -17,16 +17,13 @@ struct RootTabView: View {
             }
 
             Tab("tab.insights", systemImage: "chart.bar.xaxis") {
-                PlaceholderTabView(
-                    titleKey: "tab.insights",
-                    systemImage: "chart.bar.xaxis"
-                )
+                InsightsView(logService: logService)
             }
 
             Tab("tab.history", systemImage: "clock") {
-                PlaceholderTabView(
-                    titleKey: "tab.history",
-                    systemImage: "clock"
+                HistoryView(
+                    logService: logService,
+                    healthSync: healthSync
                 )
             }
         }
