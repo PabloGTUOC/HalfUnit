@@ -52,6 +52,58 @@ targets:
         CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION: YES
     dependencies:
       - package: HalfUnitCore
+      - target: HalfUnitWatch
+        embed: true
+  HalfUnitWatch:
+    type: application
+    platform: watchOS
+    sources:
+      - path: Apps/watchOS
+        excludes:
+          - Info.plist
+      - path: Resources/Localizable.xcstrings
+      - path: Resources/PrivacyInfo.xcprivacy
+    entitlements:
+      path: Config/Entitlements/HalfUnit-watchOS.entitlements
+      properties:
+        aps-environment: development
+        com.apple.developer.icloud-container-identifiers:
+          - iCloud.$(BUNDLE_ID_PREFIX).halfunit
+        com.apple.developer.icloud-services:
+          - CloudKit
+        com.apple.security.application-groups:
+          - group.$(BUNDLE_ID_PREFIX).halfunit
+    info:
+      path: Apps/watchOS/Info.plist
+      properties:
+        CFBundleDisplayName: Half Unit
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        WKApplication: true
+        WKCompanionAppBundleIdentifier: $(BUNDLE_ID_PREFIX).halfunit
+        UIBackgroundModes:
+          - remote-notification
+        HalfUnitAppGroup: group.$(BUNDLE_ID_PREFIX).halfunit
+        HalfUnitCloudKitContainer: iCloud.$(BUNDLE_ID_PREFIX).halfunit
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(BUNDLE_ID_PREFIX).halfunit.watchkitapp
+    dependencies:
+      - package: HalfUnitCore
+  HalfUnitWatchTests:
+    type: bundle.unit-test
+    platform: watchOS
+    sources:
+      - path: Apps/watchOSTests
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(BUNDLE_ID_PREFIX).halfunit.watchkitapp.tests
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_HOST: $(BUILT_PRODUCTS_DIR)/HalfUnitWatch.app/HalfUnitWatch
+        BUNDLE_LOADER: $(TEST_HOST)
+    dependencies:
+      - target: HalfUnitWatch
+      - package: HalfUnitCore
   HalfUnitTests:
     type: bundle.unit-test
     platform: iOS
@@ -75,3 +127,8 @@ schemes:
     test:
       targets:
         - HalfUnitTests
+  HalfUnitWatch:
+    build:
+      targets:
+        HalfUnitWatch: all
+        HalfUnitWatchTests: all
