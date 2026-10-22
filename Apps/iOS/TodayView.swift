@@ -5,6 +5,7 @@ import OSLog
 import SwiftData
 import SwiftUI
 import UIKit
+import WidgetKit
 
 struct TodayView: View {
     private static let logger = Logger(subsystem: "es.opinasdeque.halfunit", category: "TodayView")
@@ -403,6 +404,7 @@ struct TodayView: View {
         healthSync: HealthSync
     ) throws -> (drink: Drink, reconcileTask: Task<HealthSync.Status, Never>) {
         let drink = try logService.log(preset: preset, source: .phone)
+        WidgetCenter.shared.reloadAllTimelines()
         let task = Task { @MainActor in
             await HalfUnitApp.reconcileHealth(healthSync: healthSync)
             return healthSync.lastStatus
@@ -418,6 +420,7 @@ struct TodayView: View {
         healthSync: HealthSync
     ) throws -> Task<HealthSync.Status, Never> {
         try logService.undo(drink)
+        WidgetCenter.shared.reloadAllTimelines()
         return Task { @MainActor in
             await HalfUnitApp.reconcileHealth(healthSync: healthSync)
             return healthSync.lastStatus

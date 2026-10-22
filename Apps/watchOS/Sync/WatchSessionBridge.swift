@@ -3,6 +3,7 @@ import HalfUnitCore
 import OSLog
 import SwiftData
 import WatchConnectivity
+import WidgetKit
 
 @MainActor
 protocol WatchSessionTransport: AnyObject {
@@ -122,6 +123,7 @@ final class WatchSessionBridge: NSObject {
 
     func handleReceivedStateContext(_ stateContext: WatchStateContext) {
         latestStateContext = stateContext
+        WidgetCenter.shared.reloadAllTimelines()
     }
 
     /// Exposes the remote `WatchStateContext` only when the watch's own store has no drink data yet,

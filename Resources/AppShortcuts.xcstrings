@@ -1,0 +1,144 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "Days without alcohol in ${applicationName}" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Tage ohne Alkohol in ${applicationName}",
+              "Alkoholfreie Tage in ${applicationName}"
+            ]
+          }
+        },
+        "en" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Days without alcohol in ${applicationName}",
+              "Alcohol-free days in ${applicationName}"
+            ]
+          }
+        }
+      }
+    },
+    "Drinking stats in ${applicationName}" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Trinkstatistik in ${applicationName}",
+              "Statistik in ${applicationName}"
+            ]
+          }
+        },
+        "en" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Drinking stats in ${applicationName}",
+              "Drinking statistics in ${applicationName}"
+            ]
+          }
+        }
+      }
+    },
+    "How many days without alcohol in ${applicationName}" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Wie viele Tage ohne Alkohol in ${applicationName}",
+              "Wie lange ohne Alkohol in ${applicationName}"
+            ]
+          }
+        },
+        "en" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "How many days without alcohol in ${applicationName}",
+              "What is my streak in ${applicationName}"
+            ]
+          }
+        }
+      }
+    },
+    "How often did I drink in ${applicationName}" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Wie oft habe ich getrunken in ${applicationName}",
+              "Wie viele Trinktage in ${applicationName}"
+            ]
+          }
+        },
+        "en" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "How often did I drink in ${applicationName}",
+              "How many drinking days in ${applicationName}"
+            ]
+          }
+        }
+      }
+    },
+    "Log ${preset} in ${applicationName}" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "${preset} in ${applicationName} protokollieren",
+              "Protokolliere ${preset} in ${applicationName}"
+            ]
+          }
+        },
+        "en" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Log ${preset} in ${applicationName}",
+              "Record ${preset} in ${applicationName}"
+            ]
+          }
+        }
+      }
+    },
+    "Log a ${preset} in ${applicationName}" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Ein ${preset} in ${applicationName} protokollieren",
+              "Einen ${preset} in ${applicationName} protokollieren"
+            ]
+          }
+        },
+        "en" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Log a ${preset} in ${applicationName}",
+              "Add a ${preset} in ${applicationName}"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

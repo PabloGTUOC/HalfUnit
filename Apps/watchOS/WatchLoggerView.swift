@@ -3,6 +3,7 @@ import HalfUnitCore
 import OSLog
 import SwiftData
 import SwiftUI
+import WidgetKit
 
 struct WatchLoggerView: View {
     private static let logger = Logger(
@@ -91,7 +92,7 @@ struct WatchLoggerView: View {
         .task(id: boundaryScheduleVersion) {
             while !Task.isCancelled {
                 let boundaryHour = snapshot?.dayBoundaryHour ?? LogicalDay.defaultBoundaryHour
-                let delaySeconds = WatchDayBoundary.secondsUntilNextBoundary(
+                let delaySeconds = DayBoundaryScheduler.secondsUntilNextBoundary(
                     from: now(),
                     boundaryHour: boundaryHour,
                     timeZone: timeZone()
@@ -177,16 +178,16 @@ struct WatchLoggerView: View {
                     logPreset(preset)
                 } label: {
                     VStack(spacing: 2) {
-                        Image(systemName: WatchPresetPresentation.symbolName(for: preset))
+                        Image(systemName: PresetPresentation.symbolName(for: preset))
                             .font(.title3)
                             .foregroundStyle(Color.teal)
 
-                        Text(WatchPresetPresentation.formattedHU(preset.hu, locale: locale))
+                        Text(PresetPresentation.formattedHU(preset.hu, locale: locale))
                             .font(.footnote.weight(.bold))
                             .foregroundStyle(.primary)
                             .lineLimit(1)
 
-                        Text(WatchPresetPresentation.localizedName(for: preset, locale: locale))
+                        Text(PresetPresentation.localizedName(for: preset, locale: locale))
                             .font(.caption2)
                             .foregroundStyle(.secondary)
                             .lineLimit(1)
@@ -202,7 +203,7 @@ struct WatchLoggerView: View {
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel(
-                    Text(WatchPresetPresentation.accessibilityLabel(for: preset, locale: locale))
+                    Text(PresetPresentation.accessibilityLabel(for: preset, locale: locale))
                 )
             }
         }
@@ -311,9 +312,10 @@ struct WatchLoggerView: View {
     }
 
     private func recordLoggedDrink(_ drink: Drink, preset: Preset) {
+        WidgetCenter.shared.reloadAllTimelines()
         logHapticTrigger += 1
-        let localizedDrinkName = WatchPresetPresentation.localizedName(for: preset, locale: locale)
-        let format = WatchLocalization.string("undo.banner.logged", locale: locale)
+        let localizedDrinkName = PresetPresentation.localizedName(for: preset, locale: locale)
+        let format = AppLocalization.string("undo.banner.logged", locale: locale)
         let message = String(format: format, locale: locale, localizedDrinkName)
         withAnimation {
             undoBanner = UndoBannerState(drinkId: drink.id, loggedMessage: message)
@@ -328,6 +330,7 @@ struct WatchLoggerView: View {
                 return
             }
             try logService.undo(targetDrink)
+            WidgetCenter.shared.reloadAllTimelines()
             if undoBanner?.drinkId == drinkId {
                 withAnimation {
                     undoBanner = nil
@@ -355,12 +358,12 @@ private struct LogEarlierSheetView: View {
                         selectedPreset = nil
                     } label: {
                         HStack(spacing: 8) {
-                            Image(systemName: WatchPresetPresentation.symbolName(for: preset))
+                            Image(systemName: PresetPresentation.symbolName(for: preset))
                                 .foregroundStyle(Color.teal)
-                            Text(WatchPresetPresentation.localizedName(for: preset, locale: locale))
+                            Text(PresetPresentation.localizedName(for: preset, locale: locale))
                                 .font(.footnote.weight(.semibold))
                             Spacer()
-                            Text(WatchPresetPresentation.formattedHU(preset.hu, locale: locale))
+                            Text(PresetPresentation.formattedHU(preset.hu, locale: locale))
                                 .font(.caption2)
                                 .foregroundStyle(.secondary)
                         }
@@ -399,19 +402,19 @@ private struct LogEarlierSheetView: View {
                             selectedPreset = preset
                         } label: {
                             HStack(spacing: 8) {
-                                Image(systemName: WatchPresetPresentation.symbolName(for: preset))
+                                Image(systemName: PresetPresentation.symbolName(for: preset))
                                     .foregroundStyle(Color.teal)
-                                Text(WatchPresetPresentation.localizedName(for: preset, locale: locale))
+                                Text(PresetPresentation.localizedName(for: preset, locale: locale))
                                     .font(.footnote.weight(.medium))
                                     .lineLimit(1)
                                 Spacer()
-                                Text(WatchPresetPresentation.formattedHU(preset.hu, locale: locale))
+                                Text(PresetPresentation.formattedHU(preset.hu, locale: locale))
                                     .font(.caption2.weight(.semibold))
                                     .foregroundStyle(.secondary)
                             }
                         }
                         .accessibilityLabel(
-                            Text(WatchPresetPresentation.accessibilityLabel(for: preset, locale: locale))
+                            Text(PresetPresentation.accessibilityLabel(for: preset, locale: locale))
                         )
                     }
                 }

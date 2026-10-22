@@ -18,7 +18,7 @@ struct HalfUnitApp: App {
     private let phoneSessionBridge: PhoneSessionBridge
 
     init() {
-        let container = Self.makeModelContainer()
+        let container = SharedStore.makeModelContainer()
         let service = LogService(
             context: container.mainContext,
             now: Date.init,
@@ -126,50 +126,6 @@ struct HalfUnitApp: App {
         let status = await healthSync.reconcile()
         if case .failed(let reason) = status {
             logger.error("Health sync reconcile failed: \(reason, privacy: .public)")
-        }
-    }
-
-    private static func makeModelContainer() -> ModelContainer {
-        let appGroupIdentifier = Bundle.main.object(forInfoDictionaryKey: "HalfUnitAppGroup") as? String
-        let cloudKitContainer = Bundle.main.object(forInfoDictionaryKey: "HalfUnitCloudKitContainer") as? String
-
-        let storeURL: URL? =
-            if let appGroupIdentifier,
-                let groupURL = FileManager.default.containerURL(
-                    forSecurityApplicationGroupIdentifier: appGroupIdentifier
-                )
-            {
-                groupURL.appending(path: "HalfUnit.store")
-            } else {
-                nil
-            }
-
-        do {
-            return try ModelContainerFactory.make(
-                storeURL: storeURL,
-                cloudKitContainerIdentifier: cloudKitContainer,
-                inMemory: false
-            )
-        } catch {
-            logger.notice(
-                "CloudKit container init failed; falling back to local store: \(error.localizedDescription, privacy: .public)"
-            )
-            do {
-                return try ModelContainerFactory.make(
-                    storeURL: storeURL,
-                    cloudKitContainerIdentifier: nil,
-                    inMemory: false
-                )
-            } catch {
-                logger.error(
-                    "Local store init failed; falling back to in-memory store: \(error.localizedDescription, privacy: .public)"
-                )
-                do {
-                    return try ModelContainerFactory.make(inMemory: true)
-                } catch {
-                    preconditionFailure("Unable to create in-memory ModelContainer")
-                }
-            }
         }
     }
 }

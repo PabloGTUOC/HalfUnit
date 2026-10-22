@@ -317,6 +317,81 @@ struct HalfUnitAppTests {
     }
 
     @Test(
+        "WidgetTimelinePlan builds timeline entries for now and next boundary (01:30 drink, 07:00 flip, DST week, time-zone change)"
+    )
+    @MainActor
+    func widgetTimelinePlanEntriesAndStreakFlip() throws {
+        let container = try ModelContainerFactory.make(inMemory: true)
+        let currentNow = LockIsolated(Self.makeDate(2026, 3, 28, 21, 0, in: Self.berlinTimeZone))
+        let currentZone = LockIsolated(Self.berlinTimeZone)
+        let service = LogService(
+            context: container.mainContext,
+            now: { currentNow.value },
+            timeZone: { currentZone.value }
+        )
+
+        try service.seedDefaultPresetsIfNeeded()
+        let presets = try service.presets()
+        let beerPreset = try #require(presets.first(where: { $0.key == "beer" }))
+
+        // Log a beer at 01:30 on DST spring-forward Sunday 2026-03-29 (assigned to Saturday 2026-03-28)
+        let lateNight = Self.makeDate(2026, 3, 29, 1, 30, in: Self.berlinTimeZone)
+        currentNow.setValue(lateNight)
+        _ = try LogDrinkIntent.performLog(
+            preset: PresetEntity(preset: beerPreset),
+            source: .widget,
+            logService: service,
+            locale: Self.englishLocale
+        )
+
+        // Build timeline at 01:30 on 2026-03-29:
+        // Entry 0 (now = 01:30): drinking today (Saturday), currentStreakDays == 0, todayTotalHU == 1
+        // Entry 1 (nextBoundary = 07:00 CEST, 4.5 hours later): flips to Sunday without opening the app -> 1 day without alcohol!
+        let planAt0130 = try WidgetTimelinePlan.build(
+            from: service,
+            now: lateNight,
+            timeZone: Self.berlinTimeZone,
+            locale: Self.englishLocale
+        )
+        let expectedSunday0700 = Self.makeDate(2026, 3, 29, 7, 0, in: Self.berlinTimeZone)
+        #expect(planAt0130.entries.map(\.date) == [lateNight, expectedSunday0700])
+        #expect(planAt0130.reloadAfterDate == expectedSunday0700)
+        #expect(planAt0130.entries[0].snapshot.isDrinkingToday)
+        #expect(planAt0130.entries[0].snapshot.currentStreakDays == 0)
+        #expect(planAt0130.entries[0].snapshot.streakHeadline == "Today")
+        #expect(planAt0130.entries[0].snapshot.presetButtons.count == 3)
+        #expect(
+            planAt0130.entries[0].snapshot.presetButtons.first(where: { $0.entity.key == "beer" })?
+                .accessibilityLabel == "Log beer, 1 unit"
+        )
+
+        // At 07:00 boundary slice, streak flips to 1 day without alcohol
+        #expect(!planAt0130.entries[1].snapshot.isDrinkingToday)
+        #expect(planAt0130.entries[1].snapshot.currentStreakDays == 1)
+        #expect(planAt0130.entries[1].snapshot.streakHeadline == "1 day without alcohol")
+        #expect(planAt0130.entries[1].snapshot.streakAccessibilityLabel == "1 day without alcohol")
+
+        // Advance to Monday 2026-03-30 in Asia/Tokyo:
+        // Entry 0 (now = 12:00 JST) has 2 days without alcohol; Entry 1 (Tuesday 07:00 JST) has 3 days without alcohol
+        let mondayTokyo = Self.makeDate(2026, 3, 30, 12, 0, in: Self.tokyoTimeZone)
+        currentZone.setValue(Self.tokyoTimeZone)
+        currentNow.setValue(mondayTokyo)
+        let planMondayDe = try WidgetTimelinePlan.build(
+            from: service,
+            now: mondayTokyo,
+            timeZone: Self.tokyoTimeZone,
+            locale: Self.germanLocale
+        )
+        let expectedTuesdayTokyo0700 = Self.makeDate(2026, 3, 31, 7, 0, in: Self.tokyoTimeZone)
+        #expect(planMondayDe.entries.map(\.date) == [mondayTokyo, expectedTuesdayTokyo0700])
+        #expect(planMondayDe.entries[0].snapshot.currentStreakDays == 2)
+        #expect(planMondayDe.entries[0].snapshot.streakHeadline == "2 Tage ohne Alkohol")
+        #expect(planMondayDe.entries[0].snapshot.watchShortDaysText == "2T")
+        #expect(planMondayDe.entries[1].snapshot.currentStreakDays == 3)
+        #expect(planMondayDe.entries[1].snapshot.streakHeadline == "3 Tage ohne Alkohol")
+    }
+
+    @Test(
         "TodayView log/undo reconciles with Health, and launch/foreground maintenance reconciles before purging tombstones"
     )
     @MainActor

@@ -186,6 +186,13 @@ struct HalfUnitWatchTests {
                 timeZone: Self.tokyoTimeZone
             ) == Self.makeDate(2026, 3, 30, 7, 0, in: Self.tokyoTimeZone)
         )
+        #expect(
+            DayBoundaryScheduler.timelineEntryDates(
+                now: springLateNight,
+                boundaryHour: 7,
+                timeZone: Self.berlinTimeZone
+            ) == [springLateNight, springNextBoundary]
+        )
     }
 
     @Test("WatchLoggerSnapshot formats streak days, Today HU total, 01:30 drink, DST week, time-zone change, and undo")

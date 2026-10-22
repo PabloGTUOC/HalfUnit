@@ -4,6 +4,7 @@ import HalfUnitCore
 import OSLog
 import SwiftData
 import SwiftUI
+import WidgetKit
 
 struct HistoryView: View {
     private static let logger = Logger(subsystem: "es.opinasdeque.halfunit", category: "HistoryView")
@@ -262,6 +263,7 @@ struct HistoryView: View {
         healthSync: HealthSync
     ) throws -> Task<HealthSync.Status, Never> {
         try logService.delete(drink)
+        WidgetCenter.shared.reloadAllTimelines()
         return Task { @MainActor in
             await HalfUnitApp.reconcileHealth(healthSync: healthSync)
             return healthSync.lastStatus
@@ -277,6 +279,7 @@ struct HistoryView: View {
         healthSync: HealthSync
     ) throws -> Task<HealthSync.Status, Never> {
         try logService.edit(drink, edit)
+        WidgetCenter.shared.reloadAllTimelines()
         return Task { @MainActor in
             await HalfUnitApp.reconcileHealth(healthSync: healthSync)
             return healthSync.lastStatus

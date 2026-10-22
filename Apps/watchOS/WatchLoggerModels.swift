@@ -34,7 +34,7 @@ enum WatchEarlierOffset: Int, CaseIterable, Identifiable, Sendable {
     }
 
     func localizedTitle(locale: Locale = .current) -> String {
-        WatchLocalization.string(catalogKey, locale: locale)
+        AppLocalization.string(catalogKey, locale: locale)
     }
 
     func accessibilityLabel(
@@ -42,7 +42,7 @@ enum WatchEarlierOffset: Int, CaseIterable, Identifiable, Sendable {
         fallbackName: String,
         locale: Locale = .current
     ) -> String {
-        let displayName = WatchPresetPresentation.localizedName(
+        let displayName = PresetPresentation.localizedName(
             presetKey: presetKey,
             fallbackName: fallbackName,
             locale: locale
@@ -50,73 +50,8 @@ enum WatchEarlierOffset: Int, CaseIterable, Identifiable, Sendable {
         let languageCode = locale.language.languageCode?.identifier ?? "en"
         let spokenName = languageCode == "de" ? displayName : displayName.lowercased(with: locale)
         let offsetTitle = localizedTitle(locale: locale)
-        let format = WatchLocalization.string("watch.logEarlier.offset.accessibility", locale: locale)
+        let format = AppLocalization.string("watch.logEarlier.offset.accessibility", locale: locale)
         return String(format: format, locale: locale, spokenName, offsetTitle)
-    }
-}
-
-enum WatchDayBoundary {
-    static func resolvedBoundaryHour(_ hour: Int) -> Int {
-        (0...23).contains(hour) ? hour : LogicalDay.defaultBoundaryHour
-    }
-
-    static func currentLogicalDay(
-        at now: Date,
-        boundaryHour: Int = LogicalDay.defaultBoundaryHour,
-        timeZone: TimeZone
-    ) -> LogicalDay {
-        let resolvedHour = resolvedBoundaryHour(boundaryHour)
-        return LogicalDay.of(now, boundaryHour: resolvedHour, timeZone: timeZone)
-    }
-
-    static func nextBoundaryDate(
-        after now: Date,
-        boundaryHour: Int = LogicalDay.defaultBoundaryHour,
-        timeZone: TimeZone
-    ) -> Date {
-        let resolvedHour = resolvedBoundaryHour(boundaryHour)
-        let today = LogicalDay.of(now, boundaryHour: resolvedHour, timeZone: timeZone)
-        let nextDay = today.adding(days: 1)
-
-        var calendar = Calendar(identifier: .gregorian)
-        calendar.timeZone = timeZone
-
-        let targetComponents = DateComponents(
-            calendar: calendar,
-            timeZone: timeZone,
-            year: nextDay.year,
-            month: nextDay.month,
-            day: nextDay.day,
-            hour: resolvedHour,
-            minute: 0,
-            second: 0
-        )
-
-        if let candidate = calendar.date(from: targetComponents),
-            candidate > now,
-            LogicalDay.of(candidate, boundaryHour: resolvedHour, timeZone: timeZone) >= nextDay
-        {
-            return candidate
-        }
-
-        if let nextMatched = calendar.nextDate(
-            after: now,
-            matching: DateComponents(hour: resolvedHour, minute: 0, second: 0),
-            matchingPolicy: .nextTime
-        ) {
-            return nextMatched
-        }
-
-        return now.addingTimeInterval(3600)
-    }
-
-    static func secondsUntilNextBoundary(
-        from now: Date,
-        boundaryHour: Int = LogicalDay.defaultBoundaryHour,
-        timeZone: TimeZone
-    ) -> TimeInterval {
-        let next = nextBoundaryDate(after: now, boundaryHour: boundaryHour, timeZone: timeZone)
-        return max(1, next.timeIntervalSince(now))
     }
 }
 
@@ -137,14 +72,14 @@ struct WatchDrinkRowModel: Identifiable, Equatable, Sendable {
         locale: Locale = .current
     ) {
         self.id = id
-        self.name = WatchPresetPresentation.localizedName(
+        self.name = PresetPresentation.localizedName(
             presetKey: presetKey,
             fallbackName: rawName,
             locale: locale
         )
         self.timeText = Self.formatTime(timestamp, timeZone: timeZone, locale: locale)
         self.hu = hu
-        self.huText = WatchPresetPresentation.formattedHU(hu, locale: locale)
+        self.huText = PresetPresentation.formattedHU(hu, locale: locale)
     }
 
     static func formatTime(_ timestamp: Date, timeZone: TimeZone, locale: Locale = .current) -> String {
@@ -183,21 +118,21 @@ struct WatchLoggerSnapshot: Equatable, Sendable {
         self.todayTotalHU = todayTotalHU
         self.todayDrinks = todayDrinks
         self.mostRecentTodayDrinkId = todayDrinks.first?.id
-        self.dayBoundaryHour = WatchDayBoundary.resolvedBoundaryHour(dayBoundaryHour)
+        self.dayBoundaryHour = DayBoundaryScheduler.resolvedBoundaryHour(dayBoundaryHour)
 
         if drinkingToday {
-            let formattedTotal = WatchPresetPresentation.formattedHU(todayTotalHU, locale: locale)
-            let format = WatchLocalization.string("watch.header.todayHU", locale: locale)
+            let formattedTotal = PresetPresentation.formattedHU(todayTotalHU, locale: locale)
+            let format = AppLocalization.string("watch.header.todayHU", locale: locale)
             let headline = String(format: format, locale: locale, formattedTotal)
             self.headerText = headline
             self.headerAccessibilityLabel = headline
         } else {
-            self.headerText = WatchLocalization.plural(
+            self.headerText = AppLocalization.plural(
                 "watch.header.days",
                 count: streakSummary.currentStreakDays,
                 locale: locale
             )
-            self.headerAccessibilityLabel = WatchLocalization.plural(
+            self.headerAccessibilityLabel = AppLocalization.plural(
                 "streak.daysWithoutAlcohol",
                 count: streakSummary.currentStreakDays,
                 locale: locale

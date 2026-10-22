@@ -1,7 +1,10 @@
 import Foundation
 import HalfUnitCore
 
-enum WatchLocalization {
+typealias WatchLocalization = AppLocalization
+typealias WatchPresetPresentation = PresetPresentation
+
+enum AppLocalization {
     static func bundle(for locale: Locale) -> Bundle {
         if let languageCode = locale.language.languageCode?.identifier,
             let path = Bundle.main.path(forResource: languageCode, ofType: "lproj"),
@@ -22,7 +25,7 @@ enum WatchLocalization {
     }
 }
 
-enum WatchPresetPresentation {
+enum PresetPresentation {
     private static let catalogKeyByPresetKey: [String: String] = [
         "smallBeer": "preset.smallBeer",
         "smallWine": "preset.smallWine",
@@ -61,7 +64,7 @@ enum WatchPresetPresentation {
         guard let catalogKey = catalogKey(for: effectiveKey) else {
             return fallbackName
         }
-        return WatchLocalization.string(catalogKey, locale: locale)
+        return AppLocalization.string(catalogKey, locale: locale)
     }
 
     static func symbolName(for preset: Preset) -> String {
@@ -85,7 +88,7 @@ enum WatchPresetPresentation {
 
     static func formattedHU(_ hu: Decimal, locale: Locale = .current) -> String {
         let numberText = formattedHUNumber(hu, locale: locale)
-        let format = WatchLocalization.string("unit.huValue", locale: locale)
+        let format = AppLocalization.string("unit.huValue", locale: locale)
         return String(format: format, locale: locale, numberText)
     }
 
@@ -114,11 +117,11 @@ enum WatchPresetPresentation {
         let numberText = formattedHUNumber(hu, locale: locale)
 
         if hu == Decimal(1) {
-            let format = WatchLocalization.string("accessibility.logPreset.oneUnit", locale: locale)
+            let format = AppLocalization.string("accessibility.logPreset.oneUnit", locale: locale)
             return String(format: format, locale: locale, spokenName)
         }
 
-        let format = WatchLocalization.string("accessibility.logPreset.units", locale: locale)
+        let format = AppLocalization.string("accessibility.logPreset.units", locale: locale)
         return String(format: format, locale: locale, spokenName, numberText)
     }
 }
