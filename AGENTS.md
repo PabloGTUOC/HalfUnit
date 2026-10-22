@@ -74,7 +74,7 @@ XcodeGen globs source folders, so **adding a file to an existing folder needs no
 
 | Setting | Where | Notes |
 |---|---|---|
-| `BUNDLE_ID_PREFIX` | `Config/Shared.xcconfig` | e.g. `com.example` (TODO: owner sets real prefix) |
+| `BUNDLE_ID_PREFIX` | `Config/Shared.xcconfig` | `es.opinasdeque` (decided; permanent once registered with Apple) |
 | Bundle IDs | derived | app `$(BUNDLE_ID_PREFIX).halfunit`, watch `.watchkitapp`, widgets `.widgets` / `.watchwidgets` |
 | App Group | entitlements | `group.$(BUNDLE_ID_PREFIX).halfunit` |
 | iCloud container | entitlements | `iCloud.$(BUNDLE_ID_PREFIX).halfunit` |

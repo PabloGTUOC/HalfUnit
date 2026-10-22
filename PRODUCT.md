@@ -323,9 +323,10 @@ The MVP is F1–F4 on iPhone and Watch, Apple Health write, one complication and
 - Version 1 widgets: one Watch complication and one iPhone Home Screen widget, plus Siri and Shortcuts. Lock Screen widget, Control Center control, interactive Smart Stack and Action button move to 1.1.
 - Version 1 only writes to Apple Health; reading and import move to 1.1.
 - Location on drinks moves to 1.1.
+- Bundle ID prefix: `es.opinasdeque` (app `es.opinasdeque.halfunit`, App Group `group.es.opinasdeque.halfunit`, iCloud `iCloud.es.opinasdeque.halfunit`).
+- Apple Health sync design approved: HealthStoreClient protocol, HealthSync reconcile pass, `healthSyncedVersion` on Drink.
 
 **Still open**
 
 - [ ] Final check that "Half Unit" is free on the App Store and as a domain for the privacy page.
 - [ ] Launch languages beyond English and German (Spanish?).
-- [ ] Bundle ID prefix (`BUNDLE_ID_PREFIX`, e.g. a reverse domain you own). Needed before the Xcode project and entitlements are set up.
