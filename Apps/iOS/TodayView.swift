@@ -80,7 +80,10 @@ struct TodayView: View {
                 }
             }
             .sheet(isPresented: $isShowingSettings) {
-                SettingsPlaceholderView()
+                SettingsView(
+                    logService: logService,
+                    healthSync: healthSync
+                )
             }
             .safeAreaInset(edge: .bottom) {
                 if let banner = undoBanner {

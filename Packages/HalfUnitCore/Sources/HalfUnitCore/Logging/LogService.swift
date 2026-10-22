@@ -4,6 +4,7 @@ import SwiftData
 public enum LogServiceError: Error, Equatable, Sendable {
     case invalidHU
     case drinkIsDeleted
+    case invalidDayBoundaryHour
 }
 
 /// Describes a partial update to a `Drink`.
@@ -99,6 +100,10 @@ public final class LogService {
         return LogicalDay.of(now(), boundaryHour: boundary, timeZone: timeZone())
     }
 
+    public func currentDate() -> Date {
+        now()
+    }
+
     public func seedDefaultPresetsIfNeeded() throws {
         let existingPresets = try context.fetch(FetchDescriptor<Preset>())
         let existingKeys = Set(existingPresets.compactMap(\.key))
@@ -127,10 +132,10 @@ public final class LogService {
         }
     }
 
-    public func presets() throws -> [Preset] {
+    public func presets(includeHidden: Bool = false) throws -> [Preset] {
         let allPresets = try context.fetch(FetchDescriptor<Preset>())
         var keyedByKey: [String: Preset] = [:]
-        var customPresets: [Preset] = []
+        var customById: [UUID: Preset] = [:]
 
         for preset in allPresets {
             if let key = preset.key {
@@ -144,23 +149,145 @@ public final class LogService {
                     keyedByKey[key] = preset
                 }
             } else {
-                customPresets.append(preset)
+                if let current = customById[preset.id] {
+                    if preset.updatedAt > current.updatedAt
+                        || (preset.updatedAt == current.updatedAt && !preset.isHidden && current.isHidden)
+                    {
+                        customById[preset.id] = preset
+                    }
+                } else {
+                    customById[preset.id] = preset
+                }
             }
         }
 
-        let combined = Array(keyedByKey.values) + customPresets
-        return
-            combined
-            .filter { !$0.isHidden }
-            .sorted { lhs, rhs in
-                if lhs.sortOrder != rhs.sortOrder {
-                    return lhs.sortOrder < rhs.sortOrder
-                }
-                if lhs.name != rhs.name {
-                    return lhs.name < rhs.name
-                }
-                return lhs.id.uuidString < rhs.id.uuidString
+        let combined = Array(keyedByKey.values) + Array(customById.values)
+        let filtered = includeHidden ? combined : combined.filter { !$0.isHidden }
+        return filtered.sorted { lhs, rhs in
+            if lhs.sortOrder != rhs.sortOrder {
+                return lhs.sortOrder < rhs.sortOrder
             }
+            if lhs.name != rhs.name {
+                return lhs.name < rhs.name
+            }
+            return lhs.id.uuidString < rhs.id.uuidString
+        }
+    }
+
+    @discardableResult
+    public func addPreset(
+        name: String,
+        symbolName: String,
+        hu: Decimal,
+        volumeMl: Int,
+        abvPercent: Decimal
+    ) throws -> Preset {
+        guard Units.isValidHU(hu) else {
+            throw LogServiceError.invalidHU
+        }
+
+        let allPresets = try presets(includeHidden: true)
+        let nextSortOrder = (allPresets.map(\.sortOrder).max() ?? -1) + 1
+        let currentNow = now()
+
+        let preset = Preset(
+            id: UUID(),
+            key: nil,
+            name: name,
+            symbolName: symbolName,
+            huHalfSteps: IntegerStorageConversion.huToHalfSteps(hu),
+            volumeMl: volumeMl,
+            abvTenths: IntegerStorageConversion.abvToTenths(abvPercent),
+            sortOrder: nextSortOrder,
+            isHidden: false,
+            updatedAt: currentNow
+        )
+        context.insert(preset)
+        try context.save()
+        return preset
+    }
+
+    public func updatePreset(
+        _ preset: Preset,
+        name: String,
+        symbolName: String,
+        hu: Decimal,
+        volumeMl: Int,
+        abvPercent: Decimal
+    ) throws {
+        guard Units.isValidHU(hu) else {
+            throw LogServiceError.invalidHU
+        }
+
+        preset.name = name
+        preset.symbolName = symbolName
+        preset.huHalfSteps = IntegerStorageConversion.huToHalfSteps(hu)
+        preset.volumeMl = volumeMl
+        preset.abvTenths = IntegerStorageConversion.abvToTenths(abvPercent)
+        preset.updatedAt = now()
+        try context.save()
+    }
+
+    public func setPresetHidden(_ preset: Preset, _ isHidden: Bool) throws {
+        preset.isHidden = isHidden
+        preset.updatedAt = now()
+        try context.save()
+    }
+
+    public func movePresets(fromOffsets source: IndexSet, toOffset destination: Int) throws {
+        var ordered = try presets(includeHidden: true)
+        let clampedDestination = min(max(0, destination), ordered.count)
+        let validOffsets = source.filter { ordered.indices.contains($0) }
+        guard !validOffsets.isEmpty else {
+            return
+        }
+
+        let moving = validOffsets.map { ordered[$0] }
+        let removedBeforeDestination = validOffsets.filter { $0 < clampedDestination }.count
+        for index in validOffsets.sorted(by: >) {
+            ordered.remove(at: index)
+        }
+        let insertionIndex = min(max(0, clampedDestination - removedBeforeDestination), ordered.count)
+        ordered.insert(contentsOf: moving, at: insertionIndex)
+
+        let currentNow = now()
+        for (index, preset) in ordered.enumerated() {
+            preset.sortOrder = index
+            preset.updatedAt = currentNow
+        }
+        try context.save()
+    }
+
+    public func changeDayBoundary(to boundaryHour: Int) throws {
+        guard (0...23).contains(boundaryHour) else {
+            throw LogServiceError.invalidDayBoundaryHour
+        }
+
+        let currentNow = now()
+        let currentSettings = try settings()
+        currentSettings.dayBoundaryHour = boundaryHour
+        currentSettings.updatedAt = currentNow
+
+        let allDrinks = try context.fetch(FetchDescriptor<Drink>())
+        for drink in allDrinks {
+            let newLogicalDay = LogicalDay.of(
+                drink.timestamp,
+                boundaryHour: boundaryHour,
+                timeZone: drink.timeZone
+            )
+            if drink.logicalDayKey != newLogicalDay.key {
+                drink.logicalDayKey = newLogicalDay.key
+                drink.updatedAt = currentNow
+            }
+        }
+        try context.save()
+    }
+
+    public func updateDisplayUnit(_ displayUnit: DisplayUnit) throws {
+        let currentSettings = try settings()
+        currentSettings.displayUnit = displayUnit
+        currentSettings.updatedAt = now()
+        try context.save()
     }
 
     @discardableResult

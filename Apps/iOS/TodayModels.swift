@@ -34,8 +34,12 @@ struct StreakCardModel: Equatable, Sendable {
 
         if let lastDrink = summary.lastDrink {
             let dateString = Self.formatLogicalDay(lastDrink.logicalDay, locale: locale)
+            let effectivePresetKey =
+                (lastDrink.presetKey != nil && lastDrink.name == lastDrink.presetKey)
+                ? lastDrink.presetKey
+                : nil
             let drinkName = PresetPresentation.localizedName(
-                presetKey: lastDrink.presetKey,
+                presetKey: effectivePresetKey,
                 fallbackName: lastDrink.name,
                 locale: locale
             )
@@ -79,6 +83,7 @@ struct TodayDrinkRowModel: Identifiable, Equatable, Sendable {
     let name: String
     let timeText: String
     let hu: Decimal
+    let grams: Decimal
     let huText: String
 
     init(
@@ -88,17 +93,26 @@ struct TodayDrinkRowModel: Identifiable, Equatable, Sendable {
         timestamp: Date,
         timeZone: TimeZone,
         hu: Decimal,
+        grams: Decimal = Decimal(0),
+        displayUnit: DisplayUnit = .hu,
         locale: Locale = .current
     ) {
         self.id = id
+        let effectivePresetKey = (presetKey != nil && rawName == presetKey) ? presetKey : nil
         self.name = PresetPresentation.localizedName(
-            presetKey: presetKey,
+            presetKey: effectivePresetKey,
             fallbackName: rawName,
             locale: locale
         )
         self.timeText = Self.formatTime(timestamp, timeZone: timeZone, locale: locale)
         self.hu = hu
-        self.huText = PresetPresentation.formattedHU(hu, locale: locale)
+        self.grams = grams
+        self.huText = AmountFormatting.formattedValue(
+            grams: grams,
+            hu: hu,
+            in: displayUnit,
+            locale: locale
+        )
     }
 
     static func formatTime(_ timestamp: Date, timeZone: TimeZone, locale: Locale = .current) -> String {
@@ -118,11 +132,14 @@ struct TodayScreenSnapshot: Equatable, Sendable {
     let streakCard: StreakCardModel
     let todayDrinks: [TodayDrinkRowModel]
     let todayTotalHU: Decimal
+    let todayTotalGrams: Decimal
+    let displayUnit: DisplayUnit
     let todayTotalText: String
 
     @MainActor
     static func load(from logService: LogService, locale: Locale = .current) throws -> TodayScreenSnapshot {
         let currentSettings = try logService.settings()
+        let displayUnit = currentSettings.displayUnit
         let currentToday = try logService.today()
         let snapshots = try logService.snapshots()
         let engine = StatsEngine(
@@ -133,7 +150,7 @@ struct TodayScreenSnapshot: Equatable, Sendable {
         let streakSummary = engine.streaks()
         let streakCard = StreakCardModel(summary: streakSummary, locale: locale)
 
-        let presets = try logService.presets()
+        let presets = try logService.presets(includeHidden: true)
         var presetKeyById: [UUID: String] = [:]
         for preset in presets {
             if let key = preset.key {
@@ -145,11 +162,13 @@ struct TodayScreenSnapshot: Equatable, Sendable {
         let todaysDrinks = allActiveDrinks.filter { $0.logicalDay == currentToday }
 
         var totalHU = Decimal(0)
+        var totalGrams = Decimal(0)
         var rows: [TodayDrinkRowModel] = []
         rows.reserveCapacity(todaysDrinks.count)
 
         for drink in todaysDrinks {
             totalHU += drink.hu
+            totalGrams += drink.grams
             let presetKey = drink.presetId.flatMap { presetKeyById[$0] }
             rows.append(
                 TodayDrinkRowModel(
@@ -159,19 +178,28 @@ struct TodayScreenSnapshot: Equatable, Sendable {
                     timestamp: drink.timestamp,
                     timeZone: drink.timeZone,
                     hu: drink.hu,
+                    grams: drink.grams,
+                    displayUnit: displayUnit,
                     locale: locale
                 )
             )
         }
 
-        let formattedTotalHU = PresetPresentation.formattedHU(totalHU, locale: locale)
+        let formattedTotal = AmountFormatting.formattedValue(
+            grams: totalGrams,
+            hu: totalHU,
+            in: displayUnit,
+            locale: locale
+        )
         let totalFormat = AppLocalization.string("today.drinks.total", locale: locale)
-        let todayTotalText = String(format: totalFormat, locale: locale, formattedTotalHU)
+        let todayTotalText = String(format: totalFormat, locale: locale, formattedTotal)
 
         return TodayScreenSnapshot(
             streakCard: streakCard,
             todayDrinks: rows,
             todayTotalHU: totalHU,
+            todayTotalGrams: totalGrams,
+            displayUnit: displayUnit,
             todayTotalText: todayTotalText
         )
     }

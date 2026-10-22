@@ -7,7 +7,10 @@ import SwiftUI
 @main
 struct HalfUnitApp: App {
     private static let logger = Logger(subsystem: "es.opinasdeque.halfunit", category: "Persistence")
-    static let isHealthSyncEnabled = true
+    static var isHealthSyncEnabled: Bool {
+        get { HealthPreferences.isSyncEnabled() }
+        set { HealthPreferences.setSyncEnabled(newValue) }
+    }
 
     @Environment(\.scenePhase) private var scenePhase
 
