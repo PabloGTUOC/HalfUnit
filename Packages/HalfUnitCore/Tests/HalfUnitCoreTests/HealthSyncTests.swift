@@ -422,4 +422,137 @@ struct HealthSyncTests {
         #expect(result == .authorized)
         #expect(harness.client.requestAuthorizationCallCount == 1)
     }
+
+    @Test(
+        "Edit made while save() is suspended stays pending: first pass marks captured version, next reconcile saves edited drink with higher syncVersion"
+    )
+    func editWhileSaveSuspendedStaysPendingForNextReconcile() async throws {
+        let logTime = Self.makeDate(year: 2026, month: 10, day: 22, hour: 20, minute: 0)
+        let harness = try makeHarness(now: logTime)
+        try harness.logService.seedDefaultPresetsIfNeeded()
+        let beer = try #require(try harness.logService.presets().first(where: { $0.key == "beer" }))
+
+        let drink = try harness.logService.log(preset: beer, source: .phone)
+        #expect(drink.healthSyncVersion == 0)
+        #expect(drink.healthSyncedVersion == nil)
+
+        harness.client.shouldSuspendNextSave = true
+        let firstReconcileTask = Task {
+            await harness.healthSync.reconcile()
+        }
+
+        await harness.client.waitForSaveToSuspend()
+
+        // While client.save() is suspended in flight with version 0 (syncVersion 1),
+        // the user edits the drink -> healthSyncVersion becomes 1.
+        harness.clock.currentNow = logTime.addingTimeInterval(30)
+        try harness.logService.edit(
+            drink,
+            DrinkEdit(
+                hu: Self.dec("1.5"),
+                volumeMl: .set(750),
+                abvPercent: .set(Decimal(5))
+            )
+        )
+        #expect(drink.healthSyncVersion == 1)
+
+        // Release the suspended save() call.
+        harness.client.resumeSuspendedSave()
+        let firstStatus = await firstReconcileTask.value
+        #expect(firstStatus == .upToDate)
+
+        // First pass must only mark the captured version (0), leaving version 1 pending.
+        #expect(drink.healthSyncedVersion == 0)
+        #expect(drink.healthSyncVersion == 1)
+        #expect(harness.client.savedBatches.count == 1)
+        let firstSample = try #require(harness.client.savedBatches[0].first)
+        #expect(firstSample.syncIdentifier == drink.id.uuidString)
+        #expect(firstSample.syncVersion == 1)
+        #expect(firstSample.standardDrinks == Decimal(2))
+
+        // Next reconcile saves the edited drink with strictly higher syncVersion (2).
+        let secondStatus = await harness.healthSync.reconcile()
+        #expect(secondStatus == .upToDate)
+        #expect(drink.healthSyncedVersion == 1)
+        #expect(harness.client.savedBatches.count == 2)
+        let secondSample = try #require(harness.client.savedBatches[1].first)
+        #expect(secondSample.syncIdentifier == drink.id.uuidString)
+        #expect(secondSample.syncVersion == 2)
+        #expect(secondSample.standardDrinks == Decimal(3))
+    }
+
+    @Test(
+        "Two concurrent reconcile() calls while save() is suspended run single-flight with at most one follow-up pass and no duplicate (identifier, version) pairs"
+    )
+    func concurrentReconcileCallsAreSingleFlightWithoutDuplicateSaves() async throws {
+        let logTime = Self.makeDate(year: 2026, month: 10, day: 22, hour: 21, minute: 0)
+        let harness = try makeHarness(now: logTime)
+        try harness.logService.seedDefaultPresetsIfNeeded()
+        let beer = try #require(try harness.logService.presets().first(where: { $0.key == "beer" }))
+
+        // Case 1: Two concurrent reconcile() calls with no intervening edits -> exactly 1 save call
+        let drink = try harness.logService.log(preset: beer, source: .phone)
+        harness.client.shouldSuspendNextSave = true
+
+        let call1 = Task {
+            await harness.healthSync.reconcile()
+        }
+        await harness.client.waitForSaveToSuspend()
+
+        let call2 = Task {
+            await harness.healthSync.reconcile()
+        }
+        await Task.yield()
+
+        harness.client.resumeSuspendedSave()
+        let status1 = await call1.value
+        let status2 = await call2.value
+        #expect(status1 == .upToDate)
+        #expect(status2 == .upToDate)
+        #expect(harness.client.savedBatches.count == 1)
+        #expect(drink.healthSyncedVersion == 0)
+
+        // Case 2: Edit occurs while save() is suspended and a concurrent reconcile() is requested ->
+        // first pass saves version 1, automatic follow-up pass saves version 2, zero duplicates.
+        harness.clock.currentNow = logTime.addingTimeInterval(60)
+        try harness.logService.edit(drink, DrinkEdit(hu: Decimal(1)))
+        #expect(drink.healthSyncVersion == 1)
+
+        harness.client.shouldSuspendNextSave = true
+        let call3 = Task {
+            await harness.healthSync.reconcile()
+        }
+        await harness.client.waitForSaveToSuspend()
+
+        // Edit again while call3's save (syncVersion 2) is suspended, then trigger overlapping call4
+        harness.clock.currentNow = logTime.addingTimeInterval(120)
+        try harness.logService.edit(
+            drink,
+            DrinkEdit(
+                hu: Decimal(2),
+                volumeMl: .clear,
+                abvPercent: .clear
+            )
+        )
+        #expect(drink.healthSyncVersion == 2)
+
+        let call4 = Task {
+            await harness.healthSync.reconcile()
+        }
+        await Task.yield()
+
+        harness.client.resumeSuspendedSave()
+        let status3 = await call3.value
+        let status4 = await call4.value
+        #expect(status3 == .upToDate)
+        #expect(status4 == .upToDate)
+        #expect(drink.healthSyncedVersion == 2)
+
+        // Total batches across both cases: batch 0 (syncVersion 1), batch 1 (syncVersion 2), batch 2 (syncVersion 3)
+        #expect(harness.client.savedBatches.count == 3)
+        let allSamples = harness.client.savedBatches.flatMap { $0 }
+        let pairs = allSamples.map { "\($0.syncIdentifier)#\($0.syncVersion)" }
+        #expect(pairs.count == Set(pairs).count)
+        #expect(allSamples.map(\.syncVersion) == [1, 2, 3])
+    }
 }

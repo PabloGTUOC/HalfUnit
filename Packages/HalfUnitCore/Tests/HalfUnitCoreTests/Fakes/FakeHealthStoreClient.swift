@@ -17,6 +17,10 @@ final class FakeHealthStoreClient: HealthStoreClient, @unchecked Sendable {
     var saveError: (any Error)?
     var deleteError: (any Error)?
 
+    var shouldSuspendNextSave = false
+    private var saveSuspendedContinuation: CheckedContinuation<Void, Never>?
+    private var saveResumeContinuation: CheckedContinuation<Void, Never>?
+
     private(set) var requestAuthorizationCallCount = 0
     private(set) var savedBatches: [[HealthDrinkSample]] = []
     private(set) var deletedIdentifierBatches: [[String]] = []
@@ -27,6 +31,21 @@ final class FakeHealthStoreClient: HealthStoreClient, @unchecked Sendable {
     ) {
         self.isAvailable = isAvailable
         self.authorization = authorization
+    }
+
+    func waitForSaveToSuspend() async {
+        if saveResumeContinuation != nil {
+            return
+        }
+        await withCheckedContinuation { continuation in
+            saveSuspendedContinuation = continuation
+        }
+    }
+
+    func resumeSuspendedSave() {
+        let continuation = saveResumeContinuation
+        saveResumeContinuation = nil
+        continuation?.resume()
     }
 
     func writeAuthorization() async -> HealthWriteAuthorization {
@@ -47,6 +66,16 @@ final class FakeHealthStoreClient: HealthStoreClient, @unchecked Sendable {
     }
 
     func save(_ samples: [HealthDrinkSample]) async throws {
+        if shouldSuspendNextSave {
+            shouldSuspendNextSave = false
+            await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+                saveResumeContinuation = continuation
+                if let waiting = saveSuspendedContinuation {
+                    saveSuspendedContinuation = nil
+                    waiting.resume()
+                }
+            }
+        }
         if let error = saveError {
             throw error
         }

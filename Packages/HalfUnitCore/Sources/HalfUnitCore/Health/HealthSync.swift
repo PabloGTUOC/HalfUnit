@@ -21,6 +21,10 @@ public final class HealthSync {
     private let client: any HealthStoreClient
     private let isEnabled: @MainActor () -> Bool
 
+    private var isReconciling = false
+    private var rerunRequested = false
+    private var waitingContinuations: [CheckedContinuation<Status, Never>] = []
+
     public private(set) var lastStatus: Status
 
     public init(
@@ -50,6 +54,32 @@ public final class HealthSync {
 
     @discardableResult
     public func reconcile() async -> Status {
+        if isReconciling {
+            rerunRequested = true
+            return await withCheckedContinuation { continuation in
+                waitingContinuations.append(continuation)
+            }
+        }
+
+        isReconciling = true
+        rerunRequested = false
+
+        var status = await performSinglePass()
+        if rerunRequested {
+            rerunRequested = false
+            status = await performSinglePass()
+        }
+
+        isReconciling = false
+        let continuations = waitingContinuations
+        waitingContinuations.removeAll()
+        for continuation in continuations {
+            continuation.resume(returning: status)
+        }
+        return status
+    }
+
+    private func performSinglePass() async -> Status {
         guard isEnabled() else {
             lastStatus = .disabled
             return .disabled
@@ -86,11 +116,14 @@ public final class HealthSync {
                 .filter { $0.deletedAt == nil && $0.healthSyncedVersion != $0.healthSyncVersion }
             let pendingLiveDrinks = Self.selectPendingLiveDrinks(from: pendingCandidates)
             if !pendingLiveDrinks.isEmpty {
+                var sentVersionById: [UUID: Int] = [:]
                 let samples = pendingLiveDrinks.map { drink in
+                    let sentVersion = drink.healthSyncVersion
+                    sentVersionById[drink.id] = sentVersion
                     let presetKey = drink.presetId.flatMap { presetKeyById[$0] }
                     return HealthDrinkSample(
                         syncIdentifier: drink.id.uuidString,
-                        syncVersion: drink.healthSyncVersion + 1,
+                        syncVersion: sentVersion + 1,
                         date: drink.timestamp,
                         standardDrinks: Units.standardDrinks(grams: drink.grams),
                         presetKey: presetKey,
@@ -101,14 +134,23 @@ public final class HealthSync {
                     )
                 }
 
+                let capturedCandidateVersions: [(drink: Drink, version: Int)] =
+                    pendingCandidates.compactMap { drink in
+                        guard let sentVersion = sentVersionById[drink.id] else {
+                            return nil
+                        }
+                        return (drink, min(drink.healthSyncVersion, sentVersion))
+                    }
+
                 try await client.save(samples)
-                for drink in pendingCandidates {
-                    drink.healthSyncedVersion = drink.healthSyncVersion
+                for captured in capturedCandidateVersions {
+                    captured.drink.healthSyncedVersion = captured.version
                 }
                 try context.save()
             }
 
-            let pendingTombstones = Self.selectPendingTombstones(from: allDrinks)
+            let allDrinksForTombstones = try context.fetch(FetchDescriptor<Drink>())
+            let pendingTombstones = Self.selectPendingTombstones(from: allDrinksForTombstones)
             if !pendingTombstones.isEmpty {
                 var seenIds: Set<String> = []
                 var idsToDelete: [String] = []
@@ -118,9 +160,12 @@ public final class HealthSync {
                         idsToDelete.append(syncId)
                     }
                 }
+                let capturedTombstones = pendingTombstones.filter {
+                    seenIds.contains($0.id.uuidString)
+                }
 
                 try await client.deleteSamples(withSyncIdentifiers: idsToDelete)
-                for drink in pendingTombstones {
+                for drink in capturedTombstones {
                     drink.healthSyncedVersion = nil
                 }
                 try context.save()
