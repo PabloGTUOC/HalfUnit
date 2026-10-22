@@ -151,6 +151,53 @@ struct InsightsAndHistoryTests {
         )
     }
 
+    @Test("Heatmap summary accessibility string pluralizes drinkingDays and trackedDays independently in en and de")
+    func heatmapSummaryAccessibilityPluralization() {
+        #expect(
+            InsightsScreenSnapshot.buildHeatmapSummaryAccessibility(
+                drinkingDays: 1,
+                trackedDays: 1,
+                locale: Self.englishLocale
+            ) == "Calendar heatmap: 1 drinking day in 1 tracked day"
+        )
+        #expect(
+            InsightsScreenSnapshot.buildHeatmapSummaryAccessibility(
+                drinkingDays: 1,
+                trackedDays: 2,
+                locale: Self.englishLocale
+            ) == "Calendar heatmap: 1 drinking day in 2 tracked days"
+        )
+        #expect(
+            InsightsScreenSnapshot.buildHeatmapSummaryAccessibility(
+                drinkingDays: 3,
+                trackedDays: 91,
+                locale: Self.englishLocale
+            ) == "Calendar heatmap: 3 drinking days in 91 tracked days"
+        )
+
+        #expect(
+            InsightsScreenSnapshot.buildHeatmapSummaryAccessibility(
+                drinkingDays: 1,
+                trackedDays: 1,
+                locale: Self.germanLocale
+            ) == "Kalenderübersicht: 1 Trinktag in 1 erfasstem Tag"
+        )
+        #expect(
+            InsightsScreenSnapshot.buildHeatmapSummaryAccessibility(
+                drinkingDays: 1,
+                trackedDays: 2,
+                locale: Self.germanLocale
+            ) == "Kalenderübersicht: 1 Trinktag in 2 erfassten Tagen"
+        )
+        #expect(
+            InsightsScreenSnapshot.buildHeatmapSummaryAccessibility(
+                drinkingDays: 3,
+                trackedDays: 91,
+                locale: Self.germanLocale
+            ) == "Kalenderübersicht: 3 Trinktage in 91 erfassten Tagen"
+        )
+    }
+
     @Test("InsightsScreenSnapshot formats top weekday sentence, drink-type breakdown, heatmap cells, and streaks")
     func insightsTopWeekdayHeatmapAndBreakdowns() {
         let today = LogicalDay(year: 2026, month: 10, day: 22)

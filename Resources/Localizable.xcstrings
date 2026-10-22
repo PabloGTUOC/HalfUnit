@@ -515,36 +515,56 @@
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
-          "variations" : {
-            "plural" : {
-              "one" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "−1 Trinktag vs. vorherige %2$@"
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "−%1$lld Trinktage vs. vorherige %2$@"
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "−%#@drinkingDays@ vs. vorherige %2$@"
+          },
+          "substitutions" : {
+            "drinkingDays" : {
+              "argNum" : 1,
+              "formatSpecifier" : "lld",
+              "variations" : {
+                "plural" : {
+                  "one" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "1 Trinktag"
+                    }
+                  },
+                  "other" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg Trinktage"
+                    }
+                  }
                 }
               }
             }
           }
         },
         "en" : {
-          "variations" : {
-            "plural" : {
-              "one" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "−1 drinking day vs previous %2$@"
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "−%1$lld drinking days vs previous %2$@"
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "−%#@drinkingDays@ vs previous %2$@"
+          },
+          "substitutions" : {
+            "drinkingDays" : {
+              "argNum" : 1,
+              "formatSpecifier" : "lld",
+              "variations" : {
+                "plural" : {
+                  "one" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "1 drinking day"
+                    }
+                  },
+                  "other" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg drinking days"
+                    }
+                  }
                 }
               }
             }
@@ -556,36 +576,56 @@
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
-          "variations" : {
-            "plural" : {
-              "one" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "+1 Trinktag vs. vorherige %2$@"
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "+%1$lld Trinktage vs. vorherige %2$@"
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "+%#@drinkingDays@ vs. vorherige %2$@"
+          },
+          "substitutions" : {
+            "drinkingDays" : {
+              "argNum" : 1,
+              "formatSpecifier" : "lld",
+              "variations" : {
+                "plural" : {
+                  "one" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "1 Trinktag"
+                    }
+                  },
+                  "other" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg Trinktage"
+                    }
+                  }
                 }
               }
             }
           }
         },
         "en" : {
-          "variations" : {
-            "plural" : {
-              "one" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "+1 drinking day vs previous %2$@"
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "+%1$lld drinking days vs previous %2$@"
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "+%#@drinkingDays@ vs previous %2$@"
+          },
+          "substitutions" : {
+            "drinkingDays" : {
+              "argNum" : 1,
+              "formatSpecifier" : "lld",
+              "variations" : {
+                "plural" : {
+                  "one" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "1 drinking day"
+                    }
+                  },
+                  "other" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg drinking days"
+                    }
+                  }
                 }
               }
             }
@@ -740,36 +780,96 @@
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
-          "variations" : {
-            "plural" : {
-              "one" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Kalenderübersicht: %1$lld Trinktag in %2$lld erfassten Tagen"
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kalenderübersicht: %#@drinkingDays@ in %#@trackedDays@"
+          },
+          "substitutions" : {
+            "drinkingDays" : {
+              "argNum" : 1,
+              "formatSpecifier" : "lld",
+              "variations" : {
+                "plural" : {
+                  "one" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg Trinktag"
+                    }
+                  },
+                  "other" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg Trinktage"
+                    }
+                  }
                 }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Kalenderübersicht: %1$lld Trinktage in %2$lld erfassten Tagen"
+              }
+            },
+            "trackedDays" : {
+              "argNum" : 2,
+              "formatSpecifier" : "lld",
+              "variations" : {
+                "plural" : {
+                  "one" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg erfasstem Tag"
+                    }
+                  },
+                  "other" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg erfassten Tagen"
+                    }
+                  }
                 }
               }
             }
           }
         },
         "en" : {
-          "variations" : {
-            "plural" : {
-              "one" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Calendar heatmap: %1$lld drinking day in %2$lld tracked days"
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Calendar heatmap: %#@drinkingDays@ in %#@trackedDays@"
+          },
+          "substitutions" : {
+            "drinkingDays" : {
+              "argNum" : 1,
+              "formatSpecifier" : "lld",
+              "variations" : {
+                "plural" : {
+                  "one" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg drinking day"
+                    }
+                  },
+                  "other" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg drinking days"
+                    }
+                  }
                 }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Calendar heatmap: %1$lld drinking days in %2$lld tracked days"
+              }
+            },
+            "trackedDays" : {
+              "argNum" : 2,
+              "formatSpecifier" : "lld",
+              "variations" : {
+                "plural" : {
+                  "one" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg tracked day"
+                    }
+                  },
+                  "other" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg tracked days"
+                    }
+                  }
                 }
               }
             }
@@ -1577,36 +1677,56 @@
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
-          "variations" : {
-            "plural" : {
-              "one" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Wochendiagramm über %1$lld Woche, gesamt %2$@"
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Wochendiagramm über %1$lld Wochen, gesamt %2$@"
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wochendiagramm über %#@weeks@, gesamt %2$@"
+          },
+          "substitutions" : {
+            "weeks" : {
+              "argNum" : 1,
+              "formatSpecifier" : "lld",
+              "variations" : {
+                "plural" : {
+                  "one" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg Woche"
+                    }
+                  },
+                  "other" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg Wochen"
+                    }
+                  }
                 }
               }
             }
           }
         },
         "en" : {
-          "variations" : {
-            "plural" : {
-              "one" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Weekly bar chart across %1$lld week, total %2$@"
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Weekly bar chart across %1$lld weeks, total %2$@"
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weekly bar chart across %#@weeks@, total %2$@"
+          },
+          "substitutions" : {
+            "weeks" : {
+              "argNum" : 1,
+              "formatSpecifier" : "lld",
+              "variations" : {
+                "plural" : {
+                  "one" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg week"
+                    }
+                  },
+                  "other" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg weeks"
+                    }
+                  }
                 }
               }
             }

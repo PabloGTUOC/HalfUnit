@@ -418,7 +418,8 @@ struct InsightsScreenSnapshot: Equatable, Sendable {
         let daily = engine.dailyTotals(for: period)
         self.heatmapCells = Self.buildHeatmapCells(from: daily, locale: locale)
         self.heatmapSummaryAccessibilityLabel = Self.buildHeatmapSummaryAccessibility(
-            stats: comparison.current,
+            drinkingDays: comparison.current.drinkingDays,
+            trackedDays: comparison.current.trackedDays,
             locale: locale
         )
 
@@ -672,9 +673,10 @@ struct InsightsScreenSnapshot: Equatable, Sendable {
         }
     }
 
-    private static func buildHeatmapSummaryAccessibility(
-        stats: PeriodStats,
-        locale: Locale
+    static func buildHeatmapSummaryAccessibility(
+        drinkingDays: Int,
+        trackedDays: Int,
+        locale: Locale = .current
     ) -> String {
         let format = AppLocalization.string(
             "insights.heatmap.summary.accessibility",
@@ -683,8 +685,8 @@ struct InsightsScreenSnapshot: Equatable, Sendable {
         return String(
             format: format,
             locale: locale,
-            Int64(stats.drinkingDays),
-            Int64(stats.trackedDays)
+            Int64(drinkingDays),
+            Int64(trackedDays)
         )
     }
 
