@@ -98,6 +98,7 @@ XcodeGen globs source folders, so **adding a file to an existing folder needs no
 - The store lives in the App Group container so app, widgets and intents share it.
 - Deletes are tombstones (`deletedAt` set to the delete time), purged 30 days after `deletedAt`. Never name a property `isDeleted`: it clashes with `PersistentModel.isDeleted`. Conflicts: last writer wins by `updatedAt`.
 - WatchConnectivity: watch → phone uses `transferUserInfo` (queued, survives restarts); phone → watch uses `updateApplicationContext` for streak/today state. CloudKit remains the durable path.
+- The same drink can arrive twice (WatchConnectivity + CloudKit). Reads (`drinks()`, `snapshots()`) always collapse rows by `id`. **Only the iPhone app calls `LogService.dedupeDrinks()`** (hard delete of duplicate rows). Never call it from the watch, widgets or intents: the final tie-breaker is device-local, so two devices deduping could each delete the other's copy and CloudKit would remove the drink everywhere.
 - CloudKit: agents use the **Development** environment only. Never deploy the schema to Production.
 
 ### Apple Health (`Health/`)

@@ -10,6 +10,7 @@ struct HalfUnitWatchApp: App {
 
     private let modelContainer: ModelContainer
     private let logService: LogService
+    private let watchSessionBridge: WatchSessionBridge
 
     init() {
         let container = Self.makeModelContainer()
@@ -25,8 +26,14 @@ struct HalfUnitWatchApp: App {
             Self.logger.error("Failed to seed default presets: \(error.localizedDescription, privacy: .public)")
         }
 
+        let sessionBridge = WatchSessionBridge(
+            context: container.mainContext,
+            logService: service
+        )
+
         self.modelContainer = container
         self.logService = service
+        self.watchSessionBridge = sessionBridge
     }
 
     var body: some Scene {

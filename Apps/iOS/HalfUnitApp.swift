@@ -15,6 +15,7 @@ struct HalfUnitApp: App {
     private let logService: LogService
     private let healthSync: HealthSync
     private let dayBoundaryScheduler: DayBoundaryScheduler
+    private let phoneSessionBridge: PhoneSessionBridge
 
     init() {
         let container = Self.makeModelContainer()
@@ -39,13 +40,26 @@ struct HalfUnitApp: App {
             Self.logger.error("Failed to seed default presets: \(error.localizedDescription, privacy: .private)")
         }
 
+        let sessionBridge = PhoneSessionBridge(
+            context: container.mainContext,
+            logService: service,
+            healthSync: health,
+            now: Date.init,
+            dayBoundaryScheduler: scheduler
+        )
+
         self.modelContainer = container
         self.logService = service
         self.healthSync = health
         self.dayBoundaryScheduler = scheduler
+        self.phoneSessionBridge = sessionBridge
 
         Task { @MainActor in
-            await Self.reconcileAndPurgeTombstones(logService: service, healthSync: health)
+            await Self.reconcileAndPurgeTombstones(
+                logService: service,
+                healthSync: health,
+                phoneSessionBridge: sessionBridge
+            )
         }
     }
 
@@ -63,7 +77,11 @@ struct HalfUnitApp: App {
                 return
             }
             Task { @MainActor in
-                await Self.reconcileAndPurgeTombstones(logService: logService, healthSync: healthSync)
+                await Self.reconcileAndPurgeTombstones(
+                    logService: logService,
+                    healthSync: healthSync,
+                    phoneSessionBridge: phoneSessionBridge
+                )
             }
         }
     }
@@ -71,14 +89,36 @@ struct HalfUnitApp: App {
     @MainActor
     static func reconcileAndPurgeTombstones(
         logService: LogService,
-        healthSync: HealthSync
+        healthSync: HealthSync,
+        phoneSessionBridge: PhoneSessionBridge? = nil
     ) async {
-        await reconcileHealth(healthSync: healthSync)
         do {
-            _ = try logService.purgeTombstones()
+            if let phoneSessionBridge {
+                _ = try phoneSessionBridge.performWithoutSaveObserver {
+                    try logService.dedupeDrinks()
+                }
+            } else {
+                _ = try logService.dedupeDrinks()
+            }
+        } catch {
+            logger.error("Failed to deduplicate drinks: \(error.localizedDescription, privacy: .private)")
+        }
+
+        await reconcileHealth(healthSync: healthSync)
+
+        do {
+            if let phoneSessionBridge {
+                _ = try phoneSessionBridge.performWithoutSaveObserver {
+                    try logService.purgeTombstones()
+                }
+            } else {
+                _ = try logService.purgeTombstones()
+            }
         } catch {
             logger.error("Failed to purge tombstones: \(error.localizedDescription, privacy: .private)")
         }
+
+        phoneSessionBridge?.pushCurrentStateContext()
     }
 
     @MainActor
