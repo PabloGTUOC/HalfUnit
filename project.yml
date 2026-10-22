@@ -1,0 +1,77 @@
+name: HalfUnit
+options:
+  bundleIdPrefix: $(BUNDLE_ID_PREFIX)
+  deploymentTarget:
+    iOS: "26.0"
+    watchOS: "26.0"
+  knownRegions:
+    - en
+    - de
+  developmentLanguage: en
+configFiles:
+  Debug: Config/Shared.xcconfig
+  Release: Config/Shared.xcconfig
+packages:
+  HalfUnitCore:
+    path: Packages/HalfUnitCore
+targets:
+  HalfUnit:
+    type: application
+    platform: iOS
+    sources:
+      - path: Apps/iOS
+      - path: Resources
+    entitlements:
+      path: Config/Entitlements/HalfUnit-iOS.entitlements
+      properties:
+        aps-environment: development
+        com.apple.developer.healthkit: true
+        com.apple.developer.healthkit.access: []
+        com.apple.developer.icloud-container-identifiers:
+          - iCloud.$(BUNDLE_ID_PREFIX).halfunit
+        com.apple.developer.icloud-services:
+          - CloudKit
+        com.apple.security.application-groups:
+          - group.$(BUNDLE_ID_PREFIX).halfunit
+    info:
+      path: Config/Info/HalfUnit-iOS-Info.plist
+      properties:
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        UIBackgroundModes:
+          - remote-notification
+        NSHealthUpdateUsageDescription: Half Unit saves each drink you log to Apple Health as alcoholic beverages.
+        HalfUnitAppGroup: group.$(BUNDLE_ID_PREFIX).halfunit
+        HalfUnitCloudKitContainer: iCloud.$(BUNDLE_ID_PREFIX).halfunit
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(BUNDLE_ID_PREFIX).halfunit
+        CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION: YES
+    dependencies:
+      - package: HalfUnitCore
+  HalfUnitTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: Apps/iOSTests
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(BUNDLE_ID_PREFIX).halfunit.tests
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_HOST: $(BUILT_PRODUCTS_DIR)/HalfUnit.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/HalfUnit
+        BUNDLE_LOADER: $(TEST_HOST)
+    dependencies:
+      - target: HalfUnit
+      - package: HalfUnitCore
+schemes:
+  HalfUnit:
+    build:
+      targets:
+        HalfUnit: all
+        HalfUnitTests: [test]
+    test:
+      targets:
+        - HalfUnitTests

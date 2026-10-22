@@ -1,0 +1,23 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "NSHealthUpdateUsageDescription" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Half Unit speichert jedes protokollierte Getränk als alkoholisches Getränk in Apple Health."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Half Unit saves each drink you log to Apple Health as alcoholic beverages."
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}
