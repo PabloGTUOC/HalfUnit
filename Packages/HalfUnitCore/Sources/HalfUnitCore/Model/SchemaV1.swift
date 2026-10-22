@@ -27,6 +27,7 @@ public enum SchemaV1: VersionedSchema {
         public var note: String? = nil
         public var sourceRaw: String = DrinkSource.phone.rawValue
         public var healthSyncVersion: Int = 0
+        public var healthSyncedVersion: Int? = nil
         public var deletedAt: Date? = nil
         public var createdAt: Date = Date.distantPast
         public var updatedAt: Date = Date.distantPast
@@ -45,6 +46,7 @@ public enum SchemaV1: VersionedSchema {
             note: String? = nil,
             sourceRaw: String = DrinkSource.phone.rawValue,
             healthSyncVersion: Int = 0,
+            healthSyncedVersion: Int? = nil,
             deletedAt: Date? = nil,
             createdAt: Date,
             updatedAt: Date
@@ -62,6 +64,7 @@ public enum SchemaV1: VersionedSchema {
             self.note = note
             self.sourceRaw = sourceRaw
             self.healthSyncVersion = healthSyncVersion
+            self.healthSyncedVersion = healthSyncedVersion
             self.deletedAt = deletedAt
             self.createdAt = createdAt
             self.updatedAt = updatedAt
