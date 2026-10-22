@@ -235,4 +235,36 @@ struct LogicalDayTests {
         #expect(sunday.weekday == .sunday)
         #expect(sunday.weekday.rawValue == 7)
     }
+
+    @Test("LogicalDay key yyyyMMdd round-trip and leap year validation")
+    func keyRoundTripAndLeapYear() {
+        let oct22 = LogicalDay(year: 2026, month: 10, day: 22)
+        #expect(oct22.key == 20_261_022)
+        #expect(LogicalDay(key: 20_261_022) == oct22)
+
+        let jan1 = LogicalDay(year: 2026, month: 1, day: 1)
+        #expect(jan1.key == 20_260_101)
+        #expect(LogicalDay(key: 20_260_101) == jan1)
+
+        let leapFeb29 = LogicalDay(year: 2028, month: 2, day: 29)
+        #expect(leapFeb29.key == 20_280_229)
+        #expect(LogicalDay(key: 20_280_229) == leapFeb29)
+    }
+
+    @Test(
+        "LogicalDay(key:) returns nil for invalid dates",
+        arguments: [
+            20_260_230,
+            20_260_229,
+            20_261_301,
+            20_260_010,
+            20_260_431,
+            20_260_100,
+            0,
+            -20_261_022,
+        ]
+    )
+    func invalidKeyReturnsNil(invalidKey: Int) {
+        #expect(LogicalDay(key: invalidKey) == nil)
+    }
 }

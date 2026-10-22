@@ -23,6 +23,38 @@ public struct LogicalDay: Hashable, Comparable, Codable, Sendable {
         self.day = day
     }
 
+    public var key: Int {
+        year * 10_000 + month * 100 + day
+    }
+
+    public init?(key: Int) {
+        guard key > 0 else {
+            return nil
+        }
+        let year = key / 10_000
+        let remainder = key % 10_000
+        let month = remainder / 100
+        let day = remainder % 100
+
+        guard (1...9999).contains(year), (1...12).contains(month), (1...31).contains(day) else {
+            return nil
+        }
+
+        let calendar = Self.utcCalendar
+        let components = DateComponents(year: year, month: month, day: day)
+        guard let date = calendar.date(from: components) else {
+            return nil
+        }
+        let resolved = calendar.dateComponents([.year, .month, .day], from: date)
+        guard resolved.year == year, resolved.month == month, resolved.day == day else {
+            return nil
+        }
+
+        self.year = year
+        self.month = month
+        self.day = day
+    }
+
     public var weekday: Weekday {
         let calendar = Self.utcCalendar
         let date = toUTCDate(using: calendar)

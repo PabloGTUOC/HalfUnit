@@ -12,9 +12,14 @@ public enum Units {
     private static let minimumHU = Decimal(sign: .plus, exponent: -1, significand: 5)
     private static let gramsPerStandardDrink = Decimal(10)
     private static let gramsPerUKUnit = Decimal(8)
+    private static let estimatedGramsPerHU = Decimal(20)
 
     public static func grams(volumeMl: Int, abvPercent: Decimal) -> Decimal {
         Decimal(volumeMl) * (abvPercent / Decimal(100)) * alcoholDensity
+    }
+
+    public static func estimatedGrams(hu: Decimal) -> Decimal {
+        hu * estimatedGramsPerHU
     }
 
     public static func standardDrinks(grams: Decimal) -> Decimal {
