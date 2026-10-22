@@ -20,6 +20,7 @@ public struct DrinkEdit: Sendable, Equatable {
     }
 
     public var timestamp: Date?
+    public var presetId: UUID?
     public var name: String?
     public var hu: Decimal?
     public var volumeMl: NullableField<Int>
@@ -28,6 +29,8 @@ public struct DrinkEdit: Sendable, Equatable {
 
     public init(
         timestamp: Date? = nil,
+        preset: Preset? = nil,
+        presetId: UUID? = nil,
         name: String? = nil,
         hu: Decimal? = nil,
         volumeMl: NullableField<Int> = .unchanged,
@@ -35,6 +38,7 @@ public struct DrinkEdit: Sendable, Equatable {
         note: NullableField<String> = .unchanged
     ) {
         self.timestamp = timestamp
+        self.presetId = preset?.id ?? presetId
         self.name = name
         self.hu = hu
         self.volumeMl = volumeMl
@@ -251,10 +255,25 @@ public final class LogService {
             throw LogServiceError.drinkIsDeleted
         }
 
-        if let newHU = edit.hu {
-            guard Units.isValidHU(newHU) else {
-                throw LogServiceError.invalidHU
+        if let newHU = edit.hu, !Units.isValidHU(newHU) {
+            throw LogServiceError.invalidHU
+        }
+
+        if let newPresetId = edit.presetId {
+            let allPresets = try context.fetch(FetchDescriptor<Preset>())
+            if let newPreset = allPresets.first(where: { $0.id == newPresetId }) {
+                guard Units.isValidHU(newPreset.hu) else {
+                    throw LogServiceError.invalidHU
+                }
+                drink.presetId = newPreset.id
+                drink.name = newPreset.name
+                drink.huHalfSteps = newPreset.huHalfSteps
+                drink.volumeMl = newPreset.volumeMl
+                drink.abvTenths = newPreset.abvTenths
             }
+        }
+
+        if let newHU = edit.hu {
             drink.hu = newHU
         }
 

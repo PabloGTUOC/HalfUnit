@@ -362,6 +362,62 @@ struct LogServiceTests {
         }
     }
 
+    @Test("edit() with preset snapshots preset fields and applies explicit overrides on top")
+    func editPresetAndOverrides() throws {
+        let t0 = Self.makeDate(year: 2026, month: 10, day: 22, hour: 19, minute: 0, timeZone: Self.berlin)
+        let harness = try makeTestHarness(now: t0, timeZone: Self.berlin)
+        let clock = harness.clock
+        let service = harness.service
+        try service.seedDefaultPresetsIfNeeded()
+        let presets = try service.presets()
+        let beer = try #require(presets.first(where: { $0.key == "beer" }))
+        let wine = try #require(presets.first(where: { $0.key == "wineGlass" }))
+        let shot = try #require(presets.first(where: { $0.key == "shot" }))
+
+        let drink = try service.log(preset: beer, source: .phone)
+        #expect(drink.presetId == beer.id)
+        #expect(drink.name == "beer")
+        #expect(drink.hu == Decimal(1))
+        #expect(drink.volumeMl == 500)
+        #expect(drink.abvPercent == Decimal(5))
+        #expect(drink.grams == Decimal(20))
+        #expect(drink.healthSyncVersion == 0)
+
+        // 1. Change preset to wineGlass without overrides
+        let t1 = t0.addingTimeInterval(60)
+        clock.currentNow = t1
+        try service.edit(drink, DrinkEdit(preset: wine))
+        #expect(drink.presetId == wine.id)
+        #expect(drink.name == "wineGlass")
+        #expect(drink.hu == Decimal(1))
+        #expect(drink.volumeMl == 200)
+        #expect(drink.abvPercent == Decimal(12))
+        #expect(drink.grams == Self.dec("19.2"))
+        #expect(drink.healthSyncVersion == 1)
+        #expect(drink.updatedAt == t1)
+
+        // 2. Change preset to shot AND pass explicit HU and volumeMl overrides in the same edit
+        let t2 = t1.addingTimeInterval(60)
+        clock.currentNow = t2
+        try service.edit(
+            drink,
+            DrinkEdit(
+                preset: shot,
+                hu: Self.dec("1.5"),
+                volumeMl: .set(60)
+            )
+        )
+        #expect(drink.presetId == shot.id)
+        #expect(drink.name == "shot")
+        #expect(drink.hu == Self.dec("1.5"))
+        #expect(drink.volumeMl == 60)
+        #expect(drink.abvPercent == Decimal(40))
+        // 60 ml * 40% * 0.8 = 19.2 g
+        #expect(drink.grams == Self.dec("19.2"))
+        #expect(drink.healthSyncVersion == 2)
+        #expect(drink.updatedAt == t2)
+    }
+
     @Test("delete and undo set tombstone and exclude drink from drinks() and snapshots() unless includeDeleted is true")
     func deleteAndUndoFiltering() throws {
         let t0 = Self.makeDate(year: 2026, month: 10, day: 22, hour: 19, minute: 0, timeZone: Self.berlin)
