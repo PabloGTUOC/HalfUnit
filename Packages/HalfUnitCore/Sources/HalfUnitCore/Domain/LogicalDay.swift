@@ -1,5 +1,15 @@
 import Foundation
 
+public enum Weekday: Int, CaseIterable, Codable, Sendable {
+    case monday = 1
+    case tuesday
+    case wednesday
+    case thursday
+    case friday
+    case saturday
+    case sunday
+}
+
 public struct LogicalDay: Hashable, Comparable, Codable, Sendable {
     public static let defaultBoundaryHour = 7
 
@@ -11,6 +21,17 @@ public struct LogicalDay: Hashable, Comparable, Codable, Sendable {
         self.year = year
         self.month = month
         self.day = day
+    }
+
+    public var weekday: Weekday {
+        let calendar = Self.utcCalendar
+        let date = toUTCDate(using: calendar)
+        let gregorianWeekday = calendar.component(.weekday, from: date)
+        let isoNumber = ((gregorianWeekday + 5) % 7) + 1
+        guard let result = Weekday(rawValue: isoNumber) else {
+            preconditionFailure("Invalid ISO weekday \(isoNumber)")
+        }
+        return result
     }
 
     public static func of(
@@ -77,14 +98,14 @@ public struct LogicalDay: Hashable, Comparable, Codable, Sendable {
         return lhs.day < rhs.day
     }
 
-    private static var utcCalendar: Calendar {
+    private static let utcCalendar: Calendar = {
         var calendar = Calendar(identifier: .gregorian)
         guard let utc = TimeZone(identifier: "UTC") else {
             preconditionFailure("UTC time zone unavailable")
         }
         calendar.timeZone = utc
         return calendar
-    }
+    }()
 
     private func toUTCDate(using calendar: Calendar) -> Date {
         let components = DateComponents(year: year, month: month, day: day)
