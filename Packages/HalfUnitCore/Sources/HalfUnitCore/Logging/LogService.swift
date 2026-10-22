@@ -341,12 +341,68 @@ public final class LogService {
         return purgedCount
     }
 
+    @discardableResult
+    public func dedupeDrinks() throws -> Int {
+        let allDrinks = try context.fetch(FetchDescriptor<Drink>())
+        var groupedById: [UUID: [Drink]] = [:]
+        for drink in allDrinks {
+            groupedById[drink.id, default: []].append(drink)
+        }
+
+        var removedCount = 0
+        for (_, duplicates) in groupedById where duplicates.count > 1 {
+            guard var winner = duplicates.first else {
+                continue
+            }
+            for candidate in duplicates.dropFirst() {
+                if Self.isPreferredDrink(candidate, over: winner) {
+                    winner = candidate
+                }
+            }
+
+            if let maxSyncedVersion = duplicates.compactMap(\.healthSyncedVersion).max() {
+                winner.healthSyncedVersion = maxSyncedVersion
+            }
+
+            if let newestTombstone =
+                duplicates
+                .filter({ $0.deletedAt != nil })
+                .max(by: { $0.updatedAt < $1.updatedAt }),
+                newestTombstone.updatedAt > winner.updatedAt
+            {
+                winner.deletedAt = newestTombstone.deletedAt
+            }
+
+            for duplicate in duplicates where duplicate.persistentModelID != winner.persistentModelID {
+                context.delete(duplicate)
+                removedCount += 1
+            }
+        }
+
+        if removedCount > 0 {
+            try context.save()
+        }
+        return removedCount
+    }
+
     public func drinks(includeDeleted: Bool = false) throws -> [Drink] {
         let allDrinks = try context.fetch(FetchDescriptor<Drink>())
+        var winnersById: [UUID: Drink] = [:]
+        for drink in allDrinks {
+            if let existing = winnersById[drink.id] {
+                if Self.isPreferredDrink(drink, over: existing) {
+                    winnersById[drink.id] = drink
+                }
+            } else {
+                winnersById[drink.id] = drink
+            }
+        }
+
+        let deduplicated = Array(winnersById.values)
         let filtered =
             includeDeleted
-            ? allDrinks
-            : allDrinks.filter { $0.deletedAt == nil }
+            ? deduplicated
+            : deduplicated.filter { $0.deletedAt == nil }
 
         return filtered.sorted { lhs, rhs in
             if lhs.timestamp != rhs.timestamp {
@@ -373,6 +429,21 @@ public final class LogService {
             let presetKey = drink.presetId.flatMap { presetKeyById[$0] }
             return drink.snapshot(presetKey: presetKey)
         }
+    }
+
+    static func isPreferredDrink(_ lhs: Drink, over rhs: Drink) -> Bool {
+        if lhs.updatedAt != rhs.updatedAt {
+            return lhs.updatedAt > rhs.updatedAt
+        }
+        if lhs.healthSyncVersion != rhs.healthSyncVersion {
+            return lhs.healthSyncVersion > rhs.healthSyncVersion
+        }
+        let lhsIsTombstone = lhs.deletedAt != nil
+        let rhsIsTombstone = rhs.deletedAt != nil
+        if lhsIsTombstone != rhsIsTombstone {
+            return lhsIsTombstone
+        }
+        return String(describing: lhs.persistentModelID) < String(describing: rhs.persistentModelID)
     }
 
     private func resolvedBoundaryHour(from settings: AppSettings) -> Int {
