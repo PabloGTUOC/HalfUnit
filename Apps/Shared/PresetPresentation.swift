@@ -60,7 +60,12 @@ enum PresetPresentation {
         fallbackName: String,
         locale: Locale = .current
     ) -> String {
-        let effectiveKey = presetKey ?? (catalogKeyByPresetKey[fallbackName] != nil ? fallbackName : nil)
+        let effectiveKey: String?
+        if let presetKey {
+            effectiveKey = (fallbackName == presetKey || fallbackName.isEmpty) ? presetKey : nil
+        } else {
+            effectiveKey = catalogKeyByPresetKey[fallbackName] != nil ? fallbackName : nil
+        }
         guard let catalogKey = catalogKey(for: effectiveKey) else {
             return fallbackName
         }
@@ -72,10 +77,14 @@ enum PresetPresentation {
     }
 
     static func symbolName(presetKey: String?, fallbackSymbol: String) -> String {
+        let trimmed = fallbackSymbol.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !trimmed.isEmpty && trimmed != "questionmark" {
+            return trimmed
+        }
         if let presetKey, let mapped = symbolByPresetKey[presetKey] {
             return mapped
         }
-        return fallbackSymbol.isEmpty ? "wineglass" : fallbackSymbol
+        return trimmed.isEmpty ? "wineglass" : trimmed
     }
 
     static func formattedHUNumber(_ hu: Decimal, locale: Locale = .current) -> String {
@@ -89,6 +98,43 @@ enum PresetPresentation {
     static func formattedHU(_ hu: Decimal, locale: Locale = .current) -> String {
         let numberText = formattedHUNumber(hu, locale: locale)
         let format = AppLocalization.string("unit.huValue", locale: locale)
+        return String(format: format, locale: locale, numberText)
+    }
+
+    static func formattedDisplayValue(
+        grams: Decimal,
+        hu: Decimal,
+        in unit: DisplayUnit,
+        locale: Locale = .current
+    ) -> String {
+        let rounded = Units.displayValue(grams: grams, hu: hu, in: unit)
+        let fractionRange: ClosedRange<Int> =
+            switch unit {
+            case .grams:
+                0...0
+            case .hu, .germanStandardDrinks, .ukUnits:
+                0...1
+            }
+
+        let numberText = rounded.formatted(
+            .number
+                .locale(locale)
+                .precision(.fractionLength(fractionRange))
+        )
+
+        let formatKey: String =
+            switch unit {
+            case .hu:
+                "unit.huValue"
+            case .grams:
+                "unit.gramsValue"
+            case .germanStandardDrinks:
+                "unit.germanStandardDrinksValue"
+            case .ukUnits:
+                "unit.ukUnitsValue"
+            }
+
+        let format = AppLocalization.string(formatKey, locale: locale)
         return String(format: format, locale: locale, numberText)
     }
 

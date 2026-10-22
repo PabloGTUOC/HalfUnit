@@ -59,7 +59,7 @@ public struct GetStatsIntent: AppIntent {
 
     public func perform() async throws -> some IntentResult & ProvidesDialog & ReturnsValue<String> {
         let (_, dialogText) = try await MainActor.run {
-            let container = IntentStoreProvider.makeModelContainer()
+            let container = IntentStoreProvider.shared
             let service = LogService(
                 context: container.mainContext,
                 now: Date.init,

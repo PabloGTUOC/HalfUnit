@@ -4,8 +4,8 @@ import HalfUnitCore
 import SwiftData
 
 enum SharedStore {
-    static func makeModelContainer(bundle: Bundle = .main) -> ModelContainer {
-        IntentStoreProvider.makeModelContainer(bundle: bundle)
+    static var shared: ModelContainer {
+        IntentStoreProvider.shared
     }
 }
 

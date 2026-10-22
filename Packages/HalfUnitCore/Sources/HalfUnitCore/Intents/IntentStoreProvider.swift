@@ -8,7 +8,9 @@ public enum IntentStoreProvider {
         category: "IntentStoreProvider"
     )
 
-    public static func makeModelContainer(bundle: Bundle = .main) -> ModelContainer {
+    public static let shared: ModelContainer = makeModelContainer()
+
+    private static func makeModelContainer(bundle: Bundle = .main) -> ModelContainer {
         let appGroupIdentifier = bundle.object(forInfoDictionaryKey: "HalfUnitAppGroup") as? String
         let cloudKitContainer =
             bundle.object(forInfoDictionaryKey: "HalfUnitCloudKitContainer") as? String

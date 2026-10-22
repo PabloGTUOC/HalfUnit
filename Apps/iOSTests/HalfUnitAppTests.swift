@@ -14,6 +14,15 @@ struct HalfUnitAppTests {
     private static let tokyoTimeZone = TimeZone(identifier: "Asia/Tokyo")!
     private static let newYorkTimeZone = TimeZone(identifier: "America/New_York")!
 
+    @Test("SharedStore.shared and IntentStoreProvider.shared return the identical process-wide ModelContainer")
+    func sharedStoreProcessWideSingletonIdentity() {
+        let first = SharedStore.shared
+        let second = SharedStore.shared
+        let coreShared = IntentStoreProvider.shared
+        #expect(first === second)
+        #expect(first === coreShared)
+    }
+
     @Test("Preset keys map to catalog keys, localized names, and valid SF Symbols")
     func presetPresentationMappings() {
         let expectedCatalogKeys: [(String, String, String, String, String)] = [

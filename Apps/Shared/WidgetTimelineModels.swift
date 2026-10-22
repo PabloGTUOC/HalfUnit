@@ -9,7 +9,11 @@ struct WidgetPresetButtonModel: Identifiable, Equatable, Sendable {
     let huText: String
     let accessibilityLabel: String
 
-    init(entity: PresetEntity, locale: Locale = .current) {
+    init(
+        entity: PresetEntity,
+        displayUnit: DisplayUnit = .hu,
+        locale: Locale = .current
+    ) {
         self.id = entity.id
         self.entity = entity
         self.localizedName = PresetPresentation.localizedName(
@@ -21,7 +25,13 @@ struct WidgetPresetButtonModel: Identifiable, Equatable, Sendable {
             presetKey: entity.key,
             fallbackSymbol: entity.symbolName
         )
-        self.huText = PresetPresentation.formattedHU(entity.hu, locale: locale)
+        let grams = Units.grams(volumeMl: entity.volumeMl, abvPercent: entity.abvPercent)
+        self.huText = PresetPresentation.formattedDisplayValue(
+            grams: grams,
+            hu: entity.hu,
+            in: displayUnit,
+            locale: locale
+        )
         self.accessibilityLabel = PresetPresentation.accessibilityLabel(
             presetKey: entity.key,
             fallbackName: entity.name,
@@ -51,6 +61,8 @@ struct WidgetEntrySnapshot: Equatable, Sendable {
     init(
         summary: StreakSummary,
         todayTotalHU: Decimal,
+        todayTotalGrams: Decimal = Decimal(0),
+        displayUnit: DisplayUnit = .hu,
         presets: [PresetEntity],
         locale: Locale = .current
     ) {
@@ -59,7 +71,12 @@ struct WidgetEntrySnapshot: Equatable, Sendable {
         self.isDrinkingToday = drinkingToday
         self.todayTotalHU = todayTotalHU
         let formattedTodayHU = PresetPresentation.formattedHU(todayTotalHU, locale: locale)
-        self.todayTotalHUText = formattedTodayHU
+        self.todayTotalHUText = PresetPresentation.formattedDisplayValue(
+            grams: todayTotalGrams,
+            hu: todayTotalHU,
+            in: displayUnit,
+            locale: locale
+        )
         self.previousStreakDays = summary.previousStreakDays
 
         if let previousDays = summary.previousStreakDays, drinkingToday {
@@ -131,7 +148,7 @@ struct WidgetEntrySnapshot: Equatable, Sendable {
         self.presetButtons =
             effectivePresets
             .prefix(Self.maxMediumPresetButtons)
-            .map { WidgetPresetButtonModel(entity: $0, locale: locale) }
+            .map { WidgetPresetButtonModel(entity: $0, displayUnit: displayUnit, locale: locale) }
     }
 
     static func placeholder(locale: Locale = .current) -> WidgetEntrySnapshot {
@@ -227,14 +244,15 @@ struct WidgetTimelinePlan: Equatable, Sendable {
                 today: logicalDay
             )
             let streakSummary = engine.streaks()
-            let todayTotalHU =
-                snapshots
-                .filter { $0.deletedAt == nil && $0.logicalDay == logicalDay }
-                .reduce(Decimal(0)) { $0 + $1.hu }
+            let todaysDrinks = snapshots.filter { $0.deletedAt == nil && $0.logicalDay == logicalDay }
+            let todayTotalHU = todaysDrinks.reduce(Decimal(0)) { $0 + $1.hu }
+            let todayTotalGrams = todaysDrinks.reduce(Decimal(0)) { $0 + $1.grams }
 
             let snapshot = WidgetEntrySnapshot(
                 summary: streakSummary,
                 todayTotalHU: todayTotalHU,
+                todayTotalGrams: todayTotalGrams,
+                displayUnit: settings.displayUnit,
                 presets: presetEntities,
                 locale: locale
             )

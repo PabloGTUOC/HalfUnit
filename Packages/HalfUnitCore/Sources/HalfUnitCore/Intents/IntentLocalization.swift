@@ -113,8 +113,12 @@ public enum IntentLocalization {
         fallbackName: String,
         locale: Locale = .current
     ) -> String {
-        let effectiveKey =
-            presetKey ?? (catalogKeyByPresetKey[fallbackName] != nil ? fallbackName : nil)
+        let effectiveKey: String?
+        if let presetKey {
+            effectiveKey = (fallbackName == presetKey || fallbackName.isEmpty) ? presetKey : nil
+        } else {
+            effectiveKey = catalogKeyByPresetKey[fallbackName] != nil ? fallbackName : nil
+        }
         guard let effectiveKey, let catalogKey = catalogKeyByPresetKey[effectiveKey] else {
             return fallbackName
         }
@@ -122,10 +126,14 @@ public enum IntentLocalization {
     }
 
     public static func symbolName(presetKey: String?, fallbackSymbol: String) -> String {
+        let trimmed = fallbackSymbol.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !trimmed.isEmpty && trimmed != "questionmark" {
+            return trimmed
+        }
         if let presetKey, let mapped = symbolByPresetKey[presetKey] {
             return mapped
         }
-        return fallbackSymbol.isEmpty ? "wineglass" : fallbackSymbol
+        return trimmed.isEmpty ? "wineglass" : trimmed
     }
 
     public static func formattedHUNumber(_ hu: Decimal, locale: Locale = .current) -> String {

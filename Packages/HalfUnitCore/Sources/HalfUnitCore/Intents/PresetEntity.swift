@@ -102,7 +102,7 @@ public struct PresetEntityQuery: EntityQuery, EnumerableEntityQuery {
 
     public func entities(for identifiers: [PresetEntity.ID]) async throws -> [PresetEntity] {
         try await MainActor.run {
-            let container = IntentStoreProvider.makeModelContainer()
+            let container = IntentStoreProvider.shared
             let service = LogService(
                 context: container.mainContext,
                 now: Date.init,
@@ -118,7 +118,7 @@ public struct PresetEntityQuery: EntityQuery, EnumerableEntityQuery {
 
     public func allEntities() async throws -> [PresetEntity] {
         try await MainActor.run {
-            let container = IntentStoreProvider.makeModelContainer()
+            let container = IntentStoreProvider.shared
             let service = LogService(
                 context: container.mainContext,
                 now: Date.init,

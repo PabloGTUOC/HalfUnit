@@ -68,7 +68,7 @@ struct HalfUnitComplicationProvider: TimelineProvider {
 
     @MainActor
     private static func loadPlan(now: Date, timeZone: TimeZone) -> WidgetTimelinePlan {
-        let container = SharedStore.makeModelContainer()
+        let container = SharedStore.shared
         let service = LogService(
             context: container.mainContext,
             now: { now },

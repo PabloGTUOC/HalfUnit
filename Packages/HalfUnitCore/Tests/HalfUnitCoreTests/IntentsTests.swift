@@ -11,6 +11,13 @@ struct IntentsTests {
     private static let berlinTimeZone = TimeZone(identifier: "Europe/Berlin")!
     private static let tokyoTimeZone = TimeZone(identifier: "Asia/Tokyo")!
 
+    @Test("IntentStoreProvider.shared returns the identical process-wide ModelContainer instance across accesses")
+    func intentStoreProviderSingletonIdentity() {
+        let first = IntentStoreProvider.shared
+        let second = IntentStoreProvider.shared
+        #expect(first === second)
+    }
+
     @Test("PresetEntity and PresetEntityQuery map presets, resolve IDs, and localize in en and de")
     @MainActor
     func presetEntityQueryMapping() throws {

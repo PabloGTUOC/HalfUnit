@@ -13,7 +13,7 @@ struct HalfUnitWatchApp: App {
     private let watchSessionBridge: WatchSessionBridge
 
     init() {
-        let container = SharedStore.makeModelContainer()
+        let container = SharedStore.shared
         let service = LogService(
             context: container.mainContext,
             now: Date.init,

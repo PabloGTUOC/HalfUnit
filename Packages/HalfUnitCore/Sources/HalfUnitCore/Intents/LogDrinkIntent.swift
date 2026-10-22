@@ -86,7 +86,7 @@ public struct LogDrinkIntent: AppIntent {
         time: Date?,
         source: DrinkSource
     ) throws -> String {
-        let container = IntentStoreProvider.makeModelContainer()
+        let container = IntentStoreProvider.shared
         let service = LogService(
             context: container.mainContext,
             now: Date.init,
