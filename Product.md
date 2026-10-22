@@ -1,6 +1,7 @@
-# Half Unit – Product Specification
+# PRODUCT.md — Half Unit
 
-Oct 22, 2026 · @Pablo Torres
+Product specification. Source of truth for *what* to build. `AGENTS.md` defines *how*.
+Last updated: 22 Oct 2026 · Owner: Pablo Torres
 
 ## Overview
 
@@ -15,7 +16,7 @@ Half Unit is a native iPhone and Apple Watch app that logs each alcoholic drink 
 - Answer "how many days did I drink in the last 3 months / 12 months / 2 years?" instantly.
 - Keep official grams of alcohol in the background, so data stays comparable and exportable.
 
-**Success measures (personal use, first 3 months)**
+**Success measures (first 3 months)**
 
 - Median time to log a drink under 3 seconds.
 - At least 90% of drinking days logged on the same day.
@@ -33,7 +34,7 @@ The target user is an adult who drinks socially and wants honest awareness, not 
 
 ## Unit system
 
-The app uses the owner's simple scale in steps of 0.5 "HU" (Half Unit points), and stores grams of pure alcohol behind every entry. Conveniently, 0.5 HU is about 10 g, which is exactly one German standard drink.
+The app uses a simple scale in steps of 0.5 "HU" (Half Unit points), and stores grams of pure alcohol behind every entry. 0.5 HU is about 10 g, which is one German standard drink.
 
 **Why both.** Official units differ by country: Germany and the WHO use 10 g per standard drink, the UK uses 8 g (10 ml), the US 14 g, Austria 20 g. A personal scale is easier to tap; grams keep the data honest and comparable.
 
@@ -106,7 +107,7 @@ The watch app is a standalone logger: it works without the iPhone nearby and syn
 **Behaviour**
 
 - Tap = log + haptic + Undo for 5 seconds. Digital Crown scrolls; no confirmation dialogs.
-- Writes to the local store and to HealthKit on the watch directly, so the entry exists even if the phone is off.
+- Writes to the watch's local store immediately, so the entry exists even if the phone is off; the iPhone writes it to Apple Health once it syncs.
 - Shows only today's drinks and the streak; no charts.
 - Works offline; entries sync to the iPhone through the shared iCloud store.
 - Supports the Action button on Apple Watch Ultra and a Smart Stack widget (see Widgets).
@@ -142,7 +143,7 @@ Every drink is mirrored to Apple Health as an "Alcoholic Beverages" sample; the 
 
 **Write rules**
 
-- The device where the drink was logged writes it (watch or phone). Health syncs between the user's devices itself; the sync identifier prevents duplicates.
+- The iPhone app is the only Health writer, including for drinks logged on the watch once they sync. One writer means one Health source, so edits and deletes always find the original sample.
 - Edit = save a new sample with the same sync identifier and a higher sync version; Health replaces the old one.
 - Delete = delete the sample matched by sync identifier.
 - If permission is denied, the app works fully and shows a small "Not syncing to Health" note in Settings.
@@ -154,7 +155,7 @@ Every drink is mirrored to Apple Health as an "Alcoholic Beverages" sample; the 
 
 **Setup for the developer**
 
-- Enable the HealthKit capability on both the iOS and watchOS targets.
+- Enable the HealthKit capability on the iOS target (the watch target only if read features need it later).
 - Info.plist: `NSHealthUpdateUsageDescription` (write) and `NSHealthShareUsageDescription` (read), each with a one-line plain reason.
 - Check `HKHealthStore.isHealthDataAvailable()` first; use one shared `HKHealthStore`.
 - HealthKit never reveals whether read permission was denied, so the UI must not depend on it.
@@ -207,7 +208,7 @@ Three entities cover version 1; all statistics are computed from Drink rows, nev
 
 **Calculations**
 
-- Drinking day = a logicalDate with at least one non-deleted drink where hu > 0.
+- Drinking day = a logicalDate with at least one non-deleted drink.
 - Days without alcohol = today's logicalDate − most recent drinking day.
 - Period stats = rolling window ending today, e.g. 3 months = the last 91 logical days including today; 12 months = 365; 2 years = 730.
 - Longest streak = largest gap between consecutive drinking days (and from the first log date).
@@ -222,7 +223,7 @@ Three entities cover version 1; all statistics are computed from Drink rows, nev
 
 ## Privacy, tone and safety
 
-The app collects health data, so privacy and tone are product features, not legal footnotes.
+The app handles health data, so privacy and tone are product features, not legal footnotes.
 
 - No account, no server, no third-party SDKs, no tracking. App Store privacy label: "Data Not Collected".
 - Data lives on device and in the user's private iCloud; Health data follows Apple's rules and is never used for advertising.
@@ -236,9 +237,20 @@ The app collects health data, so privacy and tone are product features, not lega
 
 One Xcode project, 100% Swift and SwiftUI, with a shared core package so the iPhone app, Watch app, widgets and intents run the same logic.
 
-&#91;embedded content: app architecture · 3 surfaces, 1 shared core, 3 stores\]
-
-Every surface calls the shared core; the SwiftData store is the source of truth, iCloud keeps phone and watch in step, and Apple Health receives a copy of each drink.
+```
+ iPhone app            Apple Watch app        Widgets + App Intents
+ (Today/Insights/      (standalone logger)    (complications, Siri,
+  History)                                     controls)
+      │                       │                        │
+      └───────────────────────┼────────────────────────┘
+                              ▼
+        ┌──────────── HalfUnitCore (Swift package) ────────────┐
+        │  LogService      StatsEngine        HealthSync       │
+        └───────┬──────────────────────────────────┬───────────┘
+                ▼                                  ▼ (iPhone only)
+   SwiftData store (App Group) ◀──▶ iCloud      Apple Health
+   source of truth                  (CloudKit)  (Alcoholic Beverages)
+```
 
 | Area | Choice |
 | --- | --- |
@@ -246,11 +258,11 @@ Every surface calls the shared core; the SwiftData store is the source of truth,
 | UI | SwiftUI, Swift Charts for heatmap and bars |
 | Persistence | SwiftData in an App Group container |
 | Sync | CloudKit private database; WatchConnectivity for instant refresh |
-| Health | HealthKit (iOS and watchOS targets) |
+| Health | HealthKit (iOS target writes) |
 | Shortcuts and widgets | App Intents, WidgetKit, ControlWidget |
 | Targets | iOS app, watchOS app, widget extension (iOS + watchOS), shared Swift package `HalfUnitCore` |
 | Tests | Swift Testing for StatsEngine (day boundary, streaks, periods, time zones); UI tests for the 1-tap log |
-| Dependencies | None (Apple frameworks only) |
+| Dependencies | None at runtime (Apple frameworks only) |
 
 ## MVP scope and acceptance criteria
 
@@ -266,7 +278,7 @@ The MVP is F1–F4 on iPhone and Watch, Apple Health write, one complication and
 - [ ] Insights for 3 m / 12 m / 2 y show correct drinking-day counts against a seeded test dataset.
 - [ ] Editing a drink updates its Health sample without creating a duplicate; deleting removes it.
 - [ ] With Health permission denied, every feature except Health sync works.
-- [ ] Complication and widget show the correct streak after logging and after midnight / the day boundary.
+- [ ] Complication and widget show the correct streak after logging and after the day boundary.
 - [ ] CSV export opens correctly in Numbers and Excel.
 
 **App Store release (day 1)**
@@ -287,10 +299,10 @@ The MVP is F1–F4 on iPhone and Watch, Apple Health write, one complication and
 - Optional goals: "max X drinking days per week" or "dry month", with progress ring.
 - Read drinks from other apps via Health; import from CSV.
 - Monthly summary notification; year-in-review screen.
-- iPad layout and Mac (Catalyst or native) for Insights.
-- Localisation: English, German, Spanish, so the app need to be translated to all of them and user settings will drive the allocation of language. 
+- iPad layout and Mac for Insights.
+- Localisation: Spanish.
 
-## Open questions
+## Decisions and open questions
 
 **Decided on 22 Oct 2026**
 
@@ -299,7 +311,10 @@ The MVP is F1–F4 on iPhone and Watch, Apple Health write, one complication and
 - Non-alcoholic drinks: not logged.
 - Day boundary: 07:00.
 - Distribution: public and free on the App Store from day 1.
+- Stack: all native Swift (no Flutter / cross-platform).
+- The iPhone app is the only writer to Apple Health.
 
 **Still open**
 
 - [ ] Final check that "Half Unit" is free on the App Store and as a domain for the privacy page.
+- [ ] Launch languages beyond English and German (Spanish?).
