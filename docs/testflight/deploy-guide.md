@@ -49,6 +49,16 @@ Repeat this only when a future version changes the data model (the lead will tel
 2. Choose **TestFlight Internal Only** → **Distribute**. Keep the default options (automatic signing).
 3. Wait for "Upload successful".
 
+### Alternative to steps 4–5: Xcode Cloud
+
+Xcode Cloud builds from GitHub instead of this Mac. `ci_scripts/ci_post_clone.sh` generates the Xcode project after cloning.
+
+1. App Store Connect → Half Unit → **Xcode Cloud** → **Manage Workflows** → workflow **Default** → **Edit Workflow**.
+2. **Environment** → Environment Variables → add `HALFUNIT_TEAM_ID` = `63CZCUTA77`.
+3. **Actions**: remove "Build" if present; add **Archive – iOS**, scheme **HalfUnit**, Deployment Preparation **TestFlight (Internal Testing Only)**.
+4. **Post-Actions** → **TestFlight Internal Testing** → choose your tester group.
+5. Save, then **Start Build** on branch `main`.
+
 ## 6. Wait for processing
 
 You get an email from App Store Connect when the build is processed (usually 10–30 minutes).
