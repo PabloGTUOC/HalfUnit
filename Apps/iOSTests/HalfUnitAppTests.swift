@@ -505,6 +505,121 @@ struct HalfUnitAppTests {
         )
         return calendar.date(from: components)!
     }
+
+    @Test("Onboarding gating respects first run, completed state, and skips when store already has drinks")
+    @MainActor
+    func onboardingGatingFirstRunCompletedAndStoreAlreadyHasDrinks() throws {
+        let container = try ModelContainerFactory.make(inMemory: true)
+        let t0 = Self.makeDate(2026, 10, 23, 10, 0, in: Self.berlinTimeZone)
+        let service = LogService(
+            context: container.mainContext,
+            now: { t0 },
+            timeZone: { Self.berlinTimeZone }
+        )
+        try service.seedDefaultPresetsIfNeeded()
+
+        let suiteName = "test-onboarding-\(UUID().uuidString)"
+        let testDefaults = try #require(UserDefaults(suiteName: suiteName))
+        defer {
+            testDefaults.removePersistentDomain(forName: suiteName)
+        }
+
+        // 1. First run, no drinks in store, not completed in defaults -> should show onboarding
+        #expect(!OnboardingPreferences.isCompleted(in: testDefaults))
+        #expect(OnboardingGating.shouldShowOnboarding(logService: service, defaults: testDefaults))
+
+        // 2. User completes onboarding -> should not show
+        OnboardingPreferences.setCompleted(true, in: testDefaults)
+        #expect(OnboardingPreferences.isCompleted(in: testDefaults))
+        #expect(!OnboardingGating.shouldShowOnboarding(logService: service, defaults: testDefaults))
+
+        // 3. Reset defaults to simulate fresh install / restored device where store has drinks
+        OnboardingPreferences.reset(in: testDefaults)
+        #expect(!OnboardingPreferences.isCompleted(in: testDefaults))
+
+        let presets = try service.presets()
+        let beer = try #require(presets.first(where: { $0.key == "beer" }))
+        _ = try service.log(preset: beer, at: t0, source: .phone)
+
+        // Store already has drinks -> should skip onboarding and mark completed
+        let shouldShow = OnboardingGating.shouldShowOnboarding(logService: service, defaults: testDefaults)
+        #expect(!shouldShow)
+        #expect(OnboardingPreferences.isCompleted(in: testDefaults))
+    }
+
+    @Test(
+        "Log earlier offsets correctly compute timestamps and cross 07:00 boundary backwards into previous logical day"
+    )
+    @MainActor
+    func logEarlierOffsetsAndBoundaryCrossing() async throws {
+        let container = try ModelContainerFactory.make(inMemory: true)
+        let t0720 = Self.makeDate(2026, 10, 23, 7, 20, in: Self.berlinTimeZone)
+        let clock = LockIsolated(t0720)
+        let service = LogService(
+            context: container.mainContext,
+            now: { clock.value },
+            timeZone: { Self.berlinTimeZone }
+        )
+        try service.seedDefaultPresetsIfNeeded()
+        let presets = try service.presets()
+        let beer = try #require(presets.first(where: { $0.key == "beer" }))
+
+        let client = InMemoryHealthStoreClient()
+        let healthSync = HealthSync(
+            context: container.mainContext,
+            client: client,
+            isEnabled: { true }
+        )
+
+        // 1. Offset duration seconds
+        #expect(EarlierOffset.minutes15.seconds == 900)
+        #expect(EarlierOffset.minutes30.seconds == 1800)
+        #expect(EarlierOffset.hours1.seconds == 3600)
+        #expect(EarlierOffset.hours2.seconds == 7200)
+        #expect(EarlierOffset.hours3.seconds == 10_800)
+
+        // 2. Localized titles
+        #expect(EarlierOffset.minutes15.localizedTitle(locale: Self.englishLocale) == "15 min ago")
+        #expect(EarlierOffset.minutes15.localizedTitle(locale: Self.germanLocale) == "vor 15 Min.")
+        #expect(EarlierOffset.hours2.localizedTitle(locale: Self.englishLocale) == "2 h ago")
+        #expect(EarlierOffset.hours2.localizedTitle(locale: Self.germanLocale) == "vor 2 Std.")
+
+        // 3. Backward crossing of 07:00 boundary:
+        // Base time: 2026-10-23 07:20 Berlin (logical day 2026-10-23)
+        // Offset 30 min ago -> 2026-10-23 06:50 Berlin (logical day 2026-10-22!)
+        let earlierTime = EarlierOffset.minutes30.targetTimestamp(from: t0720)
+        #expect(earlierTime == Self.makeDate(2026, 10, 23, 6, 50, in: Self.berlinTimeZone))
+
+        let (drink, reconcileTask) = try TodayView.logAndReconcile(
+            preset: beer,
+            at: earlierTime,
+            logService: service,
+            healthSync: healthSync
+        )
+        _ = await reconcileTask.value
+
+        #expect(drink.timestamp == earlierTime)
+        #expect(drink.logicalDay == LogicalDay(year: 2026, month: 10, day: 22))
+        #expect(drink.source == .phone)
+
+        // Apple Health sample must have been written with earlier timestamp
+        #expect(client.savedSamples.count == 1)
+        let sample = try #require(client.savedSamples.first)
+        #expect(sample.syncIdentifier == drink.id.uuidString)
+        #expect(sample.date == earlierTime)
+
+        // Undo drink removes it from Health
+        let undoTask = try TodayView.undoAndReconcile(
+            drink: drink,
+            logService: service,
+            healthSync: healthSync
+        )
+        _ = await undoTask.value
+
+        #expect(client.deletedIdentifiers.contains(drink.id.uuidString))
+        let remainingDrinks = try service.drinks(includeDeleted: false)
+        #expect(remainingDrinks.isEmpty)
+    }
 }
 
 private final class LockIsolated<Value: Sendable>: @unchecked Sendable {

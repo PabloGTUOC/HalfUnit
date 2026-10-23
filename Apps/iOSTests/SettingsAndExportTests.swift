@@ -442,6 +442,53 @@ struct SettingsAndExportTests {
                 == "Your data stays on your devices and in your iCloud."
         )
     }
+
+    @Test(
+        "CSV export from Settings uses PresetPresentation to localize names in en and de and escapes formula injection"
+    )
+    @MainActor
+    func csvExportLocalizedNamesAndFormulaInjection() throws {
+        let container = try ModelContainerFactory.make(inMemory: true)
+        let t0 = Self.makeDate(2026, 10, 22, 19, 0)
+        let service = LogService(
+            context: container.mainContext,
+            now: { t0 },
+            timeZone: { Self.berlinTimeZone }
+        )
+        try service.seedDefaultPresetsIfNeeded()
+        let presets = try service.presets()
+        let wine = try #require(presets.first(where: { $0.key == "wineGlass" }))
+
+        _ = try service.log(preset: wine, at: t0, source: .phone)
+
+        // Custom drink with formula injection characters in name and note
+        let t1 = Self.makeDate(2026, 10, 22, 19, 30)
+        let formulaDrink = try service.logCustom(
+            name: "=SUM(1,2)",
+            hu: Decimal(1),
+            volumeMl: 500,
+            abvPercent: Decimal(5),
+            at: t1,
+            source: .phone
+        )
+        try service.edit(formulaDrink, DrinkEdit(note: .set("+DangerousFormula")))
+
+        // English export
+        let enData = try CSVExporter.exportData(from: service) { presetKey, storedName in
+            PresetPresentation.localizedName(presetKey: presetKey, fallbackName: storedName, locale: Self.englishLocale)
+        }
+        let enString = String(decoding: enData, as: UTF8.self)
+        #expect(enString.contains(",Wine glass,wineGlass,1,19.2,1.92,"))
+        #expect(enString.contains("\"'=SUM(1,2)\",,1,20,2,500,5,'+DangerousFormula,phone"))
+
+        // German export
+        let deData = try CSVExporter.exportData(from: service) { presetKey, storedName in
+            PresetPresentation.localizedName(presetKey: presetKey, fallbackName: storedName, locale: Self.germanLocale)
+        }
+        let deString = String(decoding: deData, as: UTF8.self)
+        #expect(deString.contains(",Glas Wein,wineGlass,1,19.2,1.92,"))
+        #expect(deString.contains("\"'=SUM(1,2)\",,1,20,2,500,5,'+DangerousFormula,phone"))
+    }
 }
 
 private final class LockSettingsValue<Value: Sendable>: @unchecked Sendable {

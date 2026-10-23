@@ -38,6 +38,8 @@ struct TodayView: View {
     @State private var undoBanner: UndoBannerState?
     @State private var logHapticTrigger = 0
     @State private var isShowingSettings = false
+    @State private var presetForCustomLog: Preset?
+    @State private var isShowingCustomDatePicker = false
     @State private var dayBoundaryHour = LogicalDay.defaultBoundaryHour
     @State private var boundaryScheduleRevision = 0
     @State private var externalChangeReloadTask: Task<Void, Never>?
@@ -84,6 +86,26 @@ struct TodayView: View {
                     logService: logService,
                     healthSync: healthSync
                 )
+            }
+            .sheet(isPresented: $isShowingCustomDatePicker) {
+                if let preset = presetForCustomLog {
+                    LogEarlierDatePickerSheet(
+                        preset: preset,
+                        now: dayBoundaryScheduler.now,
+                        timeZone: dayBoundaryScheduler.timeZone,
+                        locale: locale,
+                        onLog: { timestamp in
+                            logPresetAt(preset, at: timestamp)
+                            isShowingCustomDatePicker = false
+                        },
+                        onDismiss: {
+                            isShowingCustomDatePicker = false
+                        }
+                    )
+                }
+            }
+            .onAppear {
+                reloadState()
             }
             .safeAreaInset(edge: .bottom) {
                 if let banner = undoBanner {
@@ -232,6 +254,23 @@ struct TodayView: View {
                     .accessibilityLabel(
                         Text(PresetPresentation.accessibilityLabel(for: preset, locale: locale))
                     )
+                    .contextMenu {
+                        Menu {
+                            ForEach(EarlierOffset.allCases) { offset in
+                                Button(offset.localizedTitle(locale: locale)) {
+                                    logPresetEarlier(preset, offset: offset)
+                                }
+                            }
+                            Button {
+                                presetForCustomLog = preset
+                                isShowingCustomDatePicker = true
+                            } label: {
+                                Label("today.logEarlier.chooseDateTime", systemImage: "calendar")
+                            }
+                        } label: {
+                            Label("today.logEarlier.menuTitle", systemImage: "clock.arrow.circlepath")
+                        }
+                    }
                 }
             }
         }
@@ -364,9 +403,19 @@ struct TodayView: View {
     }
 
     private func logPreset(_ preset: Preset) {
+        logPresetAt(preset, at: nil)
+    }
+
+    private func logPresetEarlier(_ preset: Preset, offset: EarlierOffset) {
+        let targetTimestamp = offset.targetTimestamp(from: dayBoundaryScheduler.now())
+        logPresetAt(preset, at: targetTimestamp)
+    }
+
+    private func logPresetAt(_ preset: Preset, at timestamp: Date?) {
         do {
             let (drink, _) = try Self.logAndReconcile(
                 preset: preset,
+                at: timestamp,
                 logService: logService,
                 healthSync: healthSync
             )
@@ -403,10 +452,11 @@ struct TodayView: View {
     @discardableResult
     static func logAndReconcile(
         preset: Preset,
+        at timestamp: Date? = nil,
         logService: LogService,
         healthSync: HealthSync
     ) throws -> (drink: Drink, reconcileTask: Task<HealthSync.Status, Never>) {
-        let drink = try logService.log(preset: preset, source: .phone)
+        let drink = try logService.log(preset: preset, at: timestamp, source: .phone)
         WidgetCenter.shared.reloadAllTimelines()
         let task = Task { @MainActor in
             await HalfUnitApp.reconcileHealth(healthSync: healthSync)
@@ -427,6 +477,98 @@ struct TodayView: View {
         return Task { @MainActor in
             await HalfUnitApp.reconcileHealth(healthSync: healthSync)
             return healthSync.lastStatus
+        }
+    }
+}
+
+struct LogEarlierDatePickerSheet: View {
+    let preset: Preset
+    let now: () -> Date
+    let timeZone: () -> TimeZone
+    let locale: Locale
+    let onLog: (Date) -> Void
+    let onDismiss: () -> Void
+
+    @State private var selectedDate: Date
+
+    init(
+        preset: Preset,
+        now: @escaping () -> Date,
+        timeZone: @escaping () -> TimeZone,
+        locale: Locale,
+        onLog: @escaping (Date) -> Void,
+        onDismiss: @escaping () -> Void
+    ) {
+        self.preset = preset
+        self.now = now
+        self.timeZone = timeZone
+        self.locale = locale
+        self.onLog = onLog
+        self.onDismiss = onDismiss
+        _selectedDate = State(initialValue: now())
+    }
+
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 20) {
+                HStack(spacing: 12) {
+                    Image(systemName: PresetPresentation.symbolName(for: preset))
+                        .font(.title2)
+                        .foregroundStyle(Color.teal)
+                        .frame(width: 32, alignment: .center)
+
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(PresetPresentation.localizedName(for: preset, locale: locale))
+                            .font(.headline)
+                            .foregroundStyle(.primary)
+
+                        Text(PresetPresentation.formattedHU(preset.hu, locale: locale))
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+
+                    Spacer()
+                }
+                .padding()
+                .background(
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .fill(Color(.secondarySystemGroupedBackground))
+                )
+
+                DatePicker(
+                    "today.logEarlier.datePrompt",
+                    selection: $selectedDate,
+                    in: ...now(),
+                    displayedComponents: [.date, .hourAndMinute]
+                )
+                .datePickerStyle(.graphical)
+                .environment(\.timeZone, timeZone())
+                .environment(\.locale, locale)
+                .padding()
+                .background(
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        .fill(Color(.secondarySystemGroupedBackground))
+                )
+
+                Spacer()
+            }
+            .padding()
+            .navigationTitle("today.logEarlier.sheetTitle")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("today.logEarlier.cancel") {
+                        onDismiss()
+                    }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("today.logEarlier.logAction") {
+                        let validatedDate = min(selectedDate, now())
+                        onLog(validatedDate)
+                    }
+                    .font(.headline)
+                }
+            }
         }
     }
 }
