@@ -9,7 +9,7 @@ struct AppLockView: View {
 
     var body: some View {
         ZStack {
-            Color(uiColor: .systemBackground)
+            BrandColors.appBackground
                 .ignoresSafeArea()
 
             VStack(spacing: 24) {

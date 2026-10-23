@@ -33,6 +33,8 @@ struct TodayView: View {
     @Environment(\.locale) private var locale
     @Environment(\.scenePhase) private var scenePhase
 
+    @ScaledMetric(relativeTo: .title2) private var symbolFrame: CGFloat = 36
+
     @State private var presets: [Preset] = []
     @State private var screenSnapshot: TodayScreenSnapshot?
     @State private var undoBanner: UndoBannerState?
@@ -77,10 +79,12 @@ struct TodayView: View {
                         isShowingSettings = true
                     } label: {
                         Image(systemName: "gearshape")
+                            .foregroundStyle(BrandColors.accent)
                     }
                     .accessibilityLabel(Text("settings.open.accessibility"))
                 }
             }
+            .background(BrandColors.appBackground.ignoresSafeArea())
             .sheet(isPresented: $isShowingSettings) {
                 SettingsView(
                     logService: logService,
@@ -224,7 +228,7 @@ struct TodayView: View {
                             PresetPresentation.image(for: PresetPresentation.symbolName(for: preset))
                                 .font(.title2)
                                 .foregroundStyle(BrandColors.accent)
-                                .frame(width: 32, alignment: .center)
+                                .frame(width: symbolFrame, height: symbolFrame, alignment: .center)
 
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(PresetPresentation.localizedName(for: preset, locale: locale))
@@ -243,7 +247,7 @@ struct TodayView: View {
                         .frame(maxWidth: .infinity, minHeight: 68, alignment: .leading)
                         .background(
                             RoundedRectangle(cornerRadius: 14, style: .continuous)
-                                .fill(BrandColors.presetTileBackground)
+                                .fill(BrandColors.cardBackground)
                         )
                         .overlay(
                             RoundedRectangle(cornerRadius: 14, style: .continuous)
@@ -316,7 +320,7 @@ struct TodayView: View {
                         .padding(12)
                         .background(
                             RoundedRectangle(cornerRadius: 12, style: .continuous)
-                                .fill(Color(.secondarySystemGroupedBackground))
+                                .fill(BrandColors.cardBackground)
                         )
                         .accessibilityElement(children: .combine)
                     }
@@ -532,7 +536,7 @@ struct LogEarlierDatePickerSheet: View {
                 .padding()
                 .background(
                     RoundedRectangle(cornerRadius: 14, style: .continuous)
-                        .fill(BrandColors.presetTileBackground)
+                        .fill(BrandColors.cardBackground)
                 )
 
                 DatePicker(

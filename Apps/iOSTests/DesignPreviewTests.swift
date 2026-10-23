@@ -33,6 +33,14 @@ struct DesignPreviewTests {
         ("BrandFill", BrandColors.brandFill, BrandColors.brandFillHex.light, BrandColors.brandFillHex.dark),
         ("BrandInk", BrandColors.brandInk, BrandColors.brandInkHex.light, BrandColors.brandInkHex.dark),
         (
+            "AppBackground", BrandColors.appBackground,
+            BrandColors.appBackgroundHex.light, BrandColors.appBackgroundHex.dark
+        ),
+        (
+            "CardBackground", BrandColors.cardBackground,
+            BrandColors.cardBackgroundHex.light, BrandColors.cardBackgroundHex.dark
+        ),
+        (
             "StreakCardBackground", BrandColors.streakCardBackground,
             BrandColors.streakCardBackgroundHex.light, BrandColors.streakCardBackgroundHex.dark
         ),
@@ -50,10 +58,6 @@ struct DesignPreviewTests {
         ),
         ("ChartLow", BrandColors.chartLow, BrandColors.chartLowHex.light, BrandColors.chartLowHex.dark),
         ("ChartHigh", BrandColors.chartHigh, BrandColors.chartHighHex.light, BrandColors.chartHighHex.dark),
-        (
-            "PresetTileBackground", BrandColors.presetTileBackground,
-            BrandColors.presetTileBackgroundHex.light, BrandColors.presetTileBackgroundHex.dark
-        ),
     ]
 
     @Test("Render design preview sheet to $(SRCROOT)/.build/design-preview.png")
@@ -154,10 +158,67 @@ struct DesignPreviewTests {
 
                             Text(item.label)
                                 .font(.system(size: 9, weight: item.isSystem ? .bold : .medium))
-                                .foregroundStyle(item.isSystem ? Color(hex: BrandColors.slateHex) : .secondary)
+                                .foregroundStyle(
+                                    item.isSystem ? Color(hex: BrandColors.slateHex) : .secondary)
                         }
                         .frame(maxWidth: .infinity)
                     }
+                }
+            }
+            .padding(20)
+            .background(Color.white)
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.black.opacity(0.08), lineWidth: 1))
+
+            // Mock Preset Tiles on AppBackground (Light & Dark)
+            VStack(alignment: .leading, spacing: 14) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Preset Tile Mock on Faded Burnt Sienna Backgrounds")
+                        .font(.system(size: 18, weight: .bold))
+                        .foregroundStyle(BrandColors.brandInk)
+                    Text(
+                        "Preset tile (CardBackground, icon @ 36pt frame + 'Beer · 1 HU') resting on AppBackground in light (#F9F1ED) and dark (#221814)"
+                    )
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundStyle(.secondary)
+                }
+
+                HStack(spacing: 20) {
+                    // Light mode mock
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Light Appearance (AppBackground #F9F1ED)")
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundStyle(Color(hex: BrandColors.slateHex))
+
+                        mockPresetTile(isDark: false)
+                            .padding(16)
+                            .background(BrandColors.appBackground)
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 12).stroke(
+                                    Color.black.opacity(0.06), lineWidth: 1)
+                            )
+                            .environment(\.colorScheme, .light)
+                    }
+                    .frame(maxWidth: .infinity)
+
+                    // Dark mode mock
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Dark Appearance (AppBackground #221814)")
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundStyle(Color(hex: BrandColors.turquoiseGreenHex))
+
+                        mockPresetTile(isDark: true)
+                            .padding(16)
+                            .background(BrandColors.appBackground)
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 12).stroke(
+                                    Color.white.opacity(0.10), lineWidth: 1)
+                            )
+                            .environment(\.colorScheme, .dark)
+                    }
+                    .frame(maxWidth: .infinity)
                 }
             }
             .padding(20)
@@ -250,6 +311,38 @@ struct DesignPreviewTests {
             .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.black.opacity(0.08), lineWidth: 1))
         }
         .padding(24)
+    }
+
+    @MainActor
+    private func mockPresetTile(isDark: Bool) -> some View {
+        HStack(spacing: 12) {
+            PresetPresentation.image(for: "halfunit.beer.mug")
+                .font(.title2)
+                .foregroundStyle(BrandColors.accent)
+                .frame(width: 36, height: 36, alignment: .center)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Beer")
+                    .font(.body.weight(.semibold))
+                    .foregroundStyle(isDark ? Color.white : Color(hex: BrandColors.slateHex))
+
+                Text("1 HU")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+
+            Spacer()
+        }
+        .padding(14)
+        .frame(maxWidth: .infinity, minHeight: 68, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .fill(BrandColors.cardBackground)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .strokeBorder(Color.primary.opacity(0.08), lineWidth: 1)
+        )
     }
 
     @MainActor

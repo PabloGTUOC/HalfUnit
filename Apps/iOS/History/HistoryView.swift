@@ -61,6 +61,7 @@ struct HistoryView: View {
                                             }
                                             .accessibilityLabel(Text(item.deleteAccessibilityLabel))
                                         }
+                                        .listRowBackground(BrandColors.cardBackground)
                                     }
                                 } header: {
                                     HStack {
@@ -72,12 +73,15 @@ struct HistoryView: View {
                             }
                         }
                         .listStyle(.insetGrouped)
+                        .scrollContentBackground(.hidden)
+                        .background(BrandColors.appBackground.ignoresSafeArea())
                     }
                 } else {
                     ProgressView()
                 }
             }
             .navigationTitle("tab.history")
+            .background(BrandColors.appBackground.ignoresSafeArea())
             .searchable(
                 text: $searchQuery,
                 prompt: Text("history.search.prompt")

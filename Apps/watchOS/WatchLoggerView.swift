@@ -24,6 +24,8 @@ struct WatchLoggerView: View {
     @Environment(\.locale) private var locale
     @Environment(\.scenePhase) private var scenePhase
 
+    @ScaledMetric(relativeTo: .title3) private var symbolFrame: CGFloat = 28
+
     @State private var presets: [Preset] = []
     @State private var snapshot: WatchLoggerSnapshot?
     @State private var undoBanner: UndoBannerState?
@@ -181,6 +183,7 @@ struct WatchLoggerView: View {
                         PresetPresentation.image(for: PresetPresentation.symbolName(for: preset))
                             .font(.title3)
                             .foregroundStyle(BrandColors.accent)
+                            .frame(width: symbolFrame, height: symbolFrame, alignment: .center)
 
                         Text(PresetPresentation.formattedHU(preset.hu, locale: locale))
                             .font(.footnote.weight(.bold))

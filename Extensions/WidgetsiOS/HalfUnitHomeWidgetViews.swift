@@ -25,7 +25,7 @@ struct HalfUnitHomeWidgetEntryView: View {
             }
         }
         .containerBackground(for: .widget) {
-            Color(.systemBackground)
+            BrandColors.appBackground
         }
     }
 }
@@ -153,10 +153,10 @@ private struct MediumHomeWidgetView: View {
                     Button(intent: WidgetLogDrinkIntent(preset: button.entity)) {
                         HStack(spacing: 6) {
                             PresetPresentation.image(for: button.symbolName)
-                                .font(.caption.weight(.semibold))
+                                .font(.subheadline.weight(.semibold))
                                 .foregroundStyle(accentColor)
                                 .widgetAccentable()
-                                .frame(width: 16, alignment: .center)
+                                .frame(width: 22, height: 22, alignment: .center)
 
                             Text(button.localizedName)
                                 .font(.caption.weight(.semibold))
@@ -176,7 +176,7 @@ private struct MediumHomeWidgetView: View {
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .background(
                             RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                .fill(accentColor.opacity(0.12))
+                                .fill(BrandColors.cardBackground)
                         )
                     }
                     .buttonStyle(.plain)

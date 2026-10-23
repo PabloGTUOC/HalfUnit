@@ -9,6 +9,11 @@ public enum BrandColors {
     public static let turquoiseGreenHex = "#B5DECC"
     public static let whiteHex = "#FFFFFF"
     public static let darkBackgroundHex = "#1C1C1E"
+    public static let appBackgroundLightHex = "#F9F1ED"
+    public static let appBackgroundDarkHex = "#221814"
+    public static let cardBackgroundLightHex = "#FDFAF9"
+    public static let cardBackgroundDarkHex = "#2B211F"
+    public static let secondaryGreyHex = "#6E6E73"
 
     // MARK: - Color Tokens (Asset Catalog)
     public static let accent = Color("AccentColor")
@@ -20,12 +25,8 @@ public enum BrandColors {
     public static let highlightText = Color("HighlightText")
     public static let chartLow = Color("ChartLow")
     public static let chartHigh = Color("ChartHigh")
-
-    #if canImport(UIKit) && !os(watchOS)
-        public static let presetTileBackground = Color(uiColor: .secondarySystemGroupedBackground)
-    #else
-        public static let presetTileBackground = Color("PresetTileBackground")
-    #endif
+    public static let appBackground = Color("AppBackground")
+    public static let cardBackground = Color("CardBackground")
 
     // MARK: - Appearance Hex Specifications
     public struct AppearanceHex: Sendable {
@@ -47,7 +48,8 @@ public enum BrandColors {
     public static let highlightTextHex = AppearanceHex(light: slateHex, dark: pinkishCinnamonHex)
     public static let chartLowHex = AppearanceHex(light: pinkishCinnamonHex, dark: burntSiennaHex)
     public static let chartHighHex = AppearanceHex(light: burntSiennaHex, dark: pinkishCinnamonHex)
-    public static let presetTileBackgroundHex = AppearanceHex(light: whiteHex, dark: darkBackgroundHex)
+    public static let appBackgroundHex = AppearanceHex(light: appBackgroundLightHex, dark: appBackgroundDarkHex)
+    public static let cardBackgroundHex = AppearanceHex(light: cardBackgroundLightHex, dark: cardBackgroundDarkHex)
 
     // MARK: - WCAG Contrast Calculations
     public static func relativeLuminance(hex: String) -> Double {

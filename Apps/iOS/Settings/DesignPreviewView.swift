@@ -26,13 +26,14 @@ import SwiftUI
             ("AccentColor", BrandColors.accent, BrandColors.accentHex),
             ("BrandFill", BrandColors.brandFill, BrandColors.brandFillHex),
             ("BrandInk", BrandColors.brandInk, BrandColors.brandInkHex),
+            ("AppBackground", BrandColors.appBackground, BrandColors.appBackgroundHex),
+            ("CardBackground", BrandColors.cardBackground, BrandColors.cardBackgroundHex),
             ("StreakCardBackground", BrandColors.streakCardBackground, BrandColors.streakCardBackgroundHex),
             ("StreakCardText", BrandColors.streakCardText, BrandColors.streakCardTextHex),
             ("HighlightBackground", BrandColors.highlightBackground, BrandColors.highlightBackgroundHex),
             ("HighlightText", BrandColors.highlightText, BrandColors.highlightTextHex),
             ("ChartLow", BrandColors.chartLow, BrandColors.chartLowHex),
             ("ChartHigh", BrandColors.chartHigh, BrandColors.chartHighHex),
-            ("PresetTileBackground", BrandColors.presetTileBackground, BrandColors.presetTileBackgroundHex),
         ]
 
         public init() {}
@@ -44,6 +45,12 @@ import SwiftUI
 
                     // Baseline Alignment Row with "Aa" at body size + Apple comparison
                     baselineAlignmentSection
+                        .padding()
+                        .background(Color(uiColor: .secondarySystemGroupedBackground))
+                        .clipShape(RoundedRectangle(cornerRadius: 16))
+
+                    // Mock Preset Tile on AppBackground (Light & Dark)
+                    mockPresetTileSection
                         .padding()
                         .background(Color(uiColor: .secondarySystemGroupedBackground))
                         .clipShape(RoundedRectangle(cornerRadius: 16))
@@ -122,6 +129,75 @@ import SwiftUI
                     }
                 }
             }
+        }
+
+        private var mockPresetTileSection: some View {
+            VStack(alignment: .leading, spacing: 14) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Preset Tile Mock on Faded Burnt Sienna Backgrounds")
+                        .font(.headline)
+                        .foregroundStyle(BrandColors.brandInk)
+                    Text("Preset tile (CardBackground, icon @ 36pt frame + 'Beer · 1 HU') on AppBackground")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+
+                HStack(spacing: 16) {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("Light (#F9F1ED)")
+                            .font(.caption2.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                        mockPresetTile(isDark: false)
+                            .padding(12)
+                            .background(BrandColors.appBackground)
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                            .environment(\.colorScheme, .light)
+                    }
+                    .frame(maxWidth: .infinity)
+
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("Dark (#221814)")
+                            .font(.caption2.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                        mockPresetTile(isDark: true)
+                            .padding(12)
+                            .background(BrandColors.appBackground)
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                            .environment(\.colorScheme, .dark)
+                    }
+                    .frame(maxWidth: .infinity)
+                }
+            }
+        }
+
+        private func mockPresetTile(isDark: Bool) -> some View {
+            HStack(spacing: 12) {
+                PresetPresentation.image(for: "halfunit.beer.mug")
+                    .font(.title2)
+                    .foregroundStyle(BrandColors.accent)
+                    .frame(width: 36, height: 36, alignment: .center)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Beer")
+                        .font(.body.weight(.semibold))
+                        .foregroundStyle(isDark ? Color.white : BrandColors.brandInk)
+
+                    Text("1 HU")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+
+                Spacer()
+            }
+            .padding(14)
+            .background(
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .fill(BrandColors.cardBackground)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .strokeBorder(Color.primary.opacity(0.08), lineWidth: 1)
+            )
         }
 
         private func appearanceSection(isDark: Bool) -> some View {

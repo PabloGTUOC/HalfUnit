@@ -31,6 +31,7 @@ struct OnboardingView: View {
                 }
                 .tabViewStyle(.page(indexDisplayMode: .always))
             }
+            .background(BrandColors.appBackground.ignoresSafeArea())
             .navigationBarTitleDisplayMode(.inline)
             .task {
                 reloadPresets()
@@ -71,7 +72,7 @@ struct OnboardingView: View {
                 .padding()
                 .background(
                     RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .fill(BrandColors.presetTileBackground)
+                        .fill(BrandColors.cardBackground)
                 )
 
                 Spacer(minLength: 24)
@@ -155,7 +156,7 @@ struct OnboardingView: View {
                             .frame(maxWidth: .infinity, minHeight: 56, alignment: .leading)
                             .background(
                                 RoundedRectangle(cornerRadius: 14, style: .continuous)
-                                    .fill(BrandColors.presetTileBackground)
+                                    .fill(BrandColors.cardBackground)
                             )
                             .overlay(
                                 RoundedRectangle(cornerRadius: 14, style: .continuous)
@@ -250,7 +251,7 @@ struct OnboardingView: View {
                 .padding()
                 .background(
                     RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .fill(BrandColors.presetTileBackground)
+                        .fill(BrandColors.cardBackground)
                 )
 
                 Spacer(minLength: 24)

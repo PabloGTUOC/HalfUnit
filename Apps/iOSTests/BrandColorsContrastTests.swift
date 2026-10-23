@@ -22,7 +22,7 @@ struct BrandColorsContrastTests {
         let description: String
     }
 
-    /// Verifies Sanzo Wada #263 palette exact hex values.
+    /// Verifies Sanzo Wada #263 palette exact hex values and faded Burnt Sienna backgrounds.
     @Test("Sanzo Wada 263 palette raw hex codes match specification")
     func paletteHexCodesMatchSpecification() {
         #expect(BrandColors.slateHex == "#34454C")
@@ -31,6 +31,11 @@ struct BrandColorsContrastTests {
         #expect(BrandColors.turquoiseGreenHex == "#B5DECC")
         #expect(BrandColors.whiteHex == "#FFFFFF")
         #expect(BrandColors.darkBackgroundHex == "#1C1C1E")
+        #expect(BrandColors.appBackgroundLightHex == "#F9F1ED")
+        #expect(BrandColors.appBackgroundDarkHex == "#221814")
+        #expect(BrandColors.cardBackgroundLightHex == "#FDFAF9")
+        #expect(BrandColors.cardBackgroundDarkHex == "#2B211F")
+        #expect(BrandColors.secondaryGreyHex == "#6E6E73")
     }
 
     /// Tests relative luminance calculations for known reference values (black, white, mid-tones).
@@ -141,40 +146,62 @@ struct BrandColorsContrastTests {
                 description: "Pinkish Cinnamon (#EEB480) interactive elements on dark background"
             ),
 
-            // 6. AccentColor on Secondary Grouped Backgrounds (tiles / cards)
+            // 6. Faded Burnt Sienna Backgrounds (Lead measured)
             ContrastPair(
-                name: "AccentColor on Secondary Surface (Light)",
-                foregroundHex: BrandColors.accentHex.light,
-                backgroundHex: Self.secondaryLightBackgroundHex,
+                name: "Slate on AppBackground (Light)",
+                foregroundHex: BrandColors.slateHex,
+                backgroundHex: BrandColors.appBackgroundLightHex,
                 appearance: "Light",
-                minRatio: 3.0,
-                description: "Burnt Sienna on Secondary Grouped (#F2F2F7)"
+                minRatio: 8.9,
+                description: "Slate on light AppBackground (#F9F1ED)"
             ),
             ContrastPair(
-                name: "AccentColor on Secondary Surface (Dark)",
-                foregroundHex: BrandColors.accentHex.dark,
-                backgroundHex: Self.secondaryDarkBackgroundHex,
-                appearance: "Dark",
-                minRatio: 3.0,
-                description: "Pinkish Cinnamon on Secondary Grouped (#2C2C2E)"
-            ),
-
-            // 7. BrandInk on Secondary Grouped Backgrounds
-            ContrastPair(
-                name: "BrandInk on Secondary Surface (Light)",
-                foregroundHex: BrandColors.brandInkHex.light,
-                backgroundHex: Self.secondaryLightBackgroundHex,
+                name: "Sienna on AppBackground (Light)",
+                foregroundHex: BrandColors.burntSiennaHex,
+                backgroundHex: BrandColors.appBackgroundLightHex,
                 appearance: "Light",
                 minRatio: 4.5,
-                description: "Slate on Secondary Grouped (#F2F2F7)"
+                description: "Burnt Sienna on light AppBackground (#F9F1ED)"
             ),
             ContrastPair(
-                name: "BrandInk on Secondary Surface (Dark)",
-                foregroundHex: BrandColors.brandInkHex.dark,
-                backgroundHex: Self.secondaryDarkBackgroundHex,
-                appearance: "Dark",
+                name: "Secondary Grey on AppBackground (Light)",
+                foregroundHex: BrandColors.secondaryGreyHex,
+                backgroundHex: BrandColors.appBackgroundLightHex,
+                appearance: "Light",
                 minRatio: 4.5,
-                description: "Turquoise on Secondary Grouped (#2C2C2E)"
+                description: "Secondary Grey on light AppBackground (#F9F1ED)"
+            ),
+            ContrastPair(
+                name: "Sienna on CardBackground (Light)",
+                foregroundHex: BrandColors.burntSiennaHex,
+                backgroundHex: BrandColors.cardBackgroundLightHex,
+                appearance: "Light",
+                minRatio: 5.0,
+                description: "Burnt Sienna on light CardBackground (#FDFAF9)"
+            ),
+            ContrastPair(
+                name: "Cinnamon on AppBackground (Dark)",
+                foregroundHex: BrandColors.pinkishCinnamonHex,
+                backgroundHex: BrandColors.appBackgroundDarkHex,
+                appearance: "Dark",
+                minRatio: 9.0,
+                description: "Pinkish Cinnamon on dark AppBackground (#221814)"
+            ),
+            ContrastPair(
+                name: "Turquoise on AppBackground (Dark)",
+                foregroundHex: BrandColors.turquoiseGreenHex,
+                backgroundHex: BrandColors.appBackgroundDarkHex,
+                appearance: "Dark",
+                minRatio: 11.5,
+                description: "Turquoise on dark AppBackground (#221814)"
+            ),
+            ContrastPair(
+                name: "Cinnamon on CardBackground (Dark)",
+                foregroundHex: BrandColors.pinkishCinnamonHex,
+                backgroundHex: BrandColors.cardBackgroundDarkHex,
+                appearance: "Dark",
+                minRatio: 8.5,
+                description: "Pinkish Cinnamon on dark CardBackground (#2B211F)"
             ),
         ]
 
@@ -200,7 +227,8 @@ struct BrandColorsContrastTests {
             "HighlightText",
             "ChartLow",
             "ChartHigh",
-            "PresetTileBackground",
+            "AppBackground",
+            "CardBackground",
         ]
 
         for token in tokenNames {

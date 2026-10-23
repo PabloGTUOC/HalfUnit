@@ -78,6 +78,8 @@ struct SettingsView: View {
                     aboutSection(snapshot: snapshot)
                 }
             }
+            .scrollContentBackground(.hidden)
+            .background(BrandColors.appBackground.ignoresSafeArea())
             .navigationTitle("settings.title")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -874,7 +876,7 @@ private struct PresetEditorSheet: View {
                                             .fill(
                                                 isSelected
                                                     ? BrandColors.brandFill
-                                                    : BrandColors.presetTileBackground
+                                                    : BrandColors.cardBackground
                                             )
                                     )
                             }

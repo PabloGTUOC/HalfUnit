@@ -66,6 +66,7 @@ struct InsightsView: View {
                 }
             }
             .navigationTitle("tab.insights")
+            .background(BrandColors.appBackground.ignoresSafeArea())
             .task {
                 reloadState()
             }
@@ -134,7 +135,7 @@ struct InsightsView: View {
                 .padding(12)
                 .background(
                     RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .fill(Color(.secondarySystemGroupedBackground))
+                        .fill(BrandColors.cardBackground)
                 )
             }
         }
@@ -229,7 +230,7 @@ struct InsightsView: View {
         .padding(14)
         .background(
             RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .fill(Color(.secondarySystemGroupedBackground))
+                .fill(BrandColors.cardBackground)
         )
         .accessibilityElement(children: .combine)
     }
@@ -251,7 +252,7 @@ struct InsightsView: View {
                 .padding(14)
                 .background(
                     RoundedRectangle(cornerRadius: 14, style: .continuous)
-                        .fill(Color(.secondarySystemGroupedBackground))
+                        .fill(BrandColors.cardBackground)
                 )
                 .accessibilityLabel(Text(snapshot.heatmapSummaryAccessibilityLabel))
             }
@@ -316,7 +317,7 @@ struct InsightsView: View {
             .padding(14)
             .background(
                 RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    .fill(Color(.secondarySystemGroupedBackground))
+                    .fill(BrandColors.cardBackground)
             )
             .accessibilityLabel(Text(snapshot.weeklySummaryAccessibilityLabel))
         }
@@ -381,7 +382,7 @@ struct InsightsView: View {
             .padding(14)
             .background(
                 RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    .fill(Color(.secondarySystemGroupedBackground))
+                    .fill(BrandColors.cardBackground)
             )
         }
     }
@@ -399,7 +400,7 @@ struct InsightsView: View {
                     .padding(14)
                     .background(
                         RoundedRectangle(cornerRadius: 14, style: .continuous)
-                            .fill(Color(.secondarySystemGroupedBackground))
+                            .fill(BrandColors.cardBackground)
                     )
             } else {
                 VStack(spacing: 8) {
@@ -433,7 +434,7 @@ struct InsightsView: View {
                         .padding(12)
                         .background(
                             RoundedRectangle(cornerRadius: 12, style: .continuous)
-                                .fill(Color(.secondarySystemGroupedBackground))
+                                .fill(BrandColors.cardBackground)
                         )
                         .accessibilityElement(children: .combine)
                     }
