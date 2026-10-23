@@ -1,6 +1,7 @@
 import Foundation
 import HalfUnitCore
 import SwiftData
+import SwiftUI
 import Testing
 import UIKit
 import UserNotifications
@@ -299,6 +300,53 @@ struct RemindersAndLockTests {
         machine.handleScenePhaseChange(to: .active)
         #expect(machine.isShielded == false)
         #expect(machine.isLocked == false)
+    }
+
+    @Test(
+        "AppLockShieldContainerView and state machine hide content from accessibility and disable hit testing while shielded"
+    )
+    @MainActor
+    func appLockShieldAccessibilityState() async {
+        let fakeAuth = FakeAppLockAuthenticator()
+        fakeAuth.shouldSucceed = true
+        let machine = AppLockStateMachine(isAppLockEnabled: true, authenticator: fakeAuth)
+
+        let container = AppLockShieldContainerView(stateMachine: machine) {
+            Text("Sensitive Data")
+        }
+
+        // On launch when enabled: shielded, so content is NOT accessible
+        #expect(machine.isShielded == true)
+        #expect(machine.isContentAccessible == false)
+        #expect(container.isContentAccessible == false)
+
+        // After unlock succeeds: unshielded, so content IS accessible
+        _ = await machine.unlock(reason: "Unlock")
+        #expect(machine.isShielded == false)
+        #expect(machine.isContentAccessible == true)
+        #expect(container.isContentAccessible == true)
+
+        // On inactive / background: shielded, content is NOT accessible
+        machine.handleScenePhaseChange(to: .inactive)
+        #expect(machine.isShielded == true)
+        #expect(machine.isContentAccessible == false)
+        #expect(container.isContentAccessible == false)
+
+        machine.handleScenePhaseChange(to: .background)
+        #expect(machine.isShielded == true)
+        #expect(machine.isContentAccessible == false)
+        #expect(container.isContentAccessible == false)
+
+        // When app lock is disabled: content is always accessible
+        machine.disable()
+        #expect(machine.isShielded == false)
+        #expect(machine.isContentAccessible == true)
+        #expect(container.isContentAccessible == true)
+
+        machine.handleScenePhaseChange(to: .background)
+        #expect(machine.isShielded == false)
+        #expect(machine.isContentAccessible == true)
+        #expect(container.isContentAccessible == true)
     }
 
     @Test("App lock state machine: toggle-on requires auth and handles unavailable/failure/success")

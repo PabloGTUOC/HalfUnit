@@ -24,6 +24,10 @@ public final class AppLockStateMachine {
     public private(set) var isLocked: Bool
     public private(set) var isShielded: Bool
 
+    public var isContentAccessible: Bool {
+        !isShielded
+    }
+
     private let authenticator: any AppLockAuthenticator
     private var wasInBackground: Bool = false
 

@@ -57,9 +57,15 @@ struct AppLockShieldContainerView<Content: View>: View {
     let stateMachine: AppLockStateMachine
     @ViewBuilder let content: () -> Content
 
+    var isContentAccessible: Bool {
+        stateMachine.isContentAccessible
+    }
+
     var body: some View {
         ZStack {
             content()
+                .accessibilityHidden(!isContentAccessible)
+                .allowsHitTesting(isContentAccessible)
 
             if stateMachine.isShielded {
                 AppLockView(
@@ -72,6 +78,7 @@ struct AppLockShieldContainerView<Content: View>: View {
                         }
                     }
                 )
+                .accessibilityAddTraits(.isModal)
                 .transition(.opacity)
                 .zIndex(999)
             }
