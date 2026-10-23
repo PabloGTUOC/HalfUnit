@@ -66,6 +66,7 @@ struct InsightsView: View {
                 }
             }
             .navigationTitle("tab.insights")
+            .background(BrandColors.appBackground.ignoresSafeArea())
             .task {
                 reloadState()
             }
@@ -134,7 +135,7 @@ struct InsightsView: View {
                 .padding(12)
                 .background(
                     RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .fill(Color(.secondarySystemGroupedBackground))
+                        .fill(BrandColors.cardBackground)
                 )
             }
         }
@@ -148,7 +149,7 @@ struct InsightsView: View {
             VStack(alignment: .leading, spacing: 6) {
                 Text(summary.drinkingDaysText)
                     .font(.title2.bold())
-                    .foregroundStyle(.primary)
+                    .foregroundStyle(BrandColors.streakCardText)
 
                 HStack(spacing: 12) {
                     Text(summary.drinkingDayShareText)
@@ -156,12 +157,12 @@ struct InsightsView: View {
                     Text(summary.alcoholFreeDaysText)
                 }
                 .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(BrandColors.streakCardText.opacity(0.85))
 
                 if let deltaText = summary.deltaText {
                     Text(deltaText)
                         .font(.subheadline.weight(.medium))
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(BrandColors.streakCardText.opacity(0.85))
                         .padding(.top, 2)
                 }
             }
@@ -169,11 +170,11 @@ struct InsightsView: View {
             .padding(16)
             .background(
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .fill(Color.teal.opacity(0.12))
+                    .fill(BrandColors.streakCardBackground)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .strokeBorder(Color.teal.opacity(0.24), lineWidth: 1)
+                    .strokeBorder(BrandColors.streakCardText.opacity(0.18), lineWidth: 1)
             )
             .accessibilityElement(children: .combine)
 
@@ -229,7 +230,7 @@ struct InsightsView: View {
         .padding(14)
         .background(
             RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .fill(Color(.secondarySystemGroupedBackground))
+                .fill(BrandColors.cardBackground)
         )
         .accessibilityElement(children: .combine)
     }
@@ -251,7 +252,7 @@ struct InsightsView: View {
                 .padding(14)
                 .background(
                     RoundedRectangle(cornerRadius: 14, style: .continuous)
-                        .fill(Color(.secondarySystemGroupedBackground))
+                        .fill(BrandColors.cardBackground)
                 )
                 .accessibilityLabel(Text(snapshot.heatmapSummaryAccessibilityLabel))
             }
@@ -275,8 +276,8 @@ struct InsightsView: View {
                             RoundedRectangle(cornerRadius: 3, style: .continuous)
                                 .fill(
                                     cell.intensity > 0
-                                        ? Color.teal.opacity(cell.intensity)
-                                        : Color.secondary.opacity(0.18)
+                                        ? BrandColors.chartColor(progress: (cell.intensity - 0.25) / 0.75)
+                                        : Color(.systemFill)
                                 )
                                 .frame(width: 14, height: 14)
                                 .accessibilityHidden(collapseIndividualAccessibility)
@@ -302,7 +303,13 @@ struct InsightsView: View {
                     x: .value("Week", bar.weekStartDate, unit: .weekOfYear),
                     y: .value("Amount", bar.displayValue)
                 )
-                .foregroundStyle(Color.teal.gradient)
+                .foregroundStyle(
+                    LinearGradient(
+                        colors: [BrandColors.chartLow, BrandColors.chartHigh],
+                        startPoint: .bottom,
+                        endPoint: .top
+                    )
+                )
                 .cornerRadius(3)
                 .accessibilityLabel(bar.accessibilityLabel)
             }
@@ -310,7 +317,7 @@ struct InsightsView: View {
             .padding(14)
             .background(
                 RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    .fill(Color(.secondarySystemGroupedBackground))
+                    .fill(BrandColors.cardBackground)
             )
             .accessibilityLabel(Text(snapshot.weeklySummaryAccessibilityLabel))
         }
@@ -350,7 +357,7 @@ struct InsightsView: View {
                                         .frame(height: 8)
 
                                     Capsule()
-                                        .fill(row.isTop ? Color.teal : Color.teal.opacity(0.6))
+                                        .fill(row.isTop ? BrandColors.brandFill : BrandColors.brandFill.opacity(0.6))
                                         .frame(width: proxy.size.width * fraction, height: 8)
                                 }
                                 .frame(maxHeight: .infinity, alignment: .center)
@@ -375,7 +382,7 @@ struct InsightsView: View {
             .padding(14)
             .background(
                 RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    .fill(Color(.secondarySystemGroupedBackground))
+                    .fill(BrandColors.cardBackground)
             )
         }
     }
@@ -393,15 +400,15 @@ struct InsightsView: View {
                     .padding(14)
                     .background(
                         RoundedRectangle(cornerRadius: 14, style: .continuous)
-                            .fill(Color(.secondarySystemGroupedBackground))
+                            .fill(BrandColors.cardBackground)
                     )
             } else {
                 VStack(spacing: 8) {
                     ForEach(snapshot.drinkTypeRows) { row in
                         HStack(spacing: 12) {
-                            Image(systemName: row.symbolName)
+                            PresetPresentation.image(for: row.symbolName)
                                 .font(.body)
-                                .foregroundStyle(Color.teal)
+                                .foregroundStyle(BrandColors.accent)
                                 .frame(width: 24)
 
                             VStack(alignment: .leading, spacing: 2) {
@@ -427,7 +434,7 @@ struct InsightsView: View {
                         .padding(12)
                         .background(
                             RoundedRectangle(cornerRadius: 12, style: .continuous)
-                                .fill(Color(.secondarySystemGroupedBackground))
+                                .fill(BrandColors.cardBackground)
                         )
                         .accessibilityElement(children: .combine)
                     }

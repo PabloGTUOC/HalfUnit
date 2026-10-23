@@ -25,7 +25,7 @@ struct HalfUnitHomeWidgetEntryView: View {
             }
         }
         .containerBackground(for: .widget) {
-            Color(.systemBackground)
+            BrandColors.appBackground
         }
     }
 }
@@ -35,7 +35,7 @@ private struct SmallHomeWidgetView: View {
     let renderingMode: WidgetRenderingMode
 
     private var accentColor: Color {
-        renderingMode == .accented ? .primary : .teal
+        renderingMode == .accented ? .primary : BrandColors.accent
     }
 
     var body: some View {
@@ -100,7 +100,7 @@ private struct MediumHomeWidgetView: View {
     let renderingMode: WidgetRenderingMode
 
     private var accentColor: Color {
-        renderingMode == .accented ? .primary : .teal
+        renderingMode == .accented ? .primary : BrandColors.accent
     }
 
     var body: some View {
@@ -152,11 +152,11 @@ private struct MediumHomeWidgetView: View {
                 ForEach(snapshot.presetButtons) { button in
                     Button(intent: WidgetLogDrinkIntent(preset: button.entity)) {
                         HStack(spacing: 6) {
-                            Image(systemName: button.symbolName)
-                                .font(.caption.weight(.semibold))
+                            PresetPresentation.image(for: button.symbolName)
+                                .font(.subheadline.weight(.semibold))
                                 .foregroundStyle(accentColor)
                                 .widgetAccentable()
-                                .frame(width: 16, alignment: .center)
+                                .frame(width: 22, height: 22, alignment: .center)
 
                             Text(button.localizedName)
                                 .font(.caption.weight(.semibold))
@@ -176,7 +176,7 @@ private struct MediumHomeWidgetView: View {
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .background(
                             RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                .fill(accentColor.opacity(0.12))
+                                .fill(BrandColors.cardBackground)
                         )
                     }
                     .buttonStyle(.plain)

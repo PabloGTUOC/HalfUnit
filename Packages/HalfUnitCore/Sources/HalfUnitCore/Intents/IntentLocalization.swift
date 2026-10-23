@@ -13,12 +13,12 @@ public enum IntentLocalization {
     ]
 
     private static let symbolByPresetKey: [String: String] = [
-        "smallBeer": "mug",
-        "smallWine": "wineglass",
-        "beer": "mug.fill",
-        "wineGlass": "wineglass.fill",
-        "shot": "cup.and.saucer",
-        "longDrink": "takeoutbag.and.cup.and.straw",
+        "smallBeer": "halfunit.beer.bottle",
+        "smallWine": "halfunit.wine.small",
+        "beer": "halfunit.beer.mug",
+        "wineGlass": "halfunit.wine.glass",
+        "shot": "halfunit.shot",
+        "longDrink": "halfunit.longdrink",
     ]
 
     private static let englishFallbackStrings: [String: String] = [
@@ -126,14 +126,14 @@ public enum IntentLocalization {
     }
 
     public static func symbolName(presetKey: String?, fallbackSymbol: String) -> String {
+        if let presetKey, let mapped = symbolByPresetKey[presetKey] {
+            return mapped
+        }
         let trimmed = fallbackSymbol.trimmingCharacters(in: .whitespacesAndNewlines)
         if !trimmed.isEmpty && trimmed != "questionmark" {
             return trimmed
         }
-        if let presetKey, let mapped = symbolByPresetKey[presetKey] {
-            return mapped
-        }
-        return trimmed.isEmpty ? "wineglass" : trimmed
+        return "halfunit.wine.glass"
     }
 
     public static func formattedHUNumber(_ hu: Decimal, locale: Locale = .current) -> String {

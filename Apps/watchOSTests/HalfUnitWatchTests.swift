@@ -15,12 +15,12 @@ struct HalfUnitWatchTests {
     @Test("WatchPresetPresentation maps preset keys to localized names, symbols, and accessibility labels")
     func presetPresentationMappingsAndAccessibility() {
         let expected: [(String, String, String, String, String)] = [
-            ("smallBeer", "preset.smallBeer", "Small beer", "Kleines Bier", "mug"),
-            ("smallWine", "preset.smallWine", "Small wine", "Kleiner Wein", "wineglass"),
-            ("beer", "preset.beer", "Beer", "Bier", "mug.fill"),
-            ("wineGlass", "preset.wineGlass", "Wine glass", "Glas Wein", "wineglass.fill"),
-            ("shot", "preset.shot", "Shot", "Schnaps", "cup.and.saucer"),
-            ("longDrink", "preset.longDrink", "Long drink", "Longdrink", "takeoutbag.and.cup.and.straw"),
+            ("smallBeer", "preset.smallBeer", "Small beer", "Kleines Bier", "halfunit.beer.bottle"),
+            ("smallWine", "preset.smallWine", "Small wine", "Kleiner Wein", "halfunit.wine.small"),
+            ("beer", "preset.beer", "Beer", "Bier", "halfunit.beer.mug"),
+            ("wineGlass", "preset.wineGlass", "Wine glass", "Glas Wein", "halfunit.wine.glass"),
+            ("shot", "preset.shot", "Shot", "Schnaps", "halfunit.shot"),
+            ("longDrink", "preset.longDrink", "Long drink", "Longdrink", "halfunit.longdrink"),
         ]
 
         for (key, catalogKey, enName, deName, symbol) in expected {

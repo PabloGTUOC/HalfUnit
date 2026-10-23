@@ -24,6 +24,8 @@ struct WatchLoggerView: View {
     @Environment(\.locale) private var locale
     @Environment(\.scenePhase) private var scenePhase
 
+    @ScaledMetric(relativeTo: .title3) private var symbolFrame: CGFloat = 28
+
     @State private var presets: [Preset] = []
     @State private var snapshot: WatchLoggerSnapshot?
     @State private var undoBanner: UndoBannerState?
@@ -134,13 +136,13 @@ struct WatchLoggerView: View {
     private func headerCard(snapshot: WatchLoggerSnapshot) -> some View {
         Text(snapshot.headerText)
             .font(.headline.bold())
-            .foregroundStyle(.primary)
+            .foregroundStyle(BrandColors.streakCardText)
             .frame(maxWidth: .infinity, alignment: .center)
             .padding(.vertical, 8)
             .padding(.horizontal, 10)
             .background(
                 RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .fill(Color.teal.opacity(0.2))
+                    .fill(BrandColors.streakCardBackground)
             )
             .accessibilityElement(children: .ignore)
             .accessibilityLabel(Text(snapshot.headerAccessibilityLabel))
@@ -150,7 +152,7 @@ struct WatchLoggerView: View {
         HStack(spacing: 6) {
             Text(banner.loggedMessage)
                 .font(.caption2.weight(.medium))
-                .foregroundStyle(.primary)
+                .foregroundStyle(BrandColors.highlightText)
                 .lineLimit(1)
 
             Spacer(minLength: 4)
@@ -160,14 +162,14 @@ struct WatchLoggerView: View {
             }
             .buttonStyle(.plain)
             .font(.caption2.weight(.semibold))
-            .foregroundStyle(Color.teal)
+            .foregroundStyle(BrandColors.highlightText)
             .accessibilityLabel(Text("undo.accessibility"))
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 6)
         .background(
             RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .fill(Color.teal.opacity(0.18))
+                .fill(BrandColors.highlightBackground)
         )
     }
 
@@ -178,9 +180,10 @@ struct WatchLoggerView: View {
                     logPreset(preset)
                 } label: {
                     VStack(spacing: 2) {
-                        Image(systemName: PresetPresentation.symbolName(for: preset))
+                        PresetPresentation.image(for: PresetPresentation.symbolName(for: preset))
                             .font(.title3)
-                            .foregroundStyle(Color.teal)
+                            .foregroundStyle(BrandColors.accent)
+                            .frame(width: symbolFrame, height: symbolFrame, alignment: .center)
 
                         Text(PresetPresentation.formattedHU(preset.hu, locale: locale))
                             .font(.footnote.weight(.bold))
@@ -358,8 +361,8 @@ private struct LogEarlierSheetView: View {
                         selectedPreset = nil
                     } label: {
                         HStack(spacing: 8) {
-                            Image(systemName: PresetPresentation.symbolName(for: preset))
-                                .foregroundStyle(Color.teal)
+                            PresetPresentation.image(for: PresetPresentation.symbolName(for: preset))
+                                .foregroundStyle(BrandColors.accent)
                             Text(PresetPresentation.localizedName(for: preset, locale: locale))
                                 .font(.footnote.weight(.semibold))
                             Spacer()
@@ -402,8 +405,8 @@ private struct LogEarlierSheetView: View {
                             selectedPreset = preset
                         } label: {
                             HStack(spacing: 8) {
-                                Image(systemName: PresetPresentation.symbolName(for: preset))
-                                    .foregroundStyle(Color.teal)
+                                PresetPresentation.image(for: PresetPresentation.symbolName(for: preset))
+                                    .foregroundStyle(BrandColors.accent)
                                 Text(PresetPresentation.localizedName(for: preset, locale: locale))
                                     .font(.footnote.weight(.medium))
                                     .lineLimit(1)

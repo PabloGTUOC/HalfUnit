@@ -61,6 +61,7 @@ struct HistoryView: View {
                                             }
                                             .accessibilityLabel(Text(item.deleteAccessibilityLabel))
                                         }
+                                        .listRowBackground(BrandColors.cardBackground)
                                     }
                                 } header: {
                                     HStack {
@@ -72,12 +73,15 @@ struct HistoryView: View {
                             }
                         }
                         .listStyle(.insetGrouped)
+                        .scrollContentBackground(.hidden)
+                        .background(BrandColors.appBackground.ignoresSafeArea())
                     }
                 } else {
                     ProgressView()
                 }
             }
             .navigationTitle("tab.history")
+            .background(BrandColors.appBackground.ignoresSafeArea())
             .searchable(
                 text: $searchQuery,
                 prompt: Text("history.search.prompt")
@@ -125,9 +129,9 @@ struct HistoryView: View {
 
     private func drinkRow(item: HistoryDrinkItem, displayUnit: DisplayUnit) -> some View {
         HStack(spacing: 12) {
-            Image(systemName: item.symbolName)
+            PresetPresentation.image(for: item.symbolName)
                 .font(.title3)
-                .foregroundStyle(Color.teal)
+                .foregroundStyle(BrandColors.accent)
                 .frame(width: 28)
 
             VStack(alignment: .leading, spacing: 2) {

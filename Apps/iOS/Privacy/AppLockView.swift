@@ -9,7 +9,7 @@ struct AppLockView: View {
 
     var body: some View {
         ZStack {
-            Color(uiColor: .systemBackground)
+            BrandColors.appBackground
                 .ignoresSafeArea()
 
             VStack(spacing: 24) {
@@ -17,7 +17,7 @@ struct AppLockView: View {
 
                 Image(systemName: "lock.shield")
                     .font(.system(size: 64, weight: .light))
-                    .foregroundStyle(Color.teal)
+                    .foregroundStyle(BrandColors.accent)
                     .accessibilityHidden(true)
 
                 Text("Half Unit")
@@ -40,7 +40,7 @@ struct AppLockView: View {
                         .padding(.vertical, 12)
                         .background(
                             Capsule()
-                                .fill(Color.teal)
+                                .fill(BrandColors.brandFill)
                         )
                     }
                     .buttonStyle(.plain)

@@ -33,6 +33,8 @@ struct TodayView: View {
     @Environment(\.locale) private var locale
     @Environment(\.scenePhase) private var scenePhase
 
+    @ScaledMetric(relativeTo: .title2) private var symbolFrame: CGFloat = 36
+
     @State private var presets: [Preset] = []
     @State private var screenSnapshot: TodayScreenSnapshot?
     @State private var undoBanner: UndoBannerState?
@@ -77,10 +79,12 @@ struct TodayView: View {
                         isShowingSettings = true
                     } label: {
                         Image(systemName: "gearshape")
+                            .foregroundStyle(BrandColors.accent)
                     }
                     .accessibilityLabel(Text("settings.open.accessibility"))
                 }
             }
+            .background(BrandColors.appBackground.ignoresSafeArea())
             .sheet(isPresented: $isShowingSettings) {
                 SettingsView(
                     logService: logService,
@@ -182,30 +186,30 @@ struct TodayView: View {
         VStack(alignment: .leading, spacing: 8) {
             Text(model.headline)
                 .font(.title.bold())
-                .foregroundStyle(.primary)
+                .foregroundStyle(BrandColors.streakCardText)
                 .fixedSize(horizontal: false, vertical: true)
 
             if let previousStreakText = model.previousStreakText {
                 Text(previousStreakText)
                     .font(.subheadline.weight(.medium))
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(BrandColors.streakCardText.opacity(0.85))
                     .fixedSize(horizontal: false, vertical: true)
             }
 
             Text(model.subtitle)
                 .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(BrandColors.streakCardText.opacity(0.85))
                 .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(20)
         .background(
             RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(Color.teal.opacity(0.14))
+                .fill(BrandColors.streakCardBackground)
         )
         .overlay(
             RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .strokeBorder(Color.teal.opacity(0.28), lineWidth: 1)
+                .strokeBorder(BrandColors.streakCardText.opacity(0.18), lineWidth: 1)
         )
         .accessibilityElement(children: .combine)
     }
@@ -221,10 +225,10 @@ struct TodayView: View {
                         logPreset(preset)
                     } label: {
                         HStack(spacing: 12) {
-                            Image(systemName: PresetPresentation.symbolName(for: preset))
+                            PresetPresentation.image(for: PresetPresentation.symbolName(for: preset))
                                 .font(.title2)
-                                .foregroundStyle(Color.teal)
-                                .frame(width: 32, alignment: .center)
+                                .foregroundStyle(BrandColors.accent)
+                                .frame(width: symbolFrame, height: symbolFrame, alignment: .center)
 
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(PresetPresentation.localizedName(for: preset, locale: locale))
@@ -243,7 +247,7 @@ struct TodayView: View {
                         .frame(maxWidth: .infinity, minHeight: 68, alignment: .leading)
                         .background(
                             RoundedRectangle(cornerRadius: 14, style: .continuous)
-                                .fill(Color(.secondarySystemGroupedBackground))
+                                .fill(BrandColors.cardBackground)
                         )
                         .overlay(
                             RoundedRectangle(cornerRadius: 14, style: .continuous)
@@ -316,7 +320,7 @@ struct TodayView: View {
                         .padding(12)
                         .background(
                             RoundedRectangle(cornerRadius: 12, style: .continuous)
-                                .fill(Color(.secondarySystemGroupedBackground))
+                                .fill(BrandColors.cardBackground)
                         )
                         .accessibilityElement(children: .combine)
                     }
@@ -329,7 +333,7 @@ struct TodayView: View {
         HStack(spacing: 12) {
             Text(banner.loggedMessage)
                 .font(.subheadline.weight(.medium))
-                .foregroundStyle(.primary)
+                .foregroundStyle(BrandColors.highlightText)
 
             Spacer()
 
@@ -337,14 +341,14 @@ struct TodayView: View {
                 undoLastDrink(banner.drink)
             }
             .font(.subheadline.weight(.semibold))
-            .tint(.teal)
+            .foregroundStyle(BrandColors.highlightText)
             .accessibilityLabel(Text("undo.accessibility"))
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
         .background(
             RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .fill(.regularMaterial)
+                .fill(BrandColors.highlightBackground)
                 .shadow(color: .black.opacity(0.12), radius: 8, y: 2)
         )
     }
@@ -512,9 +516,9 @@ struct LogEarlierDatePickerSheet: View {
         NavigationStack {
             VStack(spacing: 20) {
                 HStack(spacing: 12) {
-                    Image(systemName: PresetPresentation.symbolName(for: preset))
+                    PresetPresentation.image(for: PresetPresentation.symbolName(for: preset))
                         .font(.title2)
-                        .foregroundStyle(Color.teal)
+                        .foregroundStyle(BrandColors.accent)
                         .frame(width: 32, alignment: .center)
 
                     VStack(alignment: .leading, spacing: 2) {
@@ -532,7 +536,7 @@ struct LogEarlierDatePickerSheet: View {
                 .padding()
                 .background(
                     RoundedRectangle(cornerRadius: 14, style: .continuous)
-                        .fill(Color(.secondarySystemGroupedBackground))
+                        .fill(BrandColors.cardBackground)
                 )
 
                 DatePicker(
