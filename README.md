@@ -25,6 +25,13 @@ swift test --package-path Packages/HalfUnitCore
 ./scripts/lint.sh
 ```
 
+## Scripts
+
+- `scripts/bootstrap.sh`: Sets up local xcconfig and generates `HalfUnit.xcodeproj` via XcodeGen.
+- `scripts/generate_app_icon.swift`: Generates the 1024 × 1024 app icons (light, dark, tinted, watchOS) in `Resources/Assets.xcassets/AppIcon.appiconset`.
+- `scripts/test.sh`: Runs core tests plus iOS and watchOS test suites.
+- `scripts/lint.sh`: Runs `swift format lint`.
+
 ## Documentation & Release Preparation
 
 All launch documentation, App Store metadata, and release preparation materials are organized under `docs/`:
