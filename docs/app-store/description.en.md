@@ -33,7 +33,7 @@ Welcome to Half Unit!
 - 100% private: no user accounts, no ads, no trackers, and all data stored on-device and in your private iCloud.
 
 ## Full Description
-*(Character count: 3306 / 4000)*
+*(Character count: 3376 / 4000)*
 
 ```text
 Half Unit is a native iPhone and Apple Watch app designed for quick, honest awareness of your alcohol intake and alcohol-free days. Log drinks in a single tap, track your streaks without judgment, and view long-term drinking patterns over 3 months, 12 months, or 2 years.
@@ -73,5 +73,5 @@ APPLE HEALTH INTEGRATION
 • Write-only & private: Half Unit only writes data you log and never reads personal records from other apps. Fully functional even if Health permission is not granted.
 
 DISCLAIMER
-Half Unit is an informational tracking tool and is not a medical device. It does not diagnose, treat, prevent, or cure any illness or alcohol use disorder. The app does not compute blood alcohol concentration (BAC) and does not provide safe to drive estimates. Low-risk drinking guidance varies by country; consult public health resources such as Kenn dein Limit (kenn-dein-limit.de) or the NHS (nhs.uk).
+Half Unit is a personal logging tool for your own use. It is not a medical device and does not provide medical advice, diagnosis or treatment. The app does not compute blood alcohol concentration (BAC) and does not provide safe to drive estimates. Low-risk drinking guidance varies by country; consult public health resources such as Kenn dein Limit (kenn-dein-limit.de) or the NHS (nhs.uk). If you are worried about your drinking, talk to a doctor or a counselling service.
 ```

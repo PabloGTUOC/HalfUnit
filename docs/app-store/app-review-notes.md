@@ -8,6 +8,7 @@ Thank you for reviewing Half Unit! Below is essential information to help you re
 
 - **No login or account required:** Half Unit does not require registration, login credentials, or third-party sign-in.
 - **Immediate access:** Launching the app presents a brief 3-screen onboarding sequence explaining the unit system and offering optional HealthKit setup, after which all app features are immediately accessible.
+- **Medical & personal-use disclaimer:** A clear "Not medical advice" disclaimer stating that the app is for personal use only and provides no medical advice or treatment is shown on the first onboarding screen and in Settings → About.
 
 ---
 

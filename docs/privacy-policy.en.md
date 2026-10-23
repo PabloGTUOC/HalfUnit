@@ -77,9 +77,10 @@ On iOS devices, Half Unit offers optional integration with Apple HealthKit.
 
 ## 6. Health and Medical Disclaimer
 
-Half Unit is an informational tracking tool designed solely for personal awareness and habit logging. 
+Half Unit is a personal logging tool for your own use. It is an informational tracking tool designed solely for personal awareness and habit logging. 
 
-- Half Unit is **not a medical device** and is not intended to diagnose, treat, cure, or prevent any medical condition or alcohol use disorder.
+- Half Unit is **not a medical device** and does not provide medical advice, diagnosis or treatment. It is not intended to diagnose, treat, cure, or prevent any medical condition or alcohol use disorder.
+- If you are worried about your drinking, talk to a doctor or a counselling service.
 - The app does not compute blood alcohol concentration (BAC) and does not provide intoxication or safe to drive estimates. Never rely on the app to determine fitness to drive or operate machinery.
 - Official low-risk drinking guidelines vary by country. For health guidance and support resources, please consult official public health authorities:
   - Germany: [Kenn dein Limit](https://www.kenn-dein-limit.de)
