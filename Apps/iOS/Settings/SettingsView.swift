@@ -509,7 +509,13 @@ struct SettingsView: View {
 
     private func exportCSV(for day: LogicalDay) {
         do {
-            let data = try CSVExporter.exportData(from: logService)
+            let data = try CSVExporter.exportData(from: logService) { presetKey, storedName in
+                PresetPresentation.localizedName(
+                    presetKey: presetKey,
+                    fallbackName: storedName,
+                    locale: locale
+                )
+            }
             activeExport = ActiveFileExport(
                 document: ExportDataDocument(data: data),
                 contentType: .commaSeparatedText,

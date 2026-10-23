@@ -6,6 +6,8 @@ struct RootTabView: View {
     let healthSync: HealthSync
     let dayBoundaryScheduler: DayBoundaryScheduler
 
+    @State private var isShowingOnboarding = false
+
     var body: some View {
         TabView {
             Tab("tab.today", systemImage: "sun.max") {
@@ -25,6 +27,20 @@ struct RootTabView: View {
                     logService: logService,
                     healthSync: healthSync
                 )
+            }
+        }
+        .fullScreenCover(isPresented: $isShowingOnboarding) {
+            OnboardingView(
+                logService: logService,
+                healthSync: healthSync,
+                onDismiss: {
+                    isShowingOnboarding = false
+                }
+            )
+        }
+        .task {
+            if OnboardingGating.shouldShowOnboarding(logService: logService) {
+                isShowingOnboarding = true
             }
         }
     }

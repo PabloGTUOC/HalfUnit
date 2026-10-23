@@ -28,7 +28,10 @@ public enum CSVExporter {
     }
 
     @MainActor
-    public static func exportString(from logService: LogService) throws -> String {
+    public static func exportString(
+        from logService: LogService,
+        nameResolver: ((_ presetKey: String?, _ storedName: String) -> String)? = nil
+    ) throws -> String {
         let activeDrinks = try logService.drinks(includeDeleted: false)
         let allPresets = try logService.presets(includeHidden: true)
         var presetKeyById: [UUID: String] = [:]
@@ -37,18 +40,22 @@ public enum CSVExporter {
                 presetKeyById[preset.id] = key
             }
         }
-        return exportString(drinks: activeDrinks, presetKeyById: presetKeyById)
+        return exportString(drinks: activeDrinks, presetKeyById: presetKeyById, nameResolver: nameResolver)
     }
 
     @MainActor
-    public static func exportData(from logService: LogService) throws -> Data {
-        let csvString = try exportString(from: logService)
+    public static func exportData(
+        from logService: LogService,
+        nameResolver: ((_ presetKey: String?, _ storedName: String) -> String)? = nil
+    ) throws -> Data {
+        let csvString = try exportString(from: logService, nameResolver: nameResolver)
         return Data(csvString.utf8)
     }
 
     public static func exportString(
         drinks: [Drink],
-        presetKeyById: [UUID: String] = [:]
+        presetKeyById: [UUID: String] = [:],
+        nameResolver: ((_ presetKey: String?, _ storedName: String) -> String)? = nil
     ) -> String {
         let nonDeleted = drinks.filter { $0.deletedAt == nil }
         var lines: [String] = []
@@ -56,7 +63,7 @@ public enum CSVExporter {
         lines.append(headerLine)
 
         for drink in nonDeleted {
-            let fields = rowFields(for: drink, presetKeyById: presetKeyById)
+            let fields = rowFields(for: drink, presetKeyById: presetKeyById, nameResolver: nameResolver)
             let encodedLine = fields.map(escapeField).joined(separator: ",")
             lines.append(encodedLine)
         }
@@ -66,9 +73,20 @@ public enum CSVExporter {
 
     public static func exportData(
         drinks: [Drink],
-        presetKeyById: [UUID: String] = [:]
+        presetKeyById: [UUID: String] = [:],
+        nameResolver: ((_ presetKey: String?, _ storedName: String) -> String)? = nil
     ) -> Data {
-        Data(exportString(drinks: drinks, presetKeyById: presetKeyById).utf8)
+        Data(exportString(drinks: drinks, presetKeyById: presetKeyById, nameResolver: nameResolver).utf8)
+    }
+
+    public static func sanitizeTextFieldForSpreadsheetFormulaInjection(_ value: String) -> String {
+        guard let first = value.first else {
+            return value
+        }
+        if first == "=" || first == "+" || first == "-" || first == "@" || first == "\t" || first == "\r" {
+            return "'" + value
+        }
+        return value
     }
 
     public static func escapeField(_ value: String) -> String {
@@ -113,33 +131,38 @@ public enum CSVExporter {
 
     private static func rowFields(
         for drink: Drink,
-        presetKeyById: [UUID: String]
+        presetKeyById: [UUID: String],
+        nameResolver: ((_ presetKey: String?, _ storedName: String) -> String)? = nil
     ) -> [String] {
         let (dateString, timeString) = formatLocalDateAndTime(
             timestamp: drink.timestamp,
             timeZone: drink.timeZone
         )
         let logicalDayString = formatLogicalDay(drink.logicalDay)
-        let presetKey = drink.presetId.flatMap { presetKeyById[$0] } ?? ""
+        let resolvedPresetKey = drink.presetId.flatMap { presetKeyById[$0] }
+        let presetKeyColumn = resolvedPresetKey ?? ""
+        let resolvedName = nameResolver?(resolvedPresetKey, drink.name) ?? drink.name
+        let sanitizedName = sanitizeTextFieldForSpreadsheetFormulaInjection(resolvedName)
         let huString = formatDecimal(drink.hu)
         let gramsString = formatDecimal(drink.grams)
         let standardDrinksString = formatDecimal(Units.standardDrinks(grams: drink.grams))
         let volumeString = drink.volumeMl.map(String.init) ?? ""
         let abvString = drink.abvPercent.map(formatDecimal) ?? ""
         let noteString = drink.note ?? ""
+        let sanitizedNote = sanitizeTextFieldForSpreadsheetFormulaInjection(noteString)
 
         return [
             dateString,
             timeString,
             logicalDayString,
-            drink.name,
-            presetKey,
+            sanitizedName,
+            presetKeyColumn,
             huString,
             gramsString,
             standardDrinksString,
             volumeString,
             abvString,
-            noteString,
+            sanitizedNote,
             drink.sourceRaw,
             drink.timeZoneIdentifier,
             drink.id.uuidString,

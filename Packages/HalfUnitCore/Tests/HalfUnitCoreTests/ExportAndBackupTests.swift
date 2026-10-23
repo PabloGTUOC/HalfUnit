@@ -213,6 +213,99 @@ struct ExportAndBackupTests {
     }
 
     @Test(
+        "CSVExporter supports localized display names and spreadsheet formula-injection escaping"
+    )
+    func csvExportLocalizedNameResolverAndFormulaInjectionEscaping() throws {
+        let t0 = Self.makeDate(year: 2026, month: 10, day: 22, hour: 19, minute: 0, timeZone: Self.berlin)
+        let harness = try makeHarness(now: t0, timeZone: Self.berlin)
+        let service = harness.service
+
+        try service.seedDefaultPresetsIfNeeded()
+        let presets = try service.presets()
+        let wine = try #require(presets.first(where: { $0.key == "wineGlass" }))
+
+        // 1. Wine glass logged with default name "wineGlass"
+        _ = try service.log(preset: wine, at: t0, source: .phone)
+
+        // 2. Drinks with formula-injection trigger characters in name or note
+        let t1 = Self.makeDate(year: 2026, month: 10, day: 22, hour: 19, minute: 15, timeZone: Self.berlin)
+        let dFormula1 = try service.logCustom(
+            name: "=SUM(1,2)",
+            hu: Self.dec("1.0"),
+            volumeMl: 500,
+            abvPercent: Self.dec("5.0"),
+            at: t1,
+            source: .phone
+        )
+        try service.edit(dFormula1, DrinkEdit(note: .set("+12345")))
+
+        let t2 = Self.makeDate(year: 2026, month: 10, day: 22, hour: 19, minute: 30, timeZone: Self.berlin)
+        let dFormula2 = try service.logCustom(
+            name: "-Danger Drink",
+            hu: Self.dec("0.5"),
+            volumeMl: nil,
+            abvPercent: nil,
+            at: t2,
+            source: .phone
+        )
+        try service.edit(dFormula2, DrinkEdit(note: .set("@admin")))
+
+        let t3 = Self.makeDate(year: 2026, month: 10, day: 22, hour: 19, minute: 45, timeZone: Self.berlin)
+        let dFormula3 = try service.logCustom(
+            name: "\tTabbed Name",
+            hu: Self.dec("2.0"),
+            volumeMl: nil,
+            abvPercent: nil,
+            at: t3,
+            source: .phone
+        )
+        try service.edit(dFormula3, DrinkEdit(note: .set("\rCarriage Return Note")))
+
+        // Test English name resolver
+        let englishResolver: (String?, String) -> String = { presetKey, storedName in
+            if presetKey == "wineGlass" {
+                return "Wine glass"
+            }
+            if presetKey == "beer" {
+                return "Beer"
+            }
+            return storedName
+        }
+
+        let englishCSV = try CSVExporter.exportString(from: service, nameResolver: englishResolver)
+        #expect(englishCSV.contains(",Wine glass,wineGlass,1,19.2,1.92,"))
+
+        // Test German name resolver
+        let germanResolver: (String?, String) -> String = { presetKey, storedName in
+            if presetKey == "wineGlass" {
+                return "Glas Wein"
+            }
+            if presetKey == "beer" {
+                return "Bier"
+            }
+            return storedName
+        }
+
+        let germanCSV = try CSVExporter.exportString(from: service, nameResolver: germanResolver)
+        #expect(germanCSV.contains(",Glas Wein,wineGlass,1,19.2,1.92,"))
+
+        // Test formula injection escaping:
+        // =SUM(1,2) -> name becomes '=SUM(1,2); note +12345 becomes '+12345
+        // Since =SUM(1,2) contains a comma, RFC 4180 quotes it as "'=SUM(1,2)\""
+        #expect(englishCSV.contains("\"'=SUM(1,2)\",,1,20,2,500,5,'+12345,phone"))
+
+        // -Danger Drink -> '-Danger Drink; note @admin -> '@admin
+        #expect(englishCSV.contains(",'-Danger Drink,,0.5,10,1,,,'@admin,phone"))
+
+        // \tTabbed Name -> '\tTabbed Name; \rCarriage Return Note -> contains \r so RFC 4180 quotes it
+        #expect(englishCSV.contains(",\'\tTabbed Name,,2,40,4,,,\"\'\rCarriage Return Note\""))
+
+        // Numbers must remain unaffected
+        #expect(englishCSV.contains(",1,19.2,1.92,"))
+        #expect(englishCSV.contains(",0.5,10,1,"))
+    }
+
+    @Test(
         "BackupCodec round trip into empty container preserves settings, presets, active drinks, and tombstones with nil healthSyncedVersion"
     )
     func backupRoundTripIntoEmptyContainer() throws {
