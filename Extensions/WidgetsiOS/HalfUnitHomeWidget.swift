@@ -98,6 +98,38 @@ struct HalfUnitHomeTimelineProvider: TimelineProvider {
     }
 }
 
+struct HalfUnitHomeWidgetEntryView: View {
+    @Environment(\.widgetFamily) private var widgetFamily
+    @Environment(\.widgetRenderingMode) private var widgetRenderingMode
+
+    let entry: HalfUnitHomeWidgetEntry
+
+    var body: some View {
+        Group {
+            switch widgetFamily {
+            case .systemMedium:
+                MediumHomeWidgetView(
+                    snapshot: entry.snapshot,
+                    renderingMode: widgetRenderingMode
+                )
+            case .systemLarge:
+                LargeHomeWidgetView(
+                    snapshot: entry.snapshot,
+                    renderingMode: widgetRenderingMode
+                )
+            default:
+                SmallHomeWidgetView(
+                    snapshot: entry.snapshot,
+                    renderingMode: widgetRenderingMode
+                )
+            }
+        }
+        .containerBackground(for: .widget) {
+            BrandColors.appBackground
+        }
+    }
+}
+
 struct HalfUnitHomeWidget: Widget {
     static let kind = "HalfUnitHomeWidget"
 
@@ -110,6 +142,6 @@ struct HalfUnitHomeWidget: Widget {
         }
         .configurationDisplayName("widget.ios.displayName")
         .description("widget.ios.description")
-        .supportedFamilies([.systemSmall, .systemMedium])
+        .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
     }
 }

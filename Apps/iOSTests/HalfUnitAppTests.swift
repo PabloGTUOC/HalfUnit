@@ -363,7 +363,7 @@ struct HalfUnitAppTests {
         #expect(planAt0130.entries[0].snapshot.isDrinkingToday)
         #expect(planAt0130.entries[0].snapshot.currentStreakDays == 0)
         #expect(planAt0130.entries[0].snapshot.streakHeadline == "Today")
-        #expect(planAt0130.entries[0].snapshot.presetButtons.count == 3)
+        #expect(planAt0130.entries[0].snapshot.presetButtons.count == 6)
         #expect(
             planAt0130.entries[0].snapshot.presetButtons.first(where: { $0.entity.key == "beer" })?
                 .accessibilityLabel == "Log beer, 1 unit"
@@ -614,6 +614,163 @@ struct HalfUnitAppTests {
         #expect(client.deletedIdentifiers.contains(drink.id.uuidString))
         let remainingDrinks = try service.drinks(includeDeleted: false)
         #expect(remainingDrinks.isEmpty)
+    }
+
+    @Test("Widget model returns six presets in watch order and formats drinking-today vs streak snapshot texts")
+    @MainActor
+    func widgetModelPresetsInWatchOrderAndSnapshotTexts() throws {
+        let container = try ModelContainerFactory.make(inMemory: true)
+        let t0 = Self.makeDate(2026, 10, 23, 12, 0, in: Self.berlinTimeZone)
+        let service = LogService(
+            context: container.mainContext,
+            now: { t0 },
+            timeZone: { Self.berlinTimeZone }
+        )
+
+        // 1. Fallback default entities return 6 presets in order
+        let fallbackSnapshot = WidgetEntrySnapshot.placeholder(locale: Self.englishLocale)
+        #expect(fallbackSnapshot.presetButtons.count == 6)
+        let expectedKeys = ["smallBeer", "smallWine", "beer", "wineGlass", "shot", "longDrink"]
+        #expect(fallbackSnapshot.presetButtons.map(\.entity.key) == expectedKeys)
+
+        // 2. Seed presets and verify user order and hidden presets exclusion matches watch
+        try service.seedDefaultPresetsIfNeeded()
+        let seededPresets = try service.presets()
+        #expect(seededPresets.count == 6)
+
+        // Hide one preset and add a new custom preset
+        let winePreset = try #require(seededPresets.first(where: { $0.key == "smallWine" }))
+        try service.setPresetHidden(winePreset, true)
+        _ = try service.addPreset(
+            name: "Cider",
+            symbolName: "halfunit.beer.bottle",
+            hu: Decimal(1),
+            volumeMl: 500,
+            abvPercent: Decimal(5)
+        )
+
+        let watchPresets = try service.presets()
+        #expect(watchPresets.count == 6)
+        #expect(!watchPresets.contains(where: { $0.key == "smallWine" }))
+        #expect(watchPresets.map(\.name) == ["smallBeer", "beer", "wineGlass", "shot", "longDrink", "Cider"])
+
+        let plan = try WidgetTimelinePlan.build(
+            from: service,
+            now: t0,
+            timeZone: Self.berlinTimeZone,
+            locale: Self.englishLocale
+        )
+        let widgetButtons = plan.entries[0].snapshot.presetButtons
+        #expect(widgetButtons.count == 6)
+        #expect(
+            widgetButtons.map(\.localizedName) == ["Small beer", "Beer", "Wine glass", "Shot", "Long drink", "Cider"])
+
+        // 3. Streak snapshot texts (not drinking today) in English and German
+        let streakSummary = StreakSummary(
+            lastDrinkingDay: LogicalDay(year: 2026, month: 9, day: 29),
+            lastDrink: nil,
+            isDrinkingToday: false,
+            currentStreakDays: 24,
+            previousStreakDays: nil,
+            longestStreakEver: 24,
+            longestStreakThisYear: 24
+        )
+        let streakEn = WidgetEntrySnapshot(
+            summary: streakSummary,
+            todayTotalHU: Decimal(0),
+            presets: watchPresets.map(PresetEntity.init(preset:)),
+            locale: Self.englishLocale
+        )
+        #expect(!streakEn.isDrinkingToday)
+        #expect(streakEn.currentStreakDays == 24)
+        #expect(streakEn.streakHeadline == "24 days without alcohol")
+        #expect(streakEn.streakDaysLabel == "days without alcohol")
+        #expect(streakEn.watchDaysHeadlineText == "24 days")
+        #expect(streakEn.watchSubtitleText == "Without alcohol")
+        #expect(streakEn.previousStreakText == nil)
+        #expect(streakEn.streakAccessibilityLabel == "24 days without alcohol")
+
+        let streakDe = WidgetEntrySnapshot(
+            summary: streakSummary,
+            todayTotalHU: Decimal(0),
+            presets: watchPresets.map(PresetEntity.init(preset:)),
+            locale: Self.germanLocale
+        )
+        #expect(!streakDe.isDrinkingToday)
+        #expect(streakDe.currentStreakDays == 24)
+        #expect(streakDe.streakHeadline == "24 Tage ohne Alkohol")
+        #expect(streakDe.streakDaysLabel == "Tage ohne Alkohol")
+        #expect(streakDe.watchDaysHeadlineText == "24 Tage")
+        #expect(streakDe.watchSubtitleText == "Ohne Alkohol")
+        #expect(streakDe.streakAccessibilityLabel == "24 Tage ohne Alkohol")
+
+        let singleDaySummary = StreakSummary(
+            lastDrinkingDay: LogicalDay(year: 2026, month: 10, day: 22),
+            lastDrink: nil,
+            isDrinkingToday: false,
+            currentStreakDays: 1,
+            previousStreakDays: nil,
+            longestStreakEver: 1,
+            longestStreakThisYear: 1
+        )
+        let singleDayEn = WidgetEntrySnapshot(
+            summary: singleDaySummary,
+            todayTotalHU: Decimal(0),
+            presets: watchPresets.map(PresetEntity.init(preset:)),
+            locale: Self.englishLocale
+        )
+        #expect(singleDayEn.streakDaysLabel == "day without alcohol")
+
+        let singleDayDe = WidgetEntrySnapshot(
+            summary: singleDaySummary,
+            todayTotalHU: Decimal(0),
+            presets: watchPresets.map(PresetEntity.init(preset:)),
+            locale: Self.germanLocale
+        )
+        #expect(singleDayDe.streakDaysLabel == "Tag ohne Alkohol")
+
+        // 4. Drinking-today snapshot texts in English and German
+        let drinkingTodaySummary = StreakSummary(
+            lastDrinkingDay: LogicalDay(year: 2026, month: 10, day: 23),
+            lastDrink: nil,
+            isDrinkingToday: true,
+            currentStreakDays: 0,
+            previousStreakDays: 4,
+            longestStreakEver: 24,
+            longestStreakThisYear: 24
+        )
+        let todayHU = Decimal(sign: .plus, exponent: -1, significand: 15)
+        let todayEn = WidgetEntrySnapshot(
+            summary: drinkingTodaySummary,
+            todayTotalHU: todayHU,
+            todayTotalGrams: Decimal(30),
+            presets: watchPresets.map(PresetEntity.init(preset:)),
+            locale: Self.englishLocale
+        )
+        #expect(todayEn.isDrinkingToday)
+        #expect(todayEn.currentStreakDays == 0)
+        #expect(todayEn.streakHeadline == "Today")
+        #expect(todayEn.todayTotalHUText == "1.5 HU")
+        #expect(todayEn.previousStreakDays == 4)
+        #expect(todayEn.previousStreakText == "Previous streak: 4 days")
+        #expect(todayEn.watchSubtitleText == "Today: 1.5 HU")
+        #expect(todayEn.streakAccessibilityLabel == "Today: 1.5 HU")
+
+        let todayDe = WidgetEntrySnapshot(
+            summary: drinkingTodaySummary,
+            todayTotalHU: todayHU,
+            todayTotalGrams: Decimal(30),
+            presets: watchPresets.map(PresetEntity.init(preset:)),
+            locale: Self.germanLocale
+        )
+        #expect(todayDe.isDrinkingToday)
+        #expect(todayDe.currentStreakDays == 0)
+        #expect(todayDe.streakHeadline == "Heute")
+        #expect(todayDe.todayTotalHUText == "1,5 HU")
+        #expect(todayDe.previousStreakDays == 4)
+        #expect(todayDe.previousStreakText == "Vorherige Serie: 4 Tage")
+        #expect(todayDe.watchSubtitleText == "Heute: 1,5 HU")
+        #expect(todayDe.streakAccessibilityLabel == "Heute: 1,5 HU")
     }
 }
 
