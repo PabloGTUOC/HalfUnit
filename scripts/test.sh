@@ -6,11 +6,12 @@ cd "$(dirname "$0")/.."
 swift test --package-path Packages/HalfUnitCore
 
 SIM_IPHONE="${SIM_IPHONE:-iPhone 17}"
+SIM_WATCH="${SIM_WATCH:-Apple Watch Series 12 (46mm)}"
 
 xcodebuild -project HalfUnit.xcodeproj -scheme HalfUnit \
     -destination "platform=iOS Simulator,name=$SIM_IPHONE" \
     -derivedDataPath .build/DerivedData test
 
 xcodebuild -project HalfUnit.xcodeproj -scheme HalfUnitWatch \
-    -destination "generic/platform=watchOS Simulator" \
-    -derivedDataPath .build/DerivedData build
+    -destination "platform=watchOS Simulator,name=$SIM_WATCH" \
+    -derivedDataPath .build/DerivedData test

@@ -54,5 +54,3 @@ enum EarlierOffset: Int, CaseIterable, Identifiable, Sendable {
         return String(format: format, locale: locale, spokenName, offsetTitle)
     }
 }
-
-typealias WatchEarlierOffset = EarlierOffset

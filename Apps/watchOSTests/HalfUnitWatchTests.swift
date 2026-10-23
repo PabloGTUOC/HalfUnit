@@ -77,38 +77,38 @@ struct HalfUnitWatchTests {
         #expect(smallBeerDe == "Kleines Bier protokollieren, 0,5 Einheiten")
     }
 
-    @Test("WatchEarlierOffset computes target timestamps and localizes titles and accessibility labels")
+    @Test("EarlierOffset computes target timestamps and localizes titles and accessibility labels")
     func earlierOffsets() {
         let baseDate = Self.makeDate(2026, 10, 22, 22, 0, in: Self.berlinTimeZone)
 
-        #expect(WatchEarlierOffset.minutes15.seconds == 900)
-        #expect(WatchEarlierOffset.minutes30.seconds == 1800)
-        #expect(WatchEarlierOffset.hours1.seconds == 3600)
-        #expect(WatchEarlierOffset.hours2.seconds == 7200)
-        #expect(WatchEarlierOffset.hours3.seconds == 10_800)
+        #expect(EarlierOffset.minutes15.seconds == 900)
+        #expect(EarlierOffset.minutes30.seconds == 1800)
+        #expect(EarlierOffset.hours1.seconds == 3600)
+        #expect(EarlierOffset.hours2.seconds == 7200)
+        #expect(EarlierOffset.hours3.seconds == 10_800)
 
         #expect(
-            WatchEarlierOffset.minutes15.targetTimestamp(from: baseDate)
+            EarlierOffset.minutes15.targetTimestamp(from: baseDate)
                 == Self.makeDate(2026, 10, 22, 21, 45, in: Self.berlinTimeZone)
         )
         #expect(
-            WatchEarlierOffset.hours3.targetTimestamp(from: baseDate)
+            EarlierOffset.hours3.targetTimestamp(from: baseDate)
                 == Self.makeDate(2026, 10, 22, 19, 0, in: Self.berlinTimeZone)
         )
 
-        #expect(WatchEarlierOffset.minutes15.localizedTitle(locale: Self.englishLocale) == "15 min ago")
-        #expect(WatchEarlierOffset.minutes15.localizedTitle(locale: Self.germanLocale) == "vor 15 Min.")
-        #expect(WatchEarlierOffset.hours2.localizedTitle(locale: Self.englishLocale) == "2 h ago")
-        #expect(WatchEarlierOffset.hours2.localizedTitle(locale: Self.germanLocale) == "vor 2 Std.")
+        #expect(EarlierOffset.minutes15.localizedTitle(locale: Self.englishLocale) == "15 min ago")
+        #expect(EarlierOffset.minutes15.localizedTitle(locale: Self.germanLocale) == "vor 15 Min.")
+        #expect(EarlierOffset.hours2.localizedTitle(locale: Self.englishLocale) == "2 h ago")
+        #expect(EarlierOffset.hours2.localizedTitle(locale: Self.germanLocale) == "vor 2 Std.")
 
-        let a11yEn = WatchEarlierOffset.minutes30.accessibilityLabel(
+        let a11yEn = EarlierOffset.minutes30.accessibilityLabel(
             presetKey: "beer",
             fallbackName: "beer",
             locale: Self.englishLocale
         )
         #expect(a11yEn == "Log beer, 30 min ago")
 
-        let a11yDe = WatchEarlierOffset.minutes30.accessibilityLabel(
+        let a11yDe = EarlierOffset.minutes30.accessibilityLabel(
             presetKey: "beer",
             fallbackName: "beer",
             locale: Self.germanLocale
@@ -256,7 +256,7 @@ struct HalfUnitWatchTests {
 
         // Log Beer (1 HU) and Small wine earlier (30 min ago, 0.5 HU) -> Today: 1.5 HU
         let mondayBeer = try service.log(preset: beerPreset, source: .watch)
-        let earlierTime = WatchEarlierOffset.minutes30.targetTimestamp(from: currentNow.value)
+        let earlierTime = EarlierOffset.minutes30.targetTimestamp(from: currentNow.value)
         let mondayWine = try service.log(preset: smallWinePreset, at: earlierTime, source: .watch)
         #expect(mondayWine.timestamp == earlierTime)
 

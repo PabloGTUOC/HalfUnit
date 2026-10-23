@@ -22,6 +22,8 @@
 	<string>group.$(BUNDLE_ID_PREFIX).halfunit</string>
 	<key>HalfUnitCloudKitContainer</key>
 	<string>iCloud.$(BUNDLE_ID_PREFIX).halfunit</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Half Unit uses Face ID to unlock the app.</string>
 	<key>NSHealthUpdateUsageDescription</key>
 	<string>Half Unit saves each drink you log to Apple Health as alcoholic beverages.</string>
 	<key>UIBackgroundModes</key>

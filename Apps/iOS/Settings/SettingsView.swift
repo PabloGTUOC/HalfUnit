@@ -32,6 +32,20 @@ struct SettingsView: View {
 
     let logService: LogService
     let healthSync: HealthSync
+    let reminderScheduler: ReminderScheduler
+    let appLockStateMachine: AppLockStateMachine
+
+    init(
+        logService: LogService,
+        healthSync: HealthSync,
+        reminderScheduler: ReminderScheduler = .shared,
+        appLockStateMachine: AppLockStateMachine = .shared
+    ) {
+        self.logService = logService
+        self.healthSync = healthSync
+        self.reminderScheduler = reminderScheduler
+        self.appLockStateMachine = appLockStateMachine
+    }
 
     @Environment(\.dismiss) private var dismiss
     @Environment(\.locale) private var locale
@@ -44,6 +58,8 @@ struct SettingsView: View {
     @State private var isShowingRestoreConfirmation = false
     @State private var isShowingFileImporter = false
     @State private var statusBannerMessage: String?
+    @State private var reminderStatusMessage: String?
+    @State private var appLockStatusMessage: String?
 
     var body: some View {
         NavigationStack {
@@ -53,6 +69,8 @@ struct SettingsView: View {
                     dayBoundarySection(snapshot: snapshot)
                     displayUnitSection(snapshot: snapshot)
                     healthSection(snapshot: snapshot)
+                    remindersSection(snapshot: snapshot)
+                    appLockSection(snapshot: snapshot)
                     dataSection(snapshot: snapshot)
                     aboutSection(snapshot: snapshot)
                 }
@@ -304,6 +322,74 @@ struct SettingsView: View {
         }
     }
 
+    private func remindersSection(snapshot: SettingsScreenSnapshot) -> some View {
+        Section {
+            Toggle(
+                "settings.reminders.toggle",
+                isOn: Binding(
+                    get: { snapshot.remindersEnabled },
+                    set: { isEnabled in
+                        toggleReminders(isEnabled)
+                    }
+                )
+            )
+            .tint(.teal)
+            .accessibilityLabel(Text("settings.reminders.toggle"))
+
+            if snapshot.remindersEnabled {
+                DatePicker(
+                    "settings.reminders.time",
+                    selection: Binding(
+                        get: {
+                            reminderDate(from: snapshot.reminderMinutes)
+                        },
+                        set: { newDate in
+                            updateReminderTime(from: newDate)
+                        }
+                    ),
+                    displayedComponents: .hourAndMinute
+                )
+                .accessibilityLabel(Text("settings.reminders.time"))
+            }
+
+            if let reminderStatusMessage {
+                Text(reminderStatusMessage)
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
+        } header: {
+            Text("settings.section.reminders")
+        } footer: {
+            Text("settings.reminders.footer")
+        }
+    }
+
+    private func appLockSection(snapshot: SettingsScreenSnapshot) -> some View {
+        Section {
+            Toggle(
+                "settings.appLock.toggle",
+                isOn: Binding(
+                    get: { snapshot.appLockEnabled },
+                    set: { isEnabled in
+                        toggleAppLock(isEnabled)
+                    }
+                )
+            )
+            .tint(.teal)
+            .accessibilityLabel(Text("settings.appLock.toggle"))
+
+            if let appLockStatusMessage {
+                Text(appLockStatusMessage)
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
+        } header: {
+            Text("settings.section.appLock")
+        } footer: {
+            Text("settings.appLock.footer")
+        }
+    }
+
     private func dataSection(snapshot: SettingsScreenSnapshot) -> some View {
         Section {
             Button {
@@ -390,8 +476,104 @@ struct SettingsView: View {
                 healthSync: healthSync,
                 locale: locale
             )
+            if let snapshot, snapshot.remindersEnabled {
+                Task {
+                    let status = await reminderScheduler.authorizationStatus()
+                    if status == .denied {
+                        reminderStatusMessage = AppLocalization.string(
+                            "settings.reminders.denied",
+                            locale: locale
+                        )
+                    }
+                }
+            }
         } catch {
             Self.logger.error("Failed to load Settings state: \(error.localizedDescription, privacy: .private)")
+        }
+    }
+
+    private func reminderDate(from minutes: Int) -> Date {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone.autoupdatingCurrent
+        var components = DateComponents()
+        components.hour = max(0, min(23, minutes / 60))
+        components.minute = max(0, min(59, minutes % 60))
+        return calendar.date(from: components)
+            ?? Date(timeIntervalSince1970: TimeInterval(minutes * 60))
+    }
+
+    private func reminderMinutes(from date: Date) -> Int {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone.autoupdatingCurrent
+        let components = calendar.dateComponents([.hour, .minute], from: date)
+        return (components.hour ?? 21) * 60 + (components.minute ?? 0)
+    }
+
+    private func toggleReminders(_ isEnabled: Bool) {
+        Task {
+            let result = await SettingsActions.setRemindersEnabled(
+                isEnabled,
+                minutes: snapshot?.reminderMinutes,
+                logService: logService,
+                reminderScheduler: reminderScheduler,
+                locale: locale
+            )
+            switch result {
+            case .scheduled:
+                reminderStatusMessage = nil
+            case .denied:
+                reminderStatusMessage = AppLocalization.string(
+                    "settings.reminders.denied",
+                    locale: locale
+                )
+            case .failed(let message):
+                reminderStatusMessage = message
+            }
+            reloadState()
+        }
+    }
+
+    private func updateReminderTime(from newDate: Date) {
+        let minutes = reminderMinutes(from: newDate)
+        Task {
+            do {
+                try await SettingsActions.setReminderTime(
+                    minutes: minutes,
+                    logService: logService,
+                    reminderScheduler: reminderScheduler,
+                    locale: locale
+                )
+                reloadState()
+            } catch {
+                Self.logger.error(
+                    "Failed to update reminder time: \(error.localizedDescription, privacy: .private)"
+                )
+            }
+        }
+    }
+
+    private func toggleAppLock(_ isEnabled: Bool) {
+        let machine = appLockStateMachine
+        Task {
+            let reason = AppLocalization.string("settings.appLock.authReason", locale: locale)
+            let result = await SettingsActions.setAppLockEnabled(
+                isEnabled,
+                logService: logService,
+                stateMachine: machine,
+                authReason: reason
+            )
+            switch result {
+            case .enabled:
+                appLockStatusMessage = nil
+            case .unavailable:
+                appLockStatusMessage = AppLocalization.string(
+                    "settings.appLock.unavailable",
+                    locale: locale
+                )
+            case .failed:
+                appLockStatusMessage = nil
+            }
+            reloadState()
         }
     }
 

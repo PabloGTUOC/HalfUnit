@@ -1,6 +1,23 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "NSFaceIDUsageDescription" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Half Unit verwendet Face ID zum Entsperren der App."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Half Unit uses Face ID to unlock the app."
+          }
+        }
+      }
+    },
     "NSHealthUpdateUsageDescription" : {
       "extractionState" : "manual",
       "localizations" : {
