@@ -17,7 +17,7 @@
 *(Character count: 86 / 100)*
 
 ## Primary Category
-Health & Fitness (or Lifestyle)
+Health & Fitness
 
 ## Secondary Category
 Lifestyle
@@ -33,7 +33,7 @@ Welcome to Half Unit!
 - 100% private: no user accounts, no ads, no trackers, and all data stored on-device and in your private iCloud.
 
 ## Full Description
-*(Character count: 3094 / 4000)*
+*(Character count: 3306 / 4000)*
 
 ```text
 Half Unit is a native iPhone and Apple Watch app designed for quick, honest awareness of your alcohol intake and alcohol-free days. Log drinks in a single tap, track your streaks without judgment, and view long-term drinking patterns over 3 months, 12 months, or 2 years.
@@ -41,7 +41,7 @@ Half Unit is a native iPhone and Apple Watch app designed for quick, honest awar
 LOG IN UNDER 3 SECONDS
 • One-tap logging: Hit a preset button and you are done. No tedious forms, no surveys, no friction.
 • 6 flexible presets: Small beer, small wine, beer, wine glass, shot, or long drink / double. Customize, reorder, or add your own anytime.
-• 5-second undo: Made a mistake? Tap the undo banner to immediately remove the entry.
+• 5-second undo: Made a mistake? Tap the undo banner to remove the entry immediately from your list.
 • Log earlier: Tap and hold any preset to log a drink from earlier in the evening or morning after.
 
 DAYS WITHOUT ALCOHOL
@@ -62,13 +62,14 @@ STANDALONE APPLE WATCH APP
 
 PRIVATE BY DEFAULT
 • No accounts: No registration, no passwords, and no personal data collected.
-• No developer servers: Your data is stored on your device and syncs privately across your devices via your private Apple iCloud account (CloudKit).
+• No developer servers: Your data is stored on your device and syncs privately across your devices via your private Apple iCloud account (CloudKit), encrypted in transit and at rest.
 • Zero tracking: No third-party SDKs, no advertising, and no analytics tracking.
-• Biometric lock: Protect your app with optional Face ID, Touch ID, or device passcode.
+• Biometric lock: Protect your app with optional Face ID, Touch ID, or device passcode (off by default).
+• Evening reminder: Optional daily reminder to log your day (off by default).
 • Full data ownership: Export your entire history to CSV (for Numbers or Excel) or JSON at any time.
 
 APPLE HEALTH INTEGRATION
-• Seamless sync: On iOS, Half Unit optionally mirrors logged drinks to Apple Health under Alcoholic Beverages as standard drinks (grams ÷ 10).
+• Seamless sync: On iOS, Half Unit optionally mirrors logged drinks to Apple Health under Alcoholic Beverages as standard drinks (grams ÷ 10). Edits and deletes update in Health when the iPhone app next syncs.
 • Write-only & private: Half Unit only writes data you log and never reads personal records from other apps. Fully functional even if Health permission is not granted.
 
 DISCLAIMER

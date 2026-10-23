@@ -17,10 +17,10 @@ This Privacy Policy explains how Half Unit stores and processes information on y
 | **Analytics & telemetry** | None. No third-party analytics or crash reporting SDKs. |
 | **Advertising & tracking** | None. App Store privacy classification is **Data Not Collected**. |
 | **Local storage** | Stored on-device via Apple SwiftData in an App Group container. |
-| **Cloud sync** | End-to-end via your private Apple iCloud database (CloudKit). |
+| **Cloud sync** | Via your private Apple iCloud database (CloudKit); encrypted in transit and at rest. |
 | **Apple Health** | Optional on iOS: writes logged drinks as Alcoholic Beverages. |
-| **App lock** | Optional: protected via Face ID, Touch ID, or device passcode. |
-| **Local reminders** | Optional: on-device evening reminder; no external push servers. |
+| **App lock** | Optional (off by default): protected via Face ID, Touch ID, or device passcode. |
+| **Local reminders** | Optional (off by default): on-device evening reminder; no external push servers. |
 | **Data export** | User-initiated CSV and JSON export through the system share sheet. |
 
 ---
@@ -33,10 +33,11 @@ When you log drinks or adjust settings in Half Unit, your entries are saved dire
 Per-device operational preferences (such as whether onboarding has been completed and whether Apple Health sync is turned on) are saved locally in the App Group `UserDefaults` under required-reason API category `NSPrivacyAccessedAPICategoryUserDefaults` (reason code `1C8F.1`).
 
 ### Private iCloud Sync (CloudKit)
-If you enable iCloud on your Apple devices, Half Unit synchronizes your drink records and preset configurations between your iPhone and Apple Watch using Apple's CloudKit private database (`iCloud.es.opinasdeque.halfunit`). 
+If you enable iCloud on your Apple devices, Half Unit synchronizes your drink records and preset configurations between your iPhone and Apple Watch using Apple's CloudKit private database (`iCloud.es.opinasdeque.halfunit`).
 
-- Your entries are transmitted and stored encrypted within your personal iCloud account.
-- The developer has no access to your private CloudKit database, encryption keys, or stored entries.
+- Your data syncs through your private iCloud database. Apple encrypts it in transit and at rest.
+- With Advanced Data Protection enabled on your Apple account, this data is end-to-end encrypted.
+- The developer cannot access your private CloudKit database, encryption keys, or stored entries.
 - Synchronization relies exclusively on Apple's infrastructure.
 
 ---
@@ -48,7 +49,7 @@ On iOS devices, Half Unit offers optional integration with Apple HealthKit.
 ### What Half Unit Writes
 - When enabled by you, Half Unit writes logged drinks to the Apple Health app as samples of `Alcoholic Beverages` (`HKQuantityTypeIdentifier.numberOfAlcoholicBeverages`).
 - Drinks are written as standard drink counts, calculated as pure alcohol grams divided by 10 (`grams / 10`), matching Apple Health conventions.
-- Each sample includes sync identifiers so edits and deletions made in Half Unit update or remove the corresponding Health sample.
+- Each sample includes sync identifiers so edits and deletions made in Half Unit update or remove the corresponding Health sample when the iPhone app next syncs (immediately if the change is made in the open iPhone app; drinks, edits, or deletes logged from the Apple Watch, widgets, or Siri are written when the iPhone app is next opened or brought to the foreground).
 - Only the iPhone application writes to Apple Health.
 
 ### Limitations and Protections
@@ -61,15 +62,15 @@ On iOS devices, Half Unit offers optional integration with Apple HealthKit.
 
 ## 4. Notifications and Device Security
 
-- **Evening Reminder:** You can optionally enable an evening reminder ("Anything to log today?") at a time of your choice. Reminders are scheduled locally on your device using Apple's UserNotifications framework. No external notification server is contacted.
-- **Biometric App Lock:** You can optionally enable Face ID, Touch ID, or device passcode authentication to open the app. Authentication is handled entirely by the iOS system (`LocalAuthentication`). Half Unit never accesses or stores your biometric data.
+- **Evening Reminder:** You can optionally enable an evening reminder ("Anything to log today?") at a time of your choice. Reminders are optional, off by default, and scheduled locally on your device using Apple's UserNotifications framework. No external notification server is contacted.
+- **Biometric App Lock:** You can optionally enable Face ID, Touch ID, or device passcode authentication to open the app. This feature is optional, off by default, and handled entirely by the iOS system (`LocalAuthentication`). Half Unit never accesses or stores your biometric data.
 
 ---
 
 ## 5. Data Export and Deletion
 
 - **Export:** You can export your complete history at any time as a CSV file or JSON file through the iOS share sheet.
-- **Deletions:** When you delete a drink in Half Unit, the entry is marked with a deletion date and immediately removed from active views, statistics, and Apple Health. Deleted records are permanently purged after 30 days.
+- **Deletions:** When you delete a drink in Half Unit, the entry is marked with a deletion date and removed from active views and statistics. It is removed from Apple Health when the iPhone app next syncs (immediately if deleted in the open iPhone app, or when the iPhone app is next opened if deleted elsewhere). Deleted records are permanently purged after 30 days.
 - **App Removal:** Deleting Half Unit from your devices deletes all local application data. You can manage and delete your CloudKit data at any time through your device settings under `Settings > [Your Name] > iCloud > Manage Storage`.
 
 ---

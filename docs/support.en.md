@@ -48,13 +48,13 @@ Your headline counter shows consecutive alcohol-free logical days. For example, 
 Yes. The Apple Watch app operates completely standalone. You can log drinks on your wrist with a single tap even when your phone is turned off or not nearby. When the devices reconnect, your entries synchronize automatically through your private iCloud database and WatchConnectivity.
 
 ### 6. How does Apple Health integration work?
-On iPhone, Half Unit can mirror your logged drinks to Apple Health as `Alcoholic Beverages` samples. Entries are converted to standard drink counts (`grams / 10`). When you edit or delete a drink in Half Unit, the corresponding Apple Health entry is updated or deleted as well. Apple Health integration is optional and write-only; Half Unit does not read personal records or data from other apps.
+On iPhone, Half Unit can mirror your logged drinks to Apple Health as `Alcoholic Beverages` samples. Entries are converted to standard drink counts (`grams / 10`). When you edit or delete a drink in Half Unit, the corresponding Apple Health entry is updated or removed when the iPhone app next syncs (immediately if the iPhone app is open, or when it is next opened if changes were made on Apple Watch, widgets, or Siri). Apple Health integration is optional and write-only; Half Unit does not read personal records or data from other apps.
 
 ### 7. Can I export my data?
 Yes. In Settings → Data, you can export your entire drink history as a CSV spreadsheet (compatible with Apple Numbers, Microsoft Excel, and Google Sheets) or generate a JSON data file for data restore.
 
 ### 8. Is my data private?
-Completely. Half Unit requires no account registration, runs no developer servers, and includes no third-party analytics or advertising SDKs. Your data resides on your devices and syncs through your personal, private Apple iCloud account (CloudKit).
+Completely. Half Unit requires no account registration, runs no developer servers, and includes no third-party analytics or advertising SDKs. Your data resides on your devices and syncs through your personal, private Apple iCloud account (CloudKit), encrypted in transit and at rest (and end-to-end encrypted with Advanced Data Protection). Optional security features, including Face ID / passcode lock and an evening reminder, are available in Settings (both optional and off by default).
 
 ---
 

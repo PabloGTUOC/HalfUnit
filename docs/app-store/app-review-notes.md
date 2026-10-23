@@ -18,6 +18,7 @@ Half Unit requests write access for `HKQuantityTypeIdentifier.numberOfAlcoholicB
 - **Why access is needed:** When the user logs an alcoholic drink in Half Unit, the app can mirror the entry to Apple Health as a sample of `Alcoholic Beverages`, converted into standard drinks (`pure alcohol grams / 10`). This allows the user's Health database to stay up to date with their logging.
 - **Write-only in version 1:** Half Unit requests write access only (`NSHealthUpdateUsageDescription`). It does not read health records or drinks logged by third-party applications.
 - **Strictly optional:** HealthKit integration is 100% optional. If the user taps "Not Now" in onboarding or denies permission in the iOS system prompt, all other features of Half Unit (drink logging, streak counting, period analytics, presets customization, and CSV export) continue to work normally without restriction or error banners.
+- **Sync timing:** The iPhone app is the sole writer to Apple Health. Changes made in the open iPhone app reach HealthKit immediately; changes originating from the Apple Watch, widgets, or Siri are written to HealthKit when the iPhone app is next opened or brought to the foreground.
 
 ---
 
@@ -33,14 +34,14 @@ Half Unit requests write access for `HKQuantityTypeIdentifier.numberOfAlcoholicB
 ### B. Quick Logging & 5-Second Undo
 1. On the **Today** tab, tap any preset button (e.g., "Beer, 1 HU").
 2. Notice the immediate tactile haptic response and the appearance of a 5-second **Undo** banner at the bottom of the screen.
-3. If you tap **Undo**, the drink is removed immediately from the database and from Apple Health.
+3. If you tap **Undo**, the drink is removed immediately from the local database, and removed from Apple Health when the iPhone app next syncs (immediately while the iPhone app is open).
 4. Tap a preset again to record a drink. Notice the headline counter updates to show today's consumption.
 
 ### C. History & Editing
 1. Switch to the **History** tab.
 2. The logged drink is listed under today's logical date.
 3. Tap the entry to edit details (timestamp, preset, volume, ABV, or note), or swipe left to delete the entry.
-4. If Apple Health permission was granted, changes immediately synchronize to the Apple Health app.
+4. If Apple Health permission was granted, changes synchronize to the Apple Health app (immediately while the iPhone app is open, or upon next opening if logged via Watch, widgets, or Siri).
 
 ### D. Insights & Analytics
 1. Switch to the **Insights** tab.
@@ -49,7 +50,7 @@ Half Unit requests write access for `HKQuantityTypeIdentifier.numberOfAlcoholicB
 
 ### E. Settings & Data Export
 1. Tap the gear icon in the top right corner of the **Today** tab to open **Settings**.
-2. Customize preset details, change the day-boundary hour, or switch the display unit (HU, grams, German standard drinks, UK units).
+2. Customize preset details, change the day-boundary hour, or switch the display unit (HU, grams, German standard drinks, UK units). Optional Face ID lock and optional evening reminder can also be configured here (both off by default).
 3. Under the **Data** section, tap **Export CSV** to open the system share sheet and review the exported spreadsheet file.
 
 ### F. Standalone Apple Watch App

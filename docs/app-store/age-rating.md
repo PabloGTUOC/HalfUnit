@@ -1,13 +1,17 @@
 # App Store Age Rating Questionnaire Guide — Half Unit
 
-This guide outlines the accurate responses and justifications for the **Age Rating** questionnaire in App Store Connect for Half Unit.
+This guide outlines the accurate responses and justifications for completing the **Age Rating** questionnaire in App Store Connect for Half Unit.
 
 ---
 
-## 1. Summary Expected Rating
+## 1. Overview & Strategy
 
-- **Expected Global Age Rating:** **17+**
-- **Primary Driver:** Frequent / Intense Alcohol References.
+Apple periodically revises its age rating questionnaire and rating tiers. The required strategy for Half Unit is straightforward:
+- Answer the questionnaire honestly and accurately based on the app's real functionality.
+- Declare **Frequent / Intense** for alcohol references, because the core purpose of the app is logging alcoholic drinks and alcohol-free days.
+- Select **None** for all violent, sexual, gambling, or horror categories.
+- Confirm **No** for unrestricted web access and **No** for user-generated content shared with other users.
+- The resulting rating is expected to be the highest adult tier App Store Connect assigns for frequent alcohol references. Complete the questionnaire with the honest answers below and leave the final tier assignment to App Store Connect.
 
 ---
 
@@ -15,7 +19,7 @@ This guide outlines the accurate responses and justifications for the **Age Rati
 
 ### Alcohol, Tobacco, or Drug Use or References
 - **Selection:** **Frequent / Intense Alcohol References**
-- **Rationale:** Half Unit is specifically designed for adults to log their consumption of alcoholic beverages (beer, wine, spirits) and track alcohol-free days. The entire core workflow centers on alcohol tracking, alcohol percentages by volume (ABV), and pure alcohol grams. Under Apple's rating guidelines, any application whose primary function involves tracking or logging alcoholic drinks must select Frequent/Intense Alcohol References, resulting in an automatic 17+ age rating.
+- **Rationale:** Half Unit is specifically created for adults to log their consumption of alcoholic beverages (beer, wine, spirits) and track alcohol-free days. Its workflows center on alcohol tracking, alcohol percentages by volume (ABV), and pure alcohol grams. Answering Frequent / Intense accurately reflects this core focus.
 
 ### Cartoon or Fantasy Violence
 - **Selection:** **None**
@@ -39,7 +43,7 @@ This guide outlines the accurate responses and justifications for the **Age Rati
 
 ### Medical or Treatment Information
 - **Selection:** **None**
-- **Rationale:** Half Unit does not provide medical treatment, diagnosis, medical advice, or rehabilitation therapy. It is an informational logging and habit-awareness app. Settings includes purely external informational links to public health authorities (Kenn dein Limit, NHS).
+- **Rationale:** Half Unit does not provide medical treatment, diagnosis, medical advice, or rehabilitation therapy. It is an informational logging and habit-awareness app. Settings includes external informational links to public health authorities (Kenn dein Limit, NHS).
 
 ### Simulated Gambling
 - **Selection:** **None**
@@ -53,11 +57,24 @@ This guide outlines the accurate responses and justifications for the **Age Rati
 - **Selection:** **No**
 - **Rationale:** The application does not embed an open web browser. Informational links to public health resources and privacy policies open outside the app in the user's default system browser (Safari).
 
+### User-Generated Content Shared with Others
+- **Selection:** **No**
+- **Rationale:** Half Unit has no social features, no public feeds, and no mechanism for sharing user-generated content or drink notes with other users. All data remains private on the user's devices and iCloud account.
+
 ---
 
-## 3. Product Positioning Justification
+## 3. Summary of Selections
 
-The 17+ rating is appropriate and desirable:
-1. **Target Audience:** Half Unit is created for legal-age adults who drink socially and seek transparent awareness of their consumption habits.
-2. **Compliance & Transparency:** Being completely forthcoming about alcohol references ensures smooth App Store review and prevents rejections or age rating audits.
-3. **Parental Controls:** A 17+ classification ensures that device parental restrictions on minors' devices properly restrict access to alcohol tracking apps.
+| Category | Answer |
+|---|---|
+| Alcohol, Tobacco, or Drug References | Frequent / Intense Alcohol References |
+| Cartoon / Fantasy Violence | None |
+| Realistic Violence | None |
+| Sexual Content / Nudity | None |
+| Profanity / Crude Humor | None |
+| Horror / Fear Themes | None |
+| Medical / Treatment Information | None |
+| Simulated Gambling | None |
+| Contests | None |
+| Unrestricted Web Access | No |
+| User-Generated Content Shared | No |

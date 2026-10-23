@@ -17,7 +17,7 @@
 *(Zeichenanzahl: 98 / 100)*
 
 ## Primäre Kategorie
-Gesundheit und Fitness (oder Lifestyle)
+Gesundheit und Fitness
 
 ## Sekundäre Kategorie
 Lifestyle
@@ -33,7 +33,7 @@ Willkommen bei Half Unit!
 - 100 % privat: keine Benutzerkonten, keine Werbung, kein Tracking; Datenspeicherung ausschließlich lokal und in Ihrer privaten iCloud.
 
 ## Vollständige Beschreibung
-*(Zeichenanzahl: 3627 / 4000)*
+*(Zeichenanzahl: 3881 / 4000)*
 
 ```text
 Half Unit ist eine native App für iPhone und Apple Watch, die für ehrliche Achtsamkeit und schnelles Protokollieren von alkoholischen Getränken und alkoholfreien Tagen entwickelt wurde. Erfassen Sie Getränke mit einem Fingertipp, verfolgen Sie Ihre alkoholfreien Serien ohne erhobenen Zeigefinger und erkennen Sie langfristige Konsummuster über 3 Monate, 12 Monate oder 2 Jahre.
@@ -41,7 +41,7 @@ Half Unit ist eine native App für iPhone und Apple Watch, die für ehrliche Ach
 IN UNTER 3 SEKUNDEN PROTOKOLLIEREN
 • Protokollieren mit 1 Fingertipp: Ein Tastendruck genügt. Keine endlosen Abfragen, keine Umfragen, kein Aufwand.
 • 6 praktische Vorlagen: Kleines Bier, kleiner Wein, Bier, Glas Wein, Schnaps und Longdrink / Doppelter. Jederzeit anpassbar, ausblendbar oder durch eigene Vorlagen erweiterbar.
-• 5-Sekunden-Rückgängig: Vertippt? Tippen Sie auf das Rückgängig-Banner, um den Eintrag sofort zu entfernen.
+• 5-Sekunden-Rückgängig: Vertippt? Tippen Sie auf das Rückgängig-Banner, um den Eintrag sofort aus Ihrer Liste zu entfernen.
 • Nachträglich eintragen: Halten Sie eine Vorlage gedrückt, um Getränke für einen früheren Zeitpunkt des Abends oder des Vortags zu erfassen.
 
 TAGE OHNE ALKOHOL IM BLICK
@@ -62,13 +62,14 @@ EIGENSTÄNDIGE APPLE WATCH-APP
 
 PRIVATSPHÄRE OHNE KOMPROMISSE
 • Keine Benutzerkonten: Keine Registrierung, keine Passwörter und keine Erhebung personenbezogener Daten.
-• Keine Entwicklerserver: Ihre Daten verbleiben auf Ihren Geräten und synchronisieren sich verschlüsselt über Ihre private Apple iCloud (CloudKit).
+• Keine Entwicklerserver: Ihre Daten verbleiben auf Ihren Geräten und synchronisieren sich über Ihre private Apple iCloud (CloudKit), verschlüsselt bei der Übertragung und auf den Servern.
 • Kein Tracking: Keine Werbe- oder Analyse-SDKs von Drittanbietern.
-• Biometrischer Schutz: Sperren Sie die App optional per Face ID, Touch ID oder Gerätecode.
+• Biometrischer Schutz: Sperren Sie die App optional per Face ID, Touch ID oder Gerätecode (standardmäßig aus).
+• Abenderinnerung: Optionale tägliche Erinnerung zum Eintragen (standardmäßig aus).
 • Volle Datenkontrolle: Exportieren Sie Ihre Daten jederzeit als CSV (für Numbers oder Excel) oder JSON.
 
 APPLE HEALTH INTEGRATION
-• Nahtlose Synchronisation: Spiegelt eingetragene Getränke optional in Apple Health als „Alkoholische Getränke“ in Standardgläsern (Gramm ÷ 10).
+• Nahtlose Synchronisation: Spiegelt eingetragene Getränke optional in Apple Health als „Alkoholische Getränke“ in Standardgläsern (Gramm ÷ 10). Änderungen und Löschungen werden bei der nächsten Synchronisation der iPhone-App übertragen.
 • Rein schreibend & sicher: Half Unit liest keine Daten aus Apple Health oder fremden Apps aus. Die App funktioniert auch ohne Health-Freigabe uneingeschränkt.
 
 HAFTUNGSAUSSCHLUSS

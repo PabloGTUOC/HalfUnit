@@ -48,13 +48,13 @@ Der Zähler auf der Hauptansicht zeigt aufeinanderfolgende alkoholfreie logische
 Ja. Die Apple Watch-App funktioniert vollkommen eigenständig. Sie können Getränke direkt am Handgelenk mit einem Fingertipp eintragen – auch wenn das iPhone ausgeschaltet oder nicht in Reichweite ist. Sobald sich beide Geräte wieder verbinden, synchronisieren sich die Einträge automatisch über Ihre private iCloud-Datenbank und WatchConnectivity.
 
 ### 6. Wie funktioniert die Integration mit Apple Health?
-Auf dem iPhone kann Half Unit eingetragene Getränke als Datenpunkte der Kategorie `Alkoholische Getränke` in Apple Health spiegeln. Die Umrechnung erfolgt in Standardgläser (`Gramm / 10`). Wenn Sie einen Eintrag in Half Unit bearbeiten oder löschen, wird auch der Eintrag in Apple Health synchronisiert oder entfernt. Die Verbindung ist rein optional und beschränkt sich auf Schreibzugriffe; Half Unit liest keine Daten aus Apple Health oder anderen Apps aus.
+Auf dem iPhone kann Half Unit eingetragene Getränke als Datenpunkte der Kategorie `Alkoholische Getränke` in Apple Health spiegeln. Die Umrechnung erfolgt in Standardgläser (`Gramm / 10`). Wenn Sie einen Eintrag in Half Unit bearbeiten oder löschen, wird auch der Eintrag in Apple Health aktualisiert oder entfernt, sobald die iPhone-App das nächste Mal synchronisiert (sofort bei geöffneter iPhone-App oder beim nächsten Öffnen der iPhone-App, falls die Änderung über Apple Watch, Widgets oder Siri vorgenommen wurde). Die Verbindung ist rein optional und beschränkt sich auf Schreibzugriffe; Half Unit liest keine Daten aus Apple Health oder anderen Apps aus.
 
 ### 7. Kann ich meine Daten exportieren?
 Ja. Unter `Einstellungen > Daten` können Sie Ihren gesamten Verlauf als CSV-Tabelle (kompatibel mit Apple Numbers, Microsoft Excel und Google Sheets) oder als JSON-Sicherungsdatei für die Datensicherung und Wiederherstellung exportieren.
 
 ### 8. Wie steht es um den Datenschutz?
-Ihre Privatsphäre ist uneingeschränkt geschützt. Half Unit benötigt kein Benutzerkonto, betreibt keine Entwicklerserver und nutzt keinerlei Werbe- oder Analyse-SDKs. Ihre Daten verbleiben auf Ihren Geräten und synchronisieren sich ausschließlich über Ihr persönliches iCloud-Konto (CloudKit).
+Ihre Privatsphäre ist uneingeschränkt geschützt. Half Unit benötigt kein Benutzerkonto, betreibt keine Entwicklerserver und nutzt keinerlei Werbe- oder Analyse-SDKs. Ihre Daten verbleiben auf Ihren Geräten und synchronisieren sich ausschließlich über Ihr persönliches iCloud-Konto (CloudKit), verschlüsselt bei der Übertragung und auf den Servern (sowie Ende-zu-Ende verschlüsselt bei aktiviertem Erweiterten Datenschutz). Optionale Schutz- und Komfortfunktionen wie die Face ID-Sperre und eine tägliche Abenderinnerung stehen in den Einstellungen bereit (beide optional und standardmäßig deaktiviert).
 
 ---
 

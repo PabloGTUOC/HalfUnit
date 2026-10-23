@@ -17,10 +17,10 @@ Diese Datenschutzerklärung erläutert, wie Half Unit Daten auf Ihren Geräten s
 | **Analyse & Telemetrie** | Keine Drittanbieter-Analyse oder Absturzmelder integriert. |
 | **Werbung & Tracking** | Keine Werbung, kein Tracking. Im App Store eingestuft als **Data Not Collected** (Keine Datenerfassung). |
 | **Lokale Speicherung** | Gespeichert auf dem Gerät via Apple SwiftData in einem sicheren App-Group-Container. |
-| **Cloud-Synchronisation** | Vollständig über Ihre private Apple iCloud-Datenbank (CloudKit). |
+| **Cloud-Synchronisation** | Über Ihre private Apple iCloud-Datenbank (CloudKit); verschlüsselt bei der Übertragung und auf den Servern. |
 | **Apple Health** | Optional auf iOS: schreibt protokollierte Getränke als „Alkoholische Getränke“. |
-| **App-Sperre** | Optional: Schutz per Face ID, Touch ID oder Gerätecode. |
-| **Lokale Erinnerungen** | Optional: auf dem Gerät gesteuerte Abenderinnerung; keine externen Push-Dienste. |
+| **App-Sperre** | Optional (standardmäßig aus): Schutz per Face ID, Touch ID oder Gerätecode. |
+| **Lokale Erinnerungen** | Optional (standardmäßig aus): auf dem Gerät gesteuerte Abenderinnerung; keine externen Push-Dienste. |
 | **Datenexport** | Durch Sie initiierter CSV- und JSON-Export über das iOS-Freigabemenü. |
 
 ---
@@ -35,7 +35,8 @@ Gerätespezifische Voreinstellungen (wie der Abschluss des Einführungsvorgangs 
 ### Private iCloud-Synchronisation (CloudKit)
 Sofern iCloud auf Ihren Apple-Geräten aktiviert ist, synchronisiert Half Unit Ihre Einträge und Voreinstellungen zwischen Ihrem iPhone und Ihrer Apple Watch über die private CloudKit-Datenbank Ihres persönlichen Apple-Accounts (`iCloud.es.opinasdeque.halfunit`).
 
-- Sämtliche Einträge werden Ende-zu-Ende verschlüsselt in Ihrem persönlichen iCloud-Speicher gesichert.
+- Ihre Daten werden über Ihre private iCloud-Datenbank synchronisiert. Apple verschlüsselt die Daten bei der Übertragung und auf den Servern (in transit und at rest).
+- Bei aktiviertem Erweiterten Datenschutz (Advanced Data Protection) in Ihrem Apple-Konto sind diese Daten Ende-zu-Ende verschlüsselt.
 - Der Entwickler hat zu keinem Zeitpunkt Zugriff auf Ihre private CloudKit-Datenbank, Ihre Schlüssel oder Ihre Einträge.
 - Die Synchronisation erfolgt ausschließlich über die offizielle Infrastruktur von Apple.
 
@@ -48,7 +49,7 @@ Auf iOS-Geräten bietet Half Unit eine freiwillige Anbindung an Apple HealthKit.
 ### Schreibzugriff durch Half Unit
 - Wenn Sie die Synchronisation aktivieren, überträgt Half Unit protokollierte Getränke als Datenpunkte der Kategorie `Alkoholische Getränke` (`HKQuantityTypeIdentifier.numberOfAlcoholicBeverages`) an Apple Health.
 - Die Speicherung erfolgt in Standardgetränken, berechnet aus Gramm reinem Alkohol geteilt durch 10 (`Gramm / 10`), passend zur Konvention von Apple Health.
-- Jeder Datenpunkt enthält eine eindeutige Kennung, sodass nachträgliche Bearbeitungen oder Löschungen in Half Unit den Eintrag in Apple Health synchronisieren oder entfernen.
+- Jeder Datenpunkt enthält eine eindeutige Kennung, sodass nachträgliche Bearbeitungen oder Löschungen in Half Unit den Eintrag in Apple Health aktualisieren oder entfernen, sobald die iPhone-App das nächste Mal synchronisiert (sofort, wenn die Änderung in der geöffneten iPhone-App vorgenommen wird; Einträge, Änderungen oder Löschungen von der Apple Watch, über Widgets oder Siri werden übertragen, sobald die iPhone-App das nächste Mal geöffnet oder in den Vordergrund gebracht wird).
 - Ausschließlich die iPhone-App führt Schreibvorgänge in Apple Health durch.
 
 ### Schutz Ihrer Gesundheitsdaten
@@ -61,15 +62,15 @@ Auf iOS-Geräten bietet Half Unit eine freiwillige Anbindung an Apple HealthKit.
 
 ## 4. Mitteilungen und Gerätesicherheit
 
-- **Abenderinnerung:** Sie können eine optionale tägliche Erinnerung aktivieren („Heute etwas zu protokollieren?“). Diese Mitteilungen werden ausschließlich lokal über das UserNotifications-Framework Ihres Betriebssystems geplant. Es erfolgt keine Verbindung zu externen Servern.
-- **Biometrische App-Sperre:** Sie können die App optional mit Face ID, Touch ID oder Ihrem Gerätecode absichern. Die Authentifizierung erfolgt vollständig über das iOS-System (`LocalAuthentication`). Half Unit erhält zu keinem Zeitpunkt Zugriff auf biometrische Merkmale.
+- **Abenderinnerung:** Sie können eine tägliche Erinnerung aktivieren („Heute etwas zu protokollieren?“). Diese Funktion ist optional, standardmäßig ausgeschaltet und wird ausschließlich lokal über das UserNotifications-Framework Ihres Betriebssystems geplant. Es erfolgt keine Verbindung zu externen Servern.
+- **Biometrische App-Sperre:** Sie können die App mit Face ID, Touch ID oder Ihrem Gerätecode absichern. Diese Funktion ist optional, standardmäßig ausgeschaltet und erfolgt vollständig über das iOS-System (`LocalAuthentication`). Half Unit erhält zu keinem Zeitpunkt Zugriff auf biometrische Merkmale.
 
 ---
 
 ## 5. Datenexport und Löschung
 
 - **Export:** Sie können Ihre Daten jederzeit als CSV-Datei oder JSON-Datei über das Freigabemenü exportieren.
-- **Löschen von Einträgen:** Löschen Sie einen Eintrag in Half Unit, wird dieser sofort aus den Ansichten und Statistiken ausgeblendet und aus Apple Health entfernt. Nach 30 Tagen werden gelöschte Datensätze endgültig bereinigt.
+- **Löschen von Einträgen:** Löschen Sie einen Eintrag in Half Unit, wird dieser sofort aus den aktiven Ansichten und Statistiken ausgeblendet. Er wird bei der nächsten Synchronisation der iPhone-App aus Apple Health entfernt (sofort, wenn das Löschen in der geöffneten iPhone-App vorgenommen wird, oder beim nächsten Öffnen der iPhone-App, falls die Änderung von einem anderen Gerät stammte). Nach 30 Tagen werden gelöschte Datensätze endgültig bereinigt.
 - **Löschen der App:** Durch das Entfernen von Half Unit von Ihren Geräten werden alle lokalen Daten gelöscht. Ihre CloudKit-Daten können Sie jederzeit in den Einstellungen Ihres Apple-Geräts unter `Einstellungen > [Ihr Name] > iCloud > Speicher verwalten` löschen.
 
 ---
