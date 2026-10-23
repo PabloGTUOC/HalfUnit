@@ -50,4 +50,5 @@ All launch documentation, App Store metadata, and release preparation materials 
   - [Age Rating Guide](docs/app-store/age-rating.md)
 - **Testing & Release:**
   - [TestFlight Beta Notes (EN & DE)](docs/testflight/beta-notes.md)
+  - [TestFlight Deployment Guide](docs/testflight/deploy-guide.md)
   - [Release Checklist & Hardware Verification](docs/release-checklist.md)
