@@ -380,6 +380,8 @@ struct SettingsAndExportTests {
         #expect(SettingsAboutLinks.ukURL.absoluteString == "https://www.nhs.uk/live-well/alcohol-advice/")
 
         let requiredKeys = [
+            "disclaimer.body",
+            "disclaimer.title",
             "settings.about.guidanceNote",
             "settings.about.link.germany",
             "settings.about.link.uk",
@@ -444,6 +446,22 @@ struct SettingsAndExportTests {
         #expect(
             AppLocalization.string("settings.about.privacy", locale: Self.englishLocale)
                 == "Your data stays on your devices and in your iCloud."
+        )
+        #expect(
+            AppLocalization.string("disclaimer.title", locale: Self.englishLocale)
+                == "Not medical advice"
+        )
+        #expect(
+            AppLocalization.string("disclaimer.title", locale: Self.germanLocale)
+                == "Keine medizinische Beratung"
+        )
+        #expect(
+            AppLocalization.string("disclaimer.body", locale: Self.englishLocale)
+                == "Half Unit is a personal logging tool for your own use. It is not a medical device and does not provide medical advice, diagnosis or treatment. If you are worried about your drinking, talk to a doctor or a counselling service."
+        )
+        #expect(
+            AppLocalization.string("disclaimer.body", locale: Self.germanLocale)
+                == "Half Unit ist ein Werkzeug zum Protokollieren, nur für Ihren persönlichen Gebrauch. Die App ist kein Medizinprodukt und bietet keine medizinische Beratung, Diagnose oder Behandlung. Wenn Sie sich Sorgen um Ihren Alkoholkonsum machen, sprechen Sie mit einer Ärztin, einem Arzt oder einer Beratungsstelle."
         )
     }
 

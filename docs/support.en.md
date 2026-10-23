@@ -60,9 +60,10 @@ Completely. Half Unit requires no account registration, runs no developer server
 
 ## Health and Medical Disclaimer
 
-Half Unit is an informational tool for tracking personal consumption and mindful awareness.
+Half Unit is a personal logging tool for your own use. It is an informational tool for tracking personal consumption and mindful awareness.
 
-- Half Unit is **not a medical device** and is not designed to diagnose, treat, cure, or prevent any illness or alcohol use disorder.
+- Half Unit is **not a medical device** and does not provide medical advice, diagnosis or treatment. It is not designed to diagnose, treat, cure, or prevent any illness or alcohol use disorder.
+- If you are worried about your drinking, talk to a doctor or a counselling service.
 - The app does not measure blood alcohol concentration (BAC) and does not provide intoxication or safe to drive estimates. Never use the app to decide whether it is safe to operate a vehicle.
 - Official guidelines for low-risk alcohol consumption vary by country. For health advice and official resources, please visit:
   - Germany: [Kenn dein Limit](https://www.kenn-dein-limit.de)

@@ -33,7 +33,7 @@ Willkommen bei Half Unit!
 - 100 % privat: keine Benutzerkonten, keine Werbung, kein Tracking; Datenspeicherung ausschließlich lokal und in Ihrer privaten iCloud.
 
 ## Vollständige Beschreibung
-*(Zeichenanzahl: 3881 / 4000)*
+*(Zeichenanzahl: 3898 / 4000)*
 
 ```text
 Half Unit ist eine native App für iPhone und Apple Watch, die für ehrliche Achtsamkeit und schnelles Protokollieren von alkoholischen Getränken und alkoholfreien Tagen entwickelt wurde. Erfassen Sie Getränke mit einem Fingertipp, verfolgen Sie Ihre alkoholfreien Serien ohne erhobenen Zeigefinger und erkennen Sie langfristige Konsummuster über 3 Monate, 12 Monate oder 2 Jahre.
@@ -73,5 +73,5 @@ APPLE HEALTH INTEGRATION
 • Rein schreibend & sicher: Half Unit liest keine Daten aus Apple Health oder fremden Apps aus. Die App funktioniert auch ohne Health-Freigabe uneingeschränkt.
 
 HAFTUNGSAUSSCHLUSS
-Half Unit ist ein Dokumentationswerkzeug zur Selbsteinschätzung und kein Medizinprodukt. Die App dient weder der Diagnose noch der Behandlung, Linderung oder Vorbeugung von Krankheiten oder Alkoholabhängigkeit (does not diagnose, treat, or cure). Die App ermittelt keine Blutalkoholkonzentration (BAK / blood alcohol concentration) und gibt keine Einschätzungen zur Fahrtüchtigkeit (safe to drive) ab. Offizielle Richtlinien für risikoarmen Konsum variieren je nach Land; verlässliche Informationen bieten Beratungsstellen wie Kenn dein Limit (kenn-dein-limit.de) oder der NHS (nhs.uk).
+Half Unit ist ein Werkzeug zum Protokollieren, nur für Ihren persönlichen Gebrauch. Die App ist kein Medizinprodukt und bietet keine medizinische Beratung, Diagnose oder Behandlung (does not diagnose, treat, or cure). Die App ermittelt keine Blutalkoholkonzentration (BAK / blood alcohol concentration) und gibt keine Einschätzungen zur Fahrtüchtigkeit (safe to drive) ab. Wenn Sie sich Sorgen um Ihren Alkoholkonsum machen, sprechen Sie mit einer Ärztin, einem Arzt oder einer Beratungsstelle. Offizielle Richtlinien für risikoarmen Konsum variieren je nach Land (z. B. kenn-dein-limit.de oder nhs.uk).
 ```

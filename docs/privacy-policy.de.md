@@ -77,9 +77,10 @@ Auf iOS-Geräten bietet Half Unit eine freiwillige Anbindung an Apple HealthKit.
 
 ## 6. Gesundheitshinweis und Haftungsausschluss
 
-Half Unit ist ein Dokumentationswerkzeug zur Förderung der persönlichen Achtsamkeit und zum Protokollieren von Gewohnheiten.
+Half Unit ist ein Werkzeug zum Protokollieren, nur für Ihren persönlichen Gebrauch. Die App ist ein Dokumentationswerkzeug zur Förderung der persönlichen Achtsamkeit und zum Protokollieren von Gewohnheiten.
 
-- Half Unit ist **kein Medizinprodukt**. Die App ist nicht dafür bestimmt und eignet sich nicht dafür, Krankheiten oder Alkoholabhängigkeit zu diagnostizieren, zu behandeln, zu lindern oder zu heilen (does not diagnose, treat, or cure).
+- Half Unit ist **kein Medizinprodukt** und bietet keine medizinische Beratung, Diagnose oder Behandlung. Die App ist nicht dafür bestimmt und eignet sich nicht dafür, Krankheiten oder Alkoholabhängigkeit zu diagnostizieren, zu behandeln, zu lindern oder zu heilen (does not diagnose, treat, or cure).
+- Wenn Sie sich Sorgen um Ihren Alkoholkonsum machen, sprechen Sie mit einer Ärztin, einem Arzt oder einer Beratungsstelle.
 - Die App ermittelt keine Blutalkoholkonzentration (BAK / blood alcohol concentration) und gibt keine Einschätzungen zur Fahrtüchtigkeit (safe to drive) ab. Verlassen Sie sich niemals auf die App, um Ihre Fahrtüchtigkeit oder die Eignung zum Bedienen von Maschinen zu beurteilen.
 - Offizielle Empfehlungen für risikoarmen Alkoholkonsum variieren je nach Land. Für fundierte Gesundheitsinformationen und Beratungsangebote verweisen wir auf öffentliche Stellen:
   - Deutschland: [Kenn dein Limit (BZgA)](https://www.kenn-dein-limit.de)

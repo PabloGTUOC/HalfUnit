@@ -464,6 +464,19 @@ struct SettingsView: View {
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
 
+            VStack(alignment: .leading, spacing: 4) {
+                Text("disclaimer.title")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.primary)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                Text("disclaimer.body")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .accessibilityElement(children: .combine)
+
             Text("settings.about.guidanceNote")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)

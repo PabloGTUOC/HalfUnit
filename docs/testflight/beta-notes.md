@@ -9,7 +9,7 @@ Below are testing guides and focus areas in English and German.
 # English (en-US / en-GB)
 
 ## Welcome to the Half Unit Beta
-Half Unit is a native iPhone and Apple Watch app designed for quick, 1-tap drink logging and honest awareness of your alcohol-free days. Everything is private by design: no user accounts, no ads, no trackers, and all data lives on your devices and in your private iCloud (encrypted in transit and at rest, and end-to-end encrypted with Advanced Data Protection).
+Half Unit is a native iPhone and Apple Watch app designed for quick, 1-tap drink logging and honest awareness of your alcohol-free days. Everything is private by design: no user accounts, no ads, no trackers, and all data lives on your devices and in your private iCloud (encrypted in transit and at rest, and end-to-end encrypted with Advanced Data Protection). A "Not medical advice" personal-use disclaimer is shown on the first onboarding screen and in Settings → About.
 
 Please test the following key features and let us know if anything behaves unexpectedly.
 
@@ -70,7 +70,7 @@ Please test the following key features and let us know if anything behaves unexp
 # Deutsch (de-DE)
 
 ## Willkommen beim Half Unit Betatest
-Vielen Dank, dass Sie Half Unit auf Ihrem iPhone und Ihrer Apple Watch testen! Half Unit wurde für schnelles Protokollieren mit einem Fingertipp und ehrliche Transparenz über alkoholfreie Tage entwickelt. Datenschutz steht an erster Stelle: keine Benutzerkonten, keine Werbung, kein Tracking und alle Daten verbleiben auf Ihren Geräten und in Ihrer privaten iCloud (verschlüsselt bei der Übertragung und auf den Servern sowie Ende-zu-Ende verschlüsselt bei aktiviertem Erweiterten Datenschutz).
+Vielen Dank, dass Sie Half Unit auf Ihrem iPhone und Ihrer Apple Watch testen! Half Unit wurde für schnelles Protokollieren mit einem Fingertipp und ehrliche Transparenz über alkoholfreie Tage entwickelt. Datenschutz steht an erster Stelle: keine Benutzerkonten, keine Werbung, kein Tracking und alle Daten verbleiben auf Ihren Geräten und in Ihrer privaten iCloud (verschlüsselt bei der Übertragung und auf den Servern sowie Ende-zu-Ende verschlüsselt bei aktiviertem Erweiterten Datenschutz). Ein Hinweis „Keine medizinische Beratung“ (persönlicher Gebrauch, keine medizinische Beratung) wird auf dem ersten Einführungsbildschirm und unter Einstellungen → Über die App angezeigt.
 
 Bitte testen Sie die folgenden Kernbereiche und teilen Sie uns Auffälligkeiten oder Verbesserungsvorschläge mit.
 

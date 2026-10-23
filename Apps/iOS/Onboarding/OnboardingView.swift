@@ -75,6 +75,20 @@ struct OnboardingView: View {
                         .fill(BrandColors.cardBackground)
                 )
 
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("disclaimer.title")
+                        .font(.footnote.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+
+                    Text("disclaimer.body")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .accessibilityElement(children: .combine)
+
                 Spacer(minLength: 24)
 
                 Button {
