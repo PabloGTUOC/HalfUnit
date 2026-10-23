@@ -324,6 +324,7 @@ The MVP is F1–F4 on iPhone and Watch, Apple Health write, one complication and
 - Version 1 only writes to Apple Health; reading and import move to 1.1.
 - Location on drinks moves to 1.1.
 - Colour palette: Sanzo Wada combination 263 with Burnt Sienna as main accent, including charts (owner decision 23 Oct 2026).
+- App icon: concept C, a half-full bottle — Slate outline, Burnt Sienna liquid to the half, on Pinkish Cinnamon; dark variant on #221814 with a Cinnamon outline; the watch icon is the same bottle on a Cinnamon circle (owner decision 23 Oct 2026).
 - Drink icons: custom symbols — small beer as a 0.33 l bottle, beer as a 0.5 l mug, small wine glass, wine glass, shot glass, long drink as a highball with straw.
 - Bundle ID prefix: `es.opinasdeque` (app `es.opinasdeque.halfunit`, App Group `group.es.opinasdeque.halfunit`, iCloud `iCloud.es.opinasdeque.halfunit`).
 - Apple Health sync design approved: HealthStoreClient protocol, HealthSync reconcile pass, `healthSyncedVersion` on Drink.
