@@ -113,7 +113,7 @@ XcodeGen globs source folders, so **adding a file to an existing folder needs no
 - Watch: single scrolling screen, 2 × 3 grid, no confirmation dialogs, no charts.
 - Every interactive element has an accessibility label ("Log beer, 1 unit"). Support Dynamic Type up to accessibility sizes and Dark Mode.
 - All user-facing strings in `Localizable.xcstrings` (en + de). No hard-coded strings in views.
-- Copy is neutral and factual. Never moralising, never red for drinking days, no medical claims, no BAC estimates.
+- Copy is neutral and factual. Never moralising, no alarm red (the brand accent is Burnt Sienna from Wada 263 — see PRODUCT.md design notes; use the asset-catalog colours, never hard-coded colours), no medical claims, no BAC estimates.
 
 ### Widgets and intents
 - One `LogDrinkIntent` used by app shortcuts and widgets in v1, and by the Control Center control and Action button in 1.1. Widgets call `WidgetCenter.shared.reloadAllTimelines()` after each log, and timelines refresh at the day boundary.

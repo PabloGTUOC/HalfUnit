@@ -130,7 +130,7 @@ The iPhone app has three tabs: Today, Insights and History, plus Settings behind
 **Design notes**
 
 - Native SwiftUI look, Dynamic Type, Dark Mode and VoiceOver labels on every button (e.g. "Log beer, 1 unit").
-- Neutral colour palette; the streak card can use a calm accent, never red.
+- Colour palette: Sanzo Wada, *A Dictionary of Color Combinations*, combination 263 — Slate `#34454C`, Burnt Sienna `#AE5224`, Pinkish Cinnamon `#EEB480`, Turquoise Green `#B5DECC`. Burnt Sienna is the main accent (buttons, tint, charts and heatmap); in dark mode text/tint use Pinkish Cinnamon because Sienna is too dark for small text. Turquoise is the calm streak-card colour. No alarm red (`systemRed` or similar) anywhere; Burnt Sienna is the brand colour, not a warning signal.
 - Empty states: "No drinks logged yet. Your counter starts now."
 
 ## Apple Health integration
@@ -323,6 +323,8 @@ The MVP is F1–F4 on iPhone and Watch, Apple Health write, one complication and
 - Version 1 widgets: one Watch complication and one iPhone Home Screen widget, plus Siri and Shortcuts. Lock Screen widget, Control Center control, interactive Smart Stack and Action button move to 1.1.
 - Version 1 only writes to Apple Health; reading and import move to 1.1.
 - Location on drinks moves to 1.1.
+- Colour palette: Sanzo Wada combination 263 with Burnt Sienna as main accent, including charts (owner decision 23 Oct 2026).
+- Drink icons: custom symbols — small beer as a 0.33 l bottle, beer as a 0.5 l mug, small wine glass, wine glass, shot glass, long drink as a highball with straw.
 - Bundle ID prefix: `es.opinasdeque` (app `es.opinasdeque.halfunit`, App Group `group.es.opinasdeque.halfunit`, iCloud `iCloud.es.opinasdeque.halfunit`).
 - Apple Health sync design approved: HealthStoreClient protocol, HealthSync reconcile pass, `healthSyncedVersion` on Drink.
 
