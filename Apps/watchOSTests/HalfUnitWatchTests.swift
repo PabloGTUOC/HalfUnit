@@ -278,6 +278,35 @@ struct HalfUnitWatchTests {
         #expect(afterUndo.mostRecentTodayDrinkId == mondayWine.id)
     }
 
+    @Test("Watch color pairs meet WCAG AA contrast requirements for text (>= 4.5:1) and icons (>= 3.0:1)")
+    func watchWcagContrastRequirements() {
+        let pairs: [(name: String, foreground: String, background: String, minRatio: Double)] = [
+            ("Cinnamon on Black", BrandColors.pinkishCinnamonHex, "#000000", 4.5),
+            (
+                "Cinnamon on Tile Background (#1C1C1E)",
+                BrandColors.pinkishCinnamonHex,
+                BrandColors.darkBackgroundHex,
+                4.5
+            ),
+            ("Cinnamon on Preset Tile (#1F1F1F)", BrandColors.pinkishCinnamonHex, "#1F1F1F", 4.5),
+            ("Turquoise on Black", BrandColors.turquoiseGreenHex, "#000000", 4.5),
+            ("White on BrandFill", BrandColors.whiteHex, BrandColors.burntSiennaHex, 4.5),
+            ("Cinnamon Icon on Black", BrandColors.pinkishCinnamonHex, "#000000", 3.0),
+            ("Cinnamon Icon on Dark Tile", BrandColors.pinkishCinnamonHex, BrandColors.darkBackgroundHex, 3.0),
+            ("Cinnamon Icon on Preset Tile", BrandColors.pinkishCinnamonHex, "#1F1F1F", 3.0),
+            ("Turquoise Icon on Black", BrandColors.turquoiseGreenHex, "#000000", 3.0),
+            ("White Icon on BrandFill", BrandColors.whiteHex, BrandColors.burntSiennaHex, 3.0),
+        ]
+
+        for pair in pairs {
+            let ratio = BrandColors.contrastRatio(hex1: pair.foreground, hex2: pair.background)
+            #expect(
+                ratio >= pair.minRatio,
+                "\(pair.name): ratio \(ratio) < \(pair.minRatio)"
+            )
+        }
+    }
+
     private static func makeDate(
         _ year: Int,
         _ month: Int,

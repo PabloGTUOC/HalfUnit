@@ -32,10 +32,12 @@ public enum BrandColors {
     public struct AppearanceHex: Sendable {
         public let light: String
         public let dark: String
+        public let watch: String
 
-        public init(light: String, dark: String) {
+        public init(light: String, dark: String, watch: String? = nil) {
             self.light = light
             self.dark = dark
+            self.watch = watch ?? dark
         }
     }
 
