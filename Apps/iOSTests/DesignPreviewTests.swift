@@ -60,6 +60,106 @@ struct DesignPreviewTests {
         ("ChartHigh", BrandColors.chartHigh, BrandColors.chartHighHex.light, BrandColors.chartHighHex.dark),
     ]
 
+    @Test("Measure symbol bounding boxes at 36 pt")
+    @MainActor
+    func measureSymbolBoundingBoxes() throws {
+        let keys = [
+            "wineglass",
+            "mug",
+            "halfunit.beer.bottle",
+            "halfunit.beer.mug",
+            "halfunit.wine.small",
+            "halfunit.wine.glass",
+            "halfunit.shot",
+            "halfunit.longdrink",
+        ]
+
+        for key in keys {
+            let config = UIImage.SymbolConfiguration(pointSize: 36, weight: .regular)
+            let image: UIImage?
+            if key.starts(with: "halfunit.") {
+                image = UIImage(named: key, in: Bundle.main, with: config)
+            } else {
+                image = UIImage(systemName: key, withConfiguration: config)
+            }
+
+            guard let img = image else {
+                print("Could not load image for \(key)")
+                continue
+            }
+
+            let box = boundingBox(for: img)
+            print("SYMBOL_MEASURE [\(key)]: image.size=\(img.size), nonTransparentBox=\(box)")
+
+            switch key {
+            case "halfunit.beer.bottle", "halfunit.longdrink":
+                #expect(
+                    box.height >= 30.0,
+                    "Expected \(key) height >= 30 pt at 36 pt, got \(box.height)"
+                )
+            case "halfunit.wine.glass", "halfunit.beer.mug":
+                #expect(
+                    box.height >= 26.0,
+                    "Expected \(key) height >= 26 pt at 36 pt, got \(box.height)"
+                )
+            case "halfunit.wine.small", "halfunit.shot":
+                #expect(
+                    box.height >= 24.0,
+                    "Expected \(key) height >= 24 pt at 36 pt, got \(box.height)"
+                )
+            default:
+                break
+            }
+        }
+    }
+
+    private func boundingBox(for image: UIImage) -> CGRect {
+        let size = image.size
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 2.0
+        let renderer = UIGraphicsImageRenderer(size: size, format: format)
+        let renderedImage = renderer.image { _ in
+            image.draw(in: CGRect(origin: .zero, size: size))
+        }
+
+        guard let cgImage = renderedImage.cgImage else { return .zero }
+        let width = cgImage.width
+        let height = cgImage.height
+
+        guard let data = cgImage.dataProvider?.data,
+            let ptr = CFDataGetBytePtr(data)
+        else { return .zero }
+
+        var minX = width
+        var maxX = 0
+        var minY = height
+        var maxY = 0
+        var foundAny = false
+
+        for y in 0..<height {
+            for x in 0..<width {
+                let pixelIndex = (y * cgImage.bytesPerRow) + (x * 4)
+                let alpha = ptr[pixelIndex + 3]
+                if alpha > 10 {
+                    foundAny = true
+                    if x < minX { minX = x }
+                    if x > maxX { maxX = x }
+                    if y < minY { minY = y }
+                    if y > maxY { maxY = y }
+                }
+            }
+        }
+
+        if !foundAny { return .zero }
+        let scale = renderedImage.scale
+        return CGRect(
+            x: CGFloat(minX) / scale,
+            y: CGFloat(minY) / scale,
+            width: CGFloat(maxX - minX + 1) / scale,
+            height: CGFloat(maxY - minY + 1) / scale
+        )
+    }
+
     @Test("Render design preview sheet to $(SRCROOT)/.build/design-preview.png")
     @MainActor
     func renderDesignPreviewSheet() throws {

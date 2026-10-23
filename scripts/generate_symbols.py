@@ -1,16 +1,18 @@
 #!/usr/bin/env python3
 """
 Generate filled-path SF Symbol v4.0 SVGs for HalfUnit drink presets.
-Ensures ZERO 'stroke' attributes inside <g id="Symbols">.
-Every element is a filled <path fill="#000000">.
+Ensures:
+1. One style: all six are outline style (closed filled contour paths with single horizontal liquid line).
+2. Visual weight: outline thickness ≈ 9-10% of cap height (cap height = 100, thickness = 9.5).
+3. Optical size: symbols span from baseline to capline (tall symbols up to 15% above; shot/small wine ~74% of tallest).
+4. ZERO 'stroke' attributes inside <g id="Symbols">. Guide lines in <g id="Guides"> retain strokes (exactly 12).
 """
 
 import math
 import os
-import subprocess
 
 def capsule_path(x1, y1, x2, y2, width):
-    """Generates a filled closed capsule path along a line segment."""
+    """Generates a filled closed capsule path along a line segment with round ends."""
     dx = x2 - x1
     dy = y2 - y1
     length = math.hypot(dx, dy)
@@ -33,29 +35,6 @@ def capsule_path(x1, y1, x2, y2, width):
         f"A {r:.2f} {r:.2f} 0 0 1 {p1x:.2f} {p1y:.2f} Z"
     )
     return f'<path fill="#000000" d="{d}" />'
-
-def rect_outline_path(cx, cy, w, h, thickness, angle_deg=0.0):
-    """Generates an outlined hollow rectangle path rotated by angle_deg."""
-    hw = w / 2.0
-    hh = h / 2.0
-    t = thickness
-    rad = math.radians(angle_deg)
-    cos_a = math.cos(rad)
-    sin_a = math.sin(rad)
-
-    def rot(x, y):
-        rx_ = cx + (x * cos_a - y * sin_a)
-        ry_ = cy + (x * sin_a + y * cos_a)
-        return f"{rx_:.2f} {ry_:.2f}"
-
-    outer = [(-hw, -hh), (hw, -hh), (hw, hh), (-hw, hh)]
-    ihw = hw - t
-    ihh = hh - t
-    inner = [(-ihw, -ihh), (-ihw, ihh), (ihw, ihh), (ihw, -ihh)]
-
-    d = f"M {rot(*outer[0])} L {rot(*outer[1])} L {rot(*outer[2])} L {rot(*outer[3])} Z "
-    d += f"M {rot(*inner[0])} L {rot(*inner[1])} L {rot(*inner[2])} L {rot(*inner[3])} Z"
-    return f'<path fill="#000000" fill-rule="evenodd" d="{d}" />'
 
 def make_svg(m_paths, min_x, max_x):
     margin = 14.0
@@ -108,194 +87,226 @@ def make_svg(m_paths, min_x, max_x):
 """
 
 # ==============================================================================
-# 1. halfunit.wine.glass (Full-size wine glass: bowl + stem + foot on baseline)
+# 1. halfunit.wine.glass (Full-size wine glass: 0.2 l)
+# Spans baseline (y=200) to capline (y=98, height=102). Width=66.
+# Outline thickness=9.5. Higher liquid line at y=124.
 # ==============================================================================
 def make_wine_glass():
-    # Foot: flat foot resting on baseline y = 200, width 56 (472 to 528)
-    foot = capsule_path(474.75, 197.25, 525.25, 197.25, 5.5)
-    # Stem: vertical bar connecting bowl to foot
-    stem = '<path fill="#000000" d="M 497.25 152 L 502.75 152 L 502.75 198 L 497.25 198 Z" />'
-    # Bowl: classic tulip silhouette. Rim at y = 104, base at y = 152
+    # Foot: flat capsule resting on y=200, width=60 (470 to 530)
+    foot = capsule_path(474.75, 195.25, 525.25, 195.25, 9.5)
+    # Stem: vertical solid bar width=9.5 (495.25 to 504.75), y=145 to 195
+    stem = '<path fill="#000000" d="M 495.25 145 L 504.75 145 L 504.75 195 L 495.25 195 Z" />'
+    # Bowl: tulip silhouette. Outer rim at y=98, widest at y=132 (w=66), base at y=145
+    # Wall thickness = 9.5. Rim caps rounded with radius 4.75.
     bowl = (
         '<path fill="#000000" fill-rule="evenodd" d="'
-        'M 476 104 '
-        'A 2.75 2.75 0 0 1 481.5 104 '
-        'C 481.5 116 475.5 125 475.5 133 '
-        'C 475.5 142 490 148.5 500 148.5 '
-        'C 510 148.5 524.5 142 524.5 133 '
-        'C 524.5 125 518.5 116 518.5 104 '
-        'A 2.75 2.75 0 0 1 524 104 '
-        'C 524 116 530 125 530 134 '
-        'C 530 146 512 154 502.75 154 '
-        'L 497.25 154 '
-        'C 488 154 470 146 470 134 '
-        'C 470 125 476 116 476 104 Z" />'
+        'M 473 98 '
+        'A 4.75 4.75 0 0 1 482.5 98 '
+        'C 482.5 110 476.5 120 476.5 130 '
+        'C 476.5 140 488 145 495.25 145 '
+        'L 504.75 145 '
+        'C 512 145 523.5 140 523.5 130 '
+        'C 523.5 120 517.5 110 517.5 98 '
+        'A 4.75 4.75 0 0 1 527 98 '
+        'C 527 112 533 122 533 132 '
+        'C 533 146 515 154.5 504.75 154.5 '
+        'L 495.25 154.5 '
+        'C 485 154.5 467 146 467 132 '
+        'C 467 122 473 112 473 98 Z" />'
     )
-    # Liquid line: higher in wine.glass (y = 126)
-    liquid = capsule_path(476.0, 126.0, 524.0, 126.0, 5.0)
-    return [foot, stem, bowl, liquid], 470.0, 530.0
+    # Single horizontal liquid line at y=124
+    liquid = capsule_path(476.0, 124.0, 524.0, 124.0, 9.0)
+    return [foot, stem, bowl, liquid], 467.0, 533.0
 
 # ==============================================================================
-# 2. halfunit.wine.small (Small wine glass: ~80% size, also standing on baseline)
+# 2. halfunit.wine.small (Small wine glass: 0.1 l)
+# Spans baseline (y=200) to y=108 (height=92). Width=58.
+# Outline thickness=9.5. Lower liquid line at y=142.
 # ==============================================================================
 def make_wine_small():
-    # Scaled around (500, 200) by 0.8:
-    # Foot: width 56 * 0.8 = 44.8 (477.6 to 522.4), rests on y = 200
-    foot = capsule_path(479.8, 197.8, 520.2, 197.8, 4.4)
-    # Stem: width 4.4, from y = 161.6 to y = 198
-    stem = '<path fill="#000000" d="M 497.8 161.6 L 502.2 161.6 L 502.2 198 L 497.8 198 Z" />'
-    # Bowl: rim at y = 123.2, base at y = 161.6
+    # Foot: flat capsule on y=200, width=54 (473 to 527)
+    foot = capsule_path(477.75, 195.25, 522.25, 195.25, 9.5)
+    # Stem: vertical bar width=9.5, y=152 to 195
+    stem = '<path fill="#000000" d="M 495.25 152 L 504.75 152 L 504.75 195 L 495.25 195 Z" />'
+    # Bowl: rim at y=108, widest at y=140 (w=58), base at y=152
     bowl = (
         '<path fill="#000000" fill-rule="evenodd" d="'
-        'M 480.8 123.2 '
-        'A 2.2 2.2 0 0 1 485.2 123.2 '
-        'C 485.2 132.8 480.4 140 480.4 146.4 '
-        'C 480.4 153.6 492 158.8 500 158.8 '
-        'C 508 158.8 519.6 153.6 519.6 146.4 '
-        'C 519.6 140 514.8 132.8 514.8 123.2 '
-        'A 2.2 2.2 0 0 1 519.2 123.2 '
-        'C 519.2 132.8 524 140 524 147.2 '
-        'C 524 156.8 509.6 163.2 502.2 163.2 '
-        'L 497.8 163.2 '
-        'C 490.4 163.2 476 156.8 476 147.2 '
-        'C 476 140 480.8 132.8 480.8 123.2 Z" />'
+        'M 476 108 '
+        'A 4.75 4.75 0 0 1 485.5 108 '
+        'C 485.5 118 480.5 128 480.5 136 '
+        'C 480.5 146 490 152 495.25 152 '
+        'L 504.75 152 '
+        'C 510 152 519.5 146 519.5 136 '
+        'C 519.5 128 514.5 118 514.5 108 '
+        'A 4.75 4.75 0 0 1 524 108 '
+        'C 524 120 529 130 529 138 '
+        'C 529 152 514 161.5 504.75 161.5 '
+        'L 495.25 161.5 '
+        'C 486 161.5 471 152 471 138 '
+        'C 471 130 476 120 476 108 Z" />'
     )
-    # Liquid line: lower in wine.small (y = 150.0)
-    liquid = capsule_path(481.5, 150.0, 518.5, 150.0, 4.0)
-    return [foot, stem, bowl, liquid], 476.0, 524.0
+    # Single horizontal liquid line at y=142 (lower pour)
+    liquid = capsule_path(478.0, 142.0, 522.0, 142.0, 9.0)
+    return [foot, stem, bowl, liquid], 471.0, 529.0
 
 # ==============================================================================
-# 3. halfunit.beer.bottle (0.33 l bottle: neck, cap, label band, base on 200)
+# 3. halfunit.shot (Shot glass: 2-4 cl)
+# Spans baseline (y=200) to y=108 (height=92). Width=62 (469 to 531).
+# Tapered hollow outline + heavy base + single liquid line at y=142.
+# ==============================================================================
+def make_shot():
+    # Heavy solid base bar on baseline y=200 (thickness 10.0, y=190 to 200)
+    base = (
+        '<path fill="#000000" d="'
+        'M 474 190 '
+        'L 526 190 '
+        'L 526 195 '
+        'C 526 198 523.5 200 520.5 200 '
+        'L 479.5 200 '
+        'C 476.5 200 474 198 474 195 Z" />'
+    )
+    # Heavy base line just above base
+    base_line = capsule_path(476.0, 182.0, 524.0, 182.0, 7.5)
+    # Tapered hollow body outline: rim at y=108 (w=62), wall thickness=9.5
+    body = (
+        '<path fill="#000000" fill-rule="evenodd" d="'
+        'M 469 108 '
+        'A 4.75 4.75 0 0 1 478.5 108 '
+        'L 483.5 186 '
+        'L 516.5 186 '
+        'L 521.5 108 '
+        'A 4.75 4.75 0 0 1 531 108 '
+        'L 526 188 '
+        'C 526 189 525 190 524 190 '
+        'L 476 190 '
+        'C 475 190 474 189 474 188 Z" />'
+    )
+    # Single horizontal liquid line at y=142
+    liquid = capsule_path(475.0, 142.0, 525.0, 142.0, 9.0)
+    return [base, base_line, body, liquid], 469.0, 531.0
+
+# ==============================================================================
+# 4. halfunit.beer.bottle (0.33 l bottle)
+# OUTLINE STYLE: closed outline drawn as filled contour paths (w=60, h=124).
+# Spans baseline (y=200) to cap (y=76). Outline thickness=9.5.
+# Single horizontal liquid line at y=152.
 # ==============================================================================
 def make_beer_bottle():
-    # Crown cap at y = 74 to 79
-    cap = capsule_path(492.0, 76.5, 508.0, 76.5, 5.0)
-    # Bottle body & neck hollow contour
+    # Crown cap at top (y=76 to 85, width=32, 484 to 516)
+    cap = capsule_path(488.75, 80.5, 511.25, 80.5, 9.0)
+    # Hollow bottle outline: body w=60 (470 to 530), neck w=28 (486 to 514).
+    # Wall thickness=9.5 throughout.
     body = (
         '<path fill="#000000" fill-rule="evenodd" d="'
-        'M 492.5 79 '
-        'L 492.5 112 '
-        'C 492.5 124 478 128 478 138 '
-        'L 478 196 '
-        'C 478 198.5 480 200 482.5 200 '
-        'L 517.5 200 '
-        'C 520 200 522 198.5 522 196 '
-        'L 522 138 '
-        'C 522 128 507.5 124 507.5 112 '
-        'L 507.5 79 '
-        'A 2.75 2.75 0 0 0 502 79 '
-        'L 502 110 '
-        'C 502 122 483.5 126 483.5 136 '
-        'L 483.5 194.5 '
-        'L 516.5 194.5 '
-        'L 516.5 136 '
-        'C 516.5 126 498 122 498 110 '
-        'L 498 79 '
-        'A 2.75 2.75 0 0 0 492.5 79 Z" />'
+        # Outer contour (clockwise)
+        'M 486 85 '
+        'L 486 110 '
+        'C 486 122 470 126 470 138 '
+        'L 470 192 '
+        'C 470 196.5 473.5 200 478 200 '
+        'L 522 200 '
+        'C 526.5 200 530 196.5 530 192 '
+        'L 530 138 '
+        'C 530 126 514 122 514 110 '
+        'L 514 85 '
+        'Z '
+        # Inner contour (counter-clockwise)
+        'M 495.5 87 '
+        'L 504.5 87 '
+        'L 504.5 110 '
+        'C 504.5 120 520.5 126 520.5 138 '
+        'L 520.5 190.5 '
+        'L 479.5 190.5 '
+        'L 479.5 138 '
+        'C 479.5 126 495.5 120 495.5 110 '
+        'Z" />'
     )
-    # Label band lines
-    label_top = capsule_path(481.5, 154.0, 518.5, 154.0, 5.0)
-    label_bot = capsule_path(481.5, 176.0, 518.5, 176.0, 5.0)
-    return [cap, body, label_top, label_bot], 478.0, 522.0
+    # Single horizontal liquid line inside bottle body at y=152
+    liquid = capsule_path(479.5, 152.0, 520.5, 152.0, 9.0)
+    return [cap, body, liquid], 470.0, 530.0
 
 # ==============================================================================
-# 4. halfunit.beer.mug (0.5 l mug: foam top, handle, flutes, base on 200)
+# 5. halfunit.beer.mug (0.5 l mug)
+# OUTLINE STYLE: closed outline body (w=62), foam top (y=94, h=106), handle (to x=556).
+# Outline thickness=9.5. Single horizontal liquid line at y=138.
 # ==============================================================================
 def make_beer_mug():
-    # Mug body hollow contour
+    # Mug body hollow outline: 464 to 526, baseline y=200, rim y=108.
+    # Thickness = 9.5
     body = (
         '<path fill="#000000" fill-rule="evenodd" d="'
-        'M 464 106 '
-        'L 464 196 '
-        'C 464 198.5 466.5 200 469 200 '
-        'L 521 200 '
-        'C 523.5 200 526 198.5 526 196 '
-        'L 526 106 '
-        'A 3 3 0 0 0 520 106 '
-        'L 520 194 '
-        'L 470 194 '
-        'L 470 106 '
-        'A 3 3 0 0 0 464 106 Z" />'
+        # Outer
+        'M 464 108 '
+        'L 464 192 '
+        'C 464 196.5 467.5 200 472 200 '
+        'L 518 200 '
+        'C 522.5 200 526 196.5 526 192 '
+        'L 526 108 '
+        'Z '
+        # Inner
+        'M 473.5 112 '
+        'L 516.5 112 '
+        'L 516.5 190.5 '
+        'L 473.5 190.5 '
+        'Z" />'
     )
-    # Foam head at top (y = 96 to 106)
+    # Foam head across top rim (y=94 to 108)
     foam = (
-        '<path fill="#000000" fill-rule="evenodd" d="'
-        'M 464 106 '
-        'C 464 98 474 94 482 97 '
-        'C 488 93 498 93 504 97 '
-        'C 512 94 526 98 526 106 '
-        'C 526 110 520 110 518 106 '
-        'C 516 100 504 99 499 103 '
-        'C 493 99 481 100 479 106 '
-        'C 477 110 464 110 464 106 Z" />'
+        '<path fill="#000000" d="'
+        'M 464 108 '
+        'C 464 99 474 94 482 96 '
+        'C 488 92 498 92 504 96 '
+        'C 512 94 526 99 526 108 '
+        'C 526 112 518 112 516 108 '
+        'C 514 102 504 101 500 105 '
+        'C 494 101 482 102 480 108 '
+        'C 478 112 464 112 464 108 Z" />'
     )
-    # Handle on right (y = 122 to 176)
+    # Handle on right side (y=122 to 178, w=30, thickness=9.5)
     handle = (
         '<path fill="#000000" fill-rule="evenodd" d="'
         'M 526 122 '
-        'C 554 122 554 176 526 176 '
-        'L 526 170 '
-        'C 547 170 547 128 526 128 Z" />'
+        'C 556 122 556 178 526 178 '
+        'L 526 168.5 '
+        'C 544 168.5 544 131.5 526 131.5 Z" />'
     )
-    # Flutes (vertical ribs)
-    flute1 = capsule_path(484.0, 126.0, 484.0, 180.0, 5.0)
-    flute2 = capsule_path(506.0, 126.0, 506.0, 180.0, 5.0)
-    return [body, foam, handle, flute1, flute2], 464.0, 554.0
+    # Single horizontal liquid line at y=138
+    liquid = capsule_path(473.5, 138.0, 516.5, 138.0, 9.0)
+    return [body, foam, handle, liquid], 464.0, 556.0
 
 # ==============================================================================
-# 5. halfunit.shot (Short tapered glass: heavy base line, liquid line, base on 200)
-# ==============================================================================
-def make_shot():
-    # Tapered hollow glass body: rim at y = 132, base at y = 200
-    body = (
-        '<path fill="#000000" fill-rule="evenodd" d="'
-        'M 473 132 '
-        'L 480 196 '
-        'C 480.5 198.5 482 200 484 200 '
-        'L 516 200 '
-        'C 518 200 519.5 198.5 520 196 '
-        'L 527 132 '
-        'A 2.75 2.75 0 0 0 521.5 132 '
-        'L 514.8 194.5 '
-        'L 485.2 194.5 '
-        'L 478.5 132 '
-        'A 2.75 2.75 0 0 0 473 132 Z" />'
-    )
-    # Heavy base line
-    base_line = capsule_path(482.0, 186.0, 518.0, 186.0, 5.5)
-    # Liquid line
-    liquid_line = capsule_path(476.5, 154.0, 523.5, 154.0, 5.0)
-    return [body, base_line, liquid_line], 473.0, 527.0
-
-# ==============================================================================
-# 6. halfunit.longdrink (Highball tumbler: tall cylinder, base, ice cube, straw)
+# 6. halfunit.longdrink (Highball tumbler)
+# OUTLINE STYLE: tall cylinder (w=56, h=104 to rim, h=126 to straw top).
+# Outline thickness=9.5. Angled straw. Single horizontal liquid line at y=126.
 # ==============================================================================
 def make_longdrink():
-    # Tall tumbler hollow body: rim at y = 100, base at y = 200
+    # Heavy base on baseline y=200
+    base = (
+        '<path fill="#000000" d="'
+        'M 472 191 '
+        'L 528 191 '
+        'L 528 195 '
+        'C 528 198 525.5 200 522.5 200 '
+        'L 477.5 200 '
+        'C 474.5 200 472 198 472 195 Z" />'
+    )
+    # Tall cylinder hollow outline: rim at y=96 (w=56, 472 to 528)
     body = (
         '<path fill="#000000" fill-rule="evenodd" d="'
-        'M 474 100 '
-        'L 476 196 '
-        'C 476.5 198.5 478 200 480 200 '
-        'L 520 200 '
-        'C 522 200 523.5 198.5 524 196 '
-        'L 526 100 '
-        'A 2.75 2.75 0 0 0 520.5 100 '
-        'L 518.5 194.5 '
-        'L 481.5 194.5 '
-        'L 479.5 100 '
-        'A 2.75 2.75 0 0 0 474 100 Z" />'
+        'M 472 96 '
+        'A 4.75 4.75 0 0 1 481.5 96 '
+        'L 481.5 190.5 '
+        'L 518.5 190.5 '
+        'L 518.5 96 '
+        'A 4.75 4.75 0 0 1 528 96 '
+        'L 528 191 '
+        'L 472 191 Z" />'
     )
-    # Heavy base line
-    base_line = capsule_path(478.0, 190.0, 522.0, 190.0, 5.5)
-    # Liquid line at y = 124
-    liquid_line = capsule_path(476.0, 124.0, 524.0, 124.0, 5.0)
-    # Ice cube: tilted hollow square
-    ice_cube = rect_outline_path(497.0, 155.0, 18.0, 18.0, 4.5, angle_deg=15.0)
-    # Straw: extending from inside bottom to up-right through rim
-    straw1 = capsule_path(490.0, 180.0, 522.0, 96.0, 5.0)
-    straw2 = capsule_path(522.0, 96.0, 544.0, 65.0, 5.0)
-    return [body, base_line, liquid_line, ice_cube, straw1, straw2], 474.0, 546.0
+    # Angled straw extending from inside glass through rim up to (536, 74)
+    straw = capsule_path(494.0, 172.0, 536.0, 74.0, 8.5)
+    # Single horizontal liquid line at y=126
+    liquid = capsule_path(481.5, 126.0, 518.5, 126.0, 9.0)
+    return [base, body, straw, liquid], 472.0, 538.0
 
 def main():
     root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
