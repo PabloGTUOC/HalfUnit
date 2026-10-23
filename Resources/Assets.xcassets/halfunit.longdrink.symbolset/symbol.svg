@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="1000" height="1000" viewBox="0 0 1000 1000">
+  <g id="Notes">
+    <text id="template-version">Template v.4.0</text>
+  </g>
+  <g id="Guides">
+    <line id="Baseline-S" x1="0" y1="200.0" x2="300" y2="200.0" stroke="#000000" />
+    <line id="Capline-S" x1="0" y1="115.0" x2="300" y2="115.0" stroke="#000000" />
+    <line id="left-margin-Regular-S" x1="120.2" y1="50" x2="120.2" y2="250" stroke="#000000" />
+    <line id="right-margin-Regular-S" x1="192.5" y1="50" x2="192.5" y2="250" stroke="#000000" />
+
+    <line id="Baseline-M" x1="350" y1="200.0" x2="650" y2="200.0" stroke="#000000" />
+    <line id="Capline-M" x1="350" y1="100.0" x2="650" y2="100.0" stroke="#000000" />
+    <line id="left-margin-Regular-M" x1="465.0" y1="50" x2="465.0" y2="250" stroke="#000000" />
+    <line id="right-margin-Regular-M" x1="550.0" y1="50" x2="550.0" y2="250" stroke="#000000" />
+
+    <line id="Baseline-L" x1="700" y1="200.0" x2="1000" y2="200.0" stroke="#000000" />
+    <line id="Capline-L" x1="700" y1="80.0" x2="1000" y2="80.0" stroke="#000000" />
+    <line id="left-margin-Regular-L" x1="808.0" y1="50" x2="808.0" y2="250" stroke="#000000" />
+    <line id="right-margin-Regular-L" x1="910.0" y1="50" x2="910.0" y2="250" stroke="#000000" />
+  </g>
+  <g id="Symbols">
+    <g id="Regular-S" transform="translate(150.0, 200.0) scale(0.8500) translate(-500.0, -200.0)">
+      
+          <!-- Tumbler Outer Glass -->
+          <path d="M 474 100 L 476 196 C 476.5 198.5 478 200 480 200 L 520 200 C 522 200 523.5 198.5 524 196 L 526 100 Z" fill="none" stroke="#000000" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" />
+          <!-- Thick Base Line -->
+          <line x1="477" y1="190" x2="523" y2="190" stroke="#000000" stroke-width="5.5" stroke-linecap="round" />
+          <!-- Liquid Line -->
+          <line x1="475" y1="122" x2="525" y2="122" stroke="#000000" stroke-width="5.5" stroke-linecap="round" />
+          <!-- Ice Cube Outline -->
+          <rect x="488" y="146" width="18" height="18" rx="2" transform="rotate(15 497 155)" fill="none" stroke="#000000" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" />
+          <!-- Straw extending up-right -->
+          <path d="M 490 180 L 522 96 L 536 68 L 544 65" fill="none" stroke="#000000" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" />
+        
+    </g>
+    <g id="Regular-M">
+      
+          <!-- Tumbler Outer Glass -->
+          <path d="M 474 100 L 476 196 C 476.5 198.5 478 200 480 200 L 520 200 C 522 200 523.5 198.5 524 196 L 526 100 Z" fill="none" stroke="#000000" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round" />
+          <!-- Thick Base Line -->
+          <line x1="477" y1="190" x2="523" y2="190" stroke="#000000" stroke-width="6.5" stroke-linecap="round" />
+          <!-- Liquid Line -->
+          <line x1="475" y1="122" x2="525" y2="122" stroke="#000000" stroke-width="6.5" stroke-linecap="round" />
+          <!-- Ice Cube Outline -->
+          <rect x="488" y="146" width="18" height="18" rx="2" transform="rotate(15 497 155)" fill="none" stroke="#000000" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round" />
+          <!-- Straw extending up-right -->
+          <path d="M 490 180 L 522 96 L 536 68 L 544 65" fill="none" stroke="#000000" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round" />
+        
+    </g>
+    <g id="Regular-L" transform="translate(850.0, 200.0) scale(1.2000) translate(-500.0, -200.0)">
+      
+          <!-- Tumbler Outer Glass -->
+          <path d="M 474 100 L 476 196 C 476.5 198.5 478 200 480 200 L 520 200 C 522 200 523.5 198.5 524 196 L 526 100 Z" fill="none" stroke="#000000" stroke-width="7.8" stroke-linecap="round" stroke-linejoin="round" />
+          <!-- Thick Base Line -->
+          <line x1="477" y1="190" x2="523" y2="190" stroke="#000000" stroke-width="7.8" stroke-linecap="round" />
+          <!-- Liquid Line -->
+          <line x1="475" y1="122" x2="525" y2="122" stroke="#000000" stroke-width="7.8" stroke-linecap="round" />
+          <!-- Ice Cube Outline -->
+          <rect x="488" y="146" width="18" height="18" rx="2" transform="rotate(15 497 155)" fill="none" stroke="#000000" stroke-width="7.8" stroke-linecap="round" stroke-linejoin="round" />
+          <!-- Straw extending up-right -->
+          <path d="M 490 180 L 522 96 L 536 68 L 544 65" fill="none" stroke="#000000" stroke-width="7.8" stroke-linecap="round" stroke-linejoin="round" />
+        
+    </g>
+  </g>
+</svg>

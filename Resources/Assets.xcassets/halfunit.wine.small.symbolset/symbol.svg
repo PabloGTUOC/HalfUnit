@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="1000" height="1000" viewBox="0 0 1000 1000">
+  <g id="Notes">
+    <text id="template-version">Template v.4.0</text>
+  </g>
+  <g id="Guides">
+    <line id="Baseline-S" x1="0" y1="200.0" x2="300" y2="200.0" stroke="#000000" />
+    <line id="Capline-S" x1="0" y1="115.0" x2="300" y2="115.0" stroke="#000000" />
+    <line id="left-margin-Regular-S" x1="122.8" y1="50" x2="122.8" y2="250" stroke="#000000" />
+    <line id="right-margin-Regular-S" x1="177.2" y1="50" x2="177.2" y2="250" stroke="#000000" />
+
+    <line id="Baseline-M" x1="350" y1="200.0" x2="650" y2="200.0" stroke="#000000" />
+    <line id="Capline-M" x1="350" y1="100.0" x2="650" y2="100.0" stroke="#000000" />
+    <line id="left-margin-Regular-M" x1="468.0" y1="50" x2="468.0" y2="250" stroke="#000000" />
+    <line id="right-margin-Regular-M" x1="532.0" y1="50" x2="532.0" y2="250" stroke="#000000" />
+
+    <line id="Baseline-L" x1="700" y1="200.0" x2="1000" y2="200.0" stroke="#000000" />
+    <line id="Capline-L" x1="700" y1="80.0" x2="1000" y2="80.0" stroke="#000000" />
+    <line id="left-margin-Regular-L" x1="811.6" y1="50" x2="811.6" y2="250" stroke="#000000" />
+    <line id="right-margin-Regular-L" x1="888.4" y1="50" x2="888.4" y2="250" stroke="#000000" />
+  </g>
+  <g id="Symbols">
+    <g id="Regular-S" transform="translate(150.0, 200.0) scale(0.8500) translate(-500.0, -200.0)">
+      
+          <!-- Foot & Stem -->
+          <line x1="480" y1="200" x2="520" y2="200" stroke="#000000" stroke-width="5.5" stroke-linecap="round" />
+          <line x1="500" y1="162" x2="500" y2="200" stroke="#000000" stroke-width="5.5" stroke-linecap="round" />
+          <!-- Small Wine Bowl -->
+          <path d="M 478 122 C 478 152 488 162 500 162 C 512 162 522 152 522 122 Z" fill="none" stroke="#000000" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" />
+          <!-- Low Liquid Line -->
+          <line x1="485" y1="148" x2="515" y2="148" stroke="#000000" stroke-width="5.5" stroke-linecap="round" />
+        
+    </g>
+    <g id="Regular-M">
+      
+          <!-- Foot & Stem -->
+          <line x1="480" y1="200" x2="520" y2="200" stroke="#000000" stroke-width="6.5" stroke-linecap="round" />
+          <line x1="500" y1="162" x2="500" y2="200" stroke="#000000" stroke-width="6.5" stroke-linecap="round" />
+          <!-- Small Wine Bowl -->
+          <path d="M 478 122 C 478 152 488 162 500 162 C 512 162 522 152 522 122 Z" fill="none" stroke="#000000" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round" />
+          <!-- Low Liquid Line -->
+          <line x1="485" y1="148" x2="515" y2="148" stroke="#000000" stroke-width="6.5" stroke-linecap="round" />
+        
+    </g>
+    <g id="Regular-L" transform="translate(850.0, 200.0) scale(1.2000) translate(-500.0, -200.0)">
+      
+          <!-- Foot & Stem -->
+          <line x1="480" y1="200" x2="520" y2="200" stroke="#000000" stroke-width="7.8" stroke-linecap="round" />
+          <line x1="500" y1="162" x2="500" y2="200" stroke="#000000" stroke-width="7.8" stroke-linecap="round" />
+          <!-- Small Wine Bowl -->
+          <path d="M 478 122 C 478 152 488 162 500 162 C 512 162 522 152 522 122 Z" fill="none" stroke="#000000" stroke-width="7.8" stroke-linecap="round" stroke-linejoin="round" />
+          <!-- Low Liquid Line -->
+          <line x1="485" y1="148" x2="515" y2="148" stroke="#000000" stroke-width="7.8" stroke-linecap="round" />
+        
+    </g>
+  </g>
+</svg>

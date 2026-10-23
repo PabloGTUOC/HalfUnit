@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="1000" height="1000" viewBox="0 0 1000 1000">
+  <g id="Notes">
+    <text id="template-version">Template v.4.0</text>
+  </g>
+  <g id="Guides">
+    <line id="Baseline-S" x1="0" y1="200.0" x2="300" y2="200.0" stroke="#000000" />
+    <line id="Capline-S" x1="0" y1="115.0" x2="300" y2="115.0" stroke="#000000" />
+    <line id="left-margin-Regular-S" x1="119.4" y1="50" x2="119.4" y2="250" stroke="#000000" />
+    <line id="right-margin-Regular-S" x1="180.6" y1="50" x2="180.6" y2="250" stroke="#000000" />
+
+    <line id="Baseline-M" x1="350" y1="200.0" x2="650" y2="200.0" stroke="#000000" />
+    <line id="Capline-M" x1="350" y1="100.0" x2="650" y2="100.0" stroke="#000000" />
+    <line id="left-margin-Regular-M" x1="464.0" y1="50" x2="464.0" y2="250" stroke="#000000" />
+    <line id="right-margin-Regular-M" x1="536.0" y1="50" x2="536.0" y2="250" stroke="#000000" />
+
+    <line id="Baseline-L" x1="700" y1="200.0" x2="1000" y2="200.0" stroke="#000000" />
+    <line id="Capline-L" x1="700" y1="80.0" x2="1000" y2="80.0" stroke="#000000" />
+    <line id="left-margin-Regular-L" x1="806.8" y1="50" x2="806.8" y2="250" stroke="#000000" />
+    <line id="right-margin-Regular-L" x1="893.2" y1="50" x2="893.2" y2="250" stroke="#000000" />
+  </g>
+  <g id="Symbols">
+    <g id="Regular-S" transform="translate(150.0, 200.0) scale(0.8500) translate(-500.0, -200.0)">
+      
+          <!-- Shot Glass Outer Shape -->
+          <path d="M 473 135 L 480 196 C 480.5 198.5 482 200 484 200 L 516 200 C 518 200 519.5 198.5 520 196 L 527 135 Z" fill="none" stroke="#000000" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" />
+          <!-- Heavy Base Line -->
+          <line x1="481" y1="186" x2="519" y2="186" stroke="#000000" stroke-width="5.5" stroke-linecap="round" />
+          <!-- Liquid Line -->
+          <line x1="476" y1="154" x2="524" y2="154" stroke="#000000" stroke-width="5.5" stroke-linecap="round" />
+        
+    </g>
+    <g id="Regular-M">
+      
+          <!-- Shot Glass Outer Shape -->
+          <path d="M 473 135 L 480 196 C 480.5 198.5 482 200 484 200 L 516 200 C 518 200 519.5 198.5 520 196 L 527 135 Z" fill="none" stroke="#000000" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round" />
+          <!-- Heavy Base Line -->
+          <line x1="481" y1="186" x2="519" y2="186" stroke="#000000" stroke-width="6.5" stroke-linecap="round" />
+          <!-- Liquid Line -->
+          <line x1="476" y1="154" x2="524" y2="154" stroke="#000000" stroke-width="6.5" stroke-linecap="round" />
+        
+    </g>
+    <g id="Regular-L" transform="translate(850.0, 200.0) scale(1.2000) translate(-500.0, -200.0)">
+      
+          <!-- Shot Glass Outer Shape -->
+          <path d="M 473 135 L 480 196 C 480.5 198.5 482 200 484 200 L 516 200 C 518 200 519.5 198.5 520 196 L 527 135 Z" fill="none" stroke="#000000" stroke-width="7.8" stroke-linecap="round" stroke-linejoin="round" />
+          <!-- Heavy Base Line -->
+          <line x1="481" y1="186" x2="519" y2="186" stroke="#000000" stroke-width="7.8" stroke-linecap="round" />
+          <!-- Liquid Line -->
+          <line x1="476" y1="154" x2="524" y2="154" stroke="#000000" stroke-width="7.8" stroke-linecap="round" />
+        
+    </g>
+  </g>
+</svg>

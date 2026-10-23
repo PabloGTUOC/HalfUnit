@@ -1,5 +1,6 @@
 import Foundation
 import HalfUnitCore
+import SwiftUI
 
 typealias WatchLocalization = AppLocalization
 typealias WatchPresetPresentation = PresetPresentation
@@ -36,13 +37,26 @@ enum PresetPresentation {
     ]
 
     private static let symbolByPresetKey: [String: String] = [
-        "smallBeer": "mug",
-        "smallWine": "wineglass",
-        "beer": "mug.fill",
-        "wineGlass": "wineglass.fill",
-        "shot": "cup.and.saucer",
-        "longDrink": "takeoutbag.and.cup.and.straw",
+        "smallBeer": "halfunit.beer.bottle",
+        "smallWine": "halfunit.wine.small",
+        "beer": "halfunit.beer.mug",
+        "wineGlass": "halfunit.wine.glass",
+        "shot": "halfunit.shot",
+        "longDrink": "halfunit.longdrink",
     ]
+
+    static func isCustomSymbol(_ symbolName: String) -> Bool {
+        symbolName.hasPrefix("halfunit.")
+    }
+
+    @ViewBuilder
+    static func image(for symbolName: String) -> some View {
+        if isCustomSymbol(symbolName) {
+            Image(symbolName)
+        } else {
+            Image(systemName: symbolName)
+        }
+    }
 
     static func catalogKey(for presetKey: String?) -> String? {
         guard let presetKey else {
@@ -77,14 +91,14 @@ enum PresetPresentation {
     }
 
     static func symbolName(presetKey: String?, fallbackSymbol: String) -> String {
+        if let presetKey, let mapped = symbolByPresetKey[presetKey] {
+            return mapped
+        }
         let trimmed = fallbackSymbol.trimmingCharacters(in: .whitespacesAndNewlines)
         if !trimmed.isEmpty && trimmed != "questionmark" {
             return trimmed
         }
-        if let presetKey, let mapped = symbolByPresetKey[presetKey] {
-            return mapped
-        }
-        return trimmed.isEmpty ? "wineglass" : trimmed
+        return "halfunit.wine.glass"
     }
 
     static func formattedHUNumber(_ hu: Decimal, locale: Locale = .current) -> String {
@@ -169,5 +183,17 @@ enum PresetPresentation {
 
         let format = AppLocalization.string("accessibility.logPreset.units", locale: locale)
         return String(format: format, locale: locale, spokenName, numberText)
+    }
+}
+
+public struct PresetSymbolImage: View {
+    public let symbolName: String
+
+    public init(_ symbolName: String) {
+        self.symbolName = symbolName
+    }
+
+    public var body: some View {
+        PresetPresentation.image(for: symbolName)
     }
 }

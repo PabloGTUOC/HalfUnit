@@ -6,18 +6,15 @@ import UniformTypeIdentifiers
 import WidgetKit
 
 enum SettingsPresetSymbol: String, CaseIterable, Identifiable, Sendable {
-    case mug = "mug"
-    case mugFill = "mug.fill"
+    case beerBottle = "halfunit.beer.bottle"
+    case beerMug = "halfunit.beer.mug"
+    case wineSmall = "halfunit.wine.small"
+    case wineGlass = "halfunit.wine.glass"
+    case shot = "halfunit.shot"
+    case longDrink = "halfunit.longdrink"
     case wineglass = "wineglass"
-    case wineglassFill = "wineglass.fill"
-    case cupAndSaucer = "cup.and.saucer"
-    case cupAndSaucerFill = "cup.and.saucer.fill"
-    case takeoutCup = "takeoutbag.and.cup.and.straw"
-    case takeoutCupFill = "takeoutbag.and.cup.and.straw.fill"
+    case mug = "mug"
     case waterbottle = "waterbottle"
-    case waterbottleFill = "waterbottle.fill"
-    case drop = "drop"
-    case dropFill = "drop.fill"
 
     var id: String { rawValue }
 
@@ -25,32 +22,30 @@ enum SettingsPresetSymbol: String, CaseIterable, Identifiable, Sendable {
         allCases.map(\.rawValue)
     }
 
+    var isCustom: Bool {
+        rawValue.hasPrefix("halfunit.")
+    }
+
     var accessibilityKey: String {
         switch self {
-        case .mug:
-            return "settings.preset.symbol.mug"
-        case .mugFill:
-            return "settings.preset.symbol.mugFill"
+        case .beerBottle:
+            return "settings.preset.symbol.beerBottle"
+        case .beerMug:
+            return "settings.preset.symbol.beerMug"
+        case .wineSmall:
+            return "settings.preset.symbol.wineSmall"
+        case .wineGlass:
+            return "settings.preset.symbol.wineGlass"
+        case .shot:
+            return "settings.preset.symbol.shot"
+        case .longDrink:
+            return "settings.preset.symbol.longDrink"
         case .wineglass:
             return "settings.preset.symbol.wineglass"
-        case .wineglassFill:
-            return "settings.preset.symbol.wineglassFill"
-        case .cupAndSaucer:
-            return "settings.preset.symbol.cupAndSaucer"
-        case .cupAndSaucerFill:
-            return "settings.preset.symbol.cupAndSaucerFill"
-        case .takeoutCup:
-            return "settings.preset.symbol.takeoutCup"
-        case .takeoutCupFill:
-            return "settings.preset.symbol.takeoutCupFill"
+        case .mug:
+            return "settings.preset.symbol.mug"
         case .waterbottle:
             return "settings.preset.symbol.waterbottle"
-        case .waterbottleFill:
-            return "settings.preset.symbol.waterbottleFill"
-        case .drop:
-            return "settings.preset.symbol.drop"
-        case .dropFill:
-            return "settings.preset.symbol.dropFill"
         }
     }
 }

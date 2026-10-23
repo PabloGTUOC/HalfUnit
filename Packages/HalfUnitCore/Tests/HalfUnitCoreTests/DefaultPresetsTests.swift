@@ -10,48 +10,54 @@ struct DefaultPresetsTests {
         let presets = DefaultPresets.all
         #expect(presets.count == 6)
 
-        let expected: [(key: String, volumeMl: Int, abv: Decimal, hu: Decimal, grams: Decimal)] = [
+        let expected: [(key: String, volumeMl: Int, abv: Decimal, hu: Decimal, grams: Decimal, symbol: String)] = [
             (
                 "smallBeer",
                 330,
                 Decimal(5),
                 Decimal(string: "0.5")!,
-                Decimal(string: "13.2")!
+                Decimal(string: "13.2")!,
+                "halfunit.beer.bottle"
             ),
             (
                 "smallWine",
                 125,
                 Decimal(12),
                 Decimal(string: "0.5")!,
-                Decimal(12)
+                Decimal(12),
+                "halfunit.wine.small"
             ),
             (
                 "beer",
                 500,
                 Decimal(5),
                 Decimal(1),
-                Decimal(20)
+                Decimal(20),
+                "halfunit.beer.mug"
             ),
             (
                 "wineGlass",
                 200,
                 Decimal(12),
                 Decimal(1),
-                Decimal(string: "19.2")!
+                Decimal(string: "19.2")!,
+                "halfunit.wine.glass"
             ),
             (
                 "shot",
                 40,
                 Decimal(40),
                 Decimal(1),
-                Decimal(string: "12.8")!
+                Decimal(string: "12.8")!,
+                "halfunit.shot"
             ),
             (
                 "longDrink",
                 80,
                 Decimal(40),
                 Decimal(2),
-                Decimal(string: "25.6")!
+                Decimal(string: "25.6")!,
+                "halfunit.longdrink"
             ),
         ]
 
@@ -62,7 +68,7 @@ struct DefaultPresetsTests {
             #expect(preset.hu == spec.hu)
             #expect(preset.grams == spec.grams)
             #expect(Units.isValidHU(preset.hu))
-            #expect(!preset.symbolName.isEmpty)
+            #expect(preset.symbolName == spec.symbol)
         }
     }
 }

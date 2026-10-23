@@ -30,42 +30,42 @@ public enum DefaultPresets {
     public static let all: [PresetDefinition] = [
         PresetDefinition(
             key: "smallBeer",
-            symbolName: "mug",
+            symbolName: "halfunit.beer.bottle",
             hu: Decimal(sign: .plus, exponent: -1, significand: 5),
             volumeMl: 330,
             abvPercent: Decimal(5)
         ),
         PresetDefinition(
             key: "smallWine",
-            symbolName: "wineglass",
+            symbolName: "halfunit.wine.small",
             hu: Decimal(sign: .plus, exponent: -1, significand: 5),
             volumeMl: 125,
             abvPercent: Decimal(12)
         ),
         PresetDefinition(
             key: "beer",
-            symbolName: "mug.fill",
+            symbolName: "halfunit.beer.mug",
             hu: Decimal(1),
             volumeMl: 500,
             abvPercent: Decimal(5)
         ),
         PresetDefinition(
             key: "wineGlass",
-            symbolName: "wineglass.fill",
+            symbolName: "halfunit.wine.glass",
             hu: Decimal(1),
             volumeMl: 200,
             abvPercent: Decimal(12)
         ),
         PresetDefinition(
             key: "shot",
-            symbolName: "cup.and.saucer.fill",
+            symbolName: "halfunit.shot",
             hu: Decimal(1),
             volumeMl: 40,
             abvPercent: Decimal(40)
         ),
         PresetDefinition(
             key: "longDrink",
-            symbolName: "takeoutbag.and.cup.and.straw.fill",
+            symbolName: "halfunit.longdrink",
             hu: Decimal(2),
             volumeMl: 80,
             abvPercent: Decimal(40)

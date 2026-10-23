@@ -125,9 +125,9 @@ struct HistoryView: View {
 
     private func drinkRow(item: HistoryDrinkItem, displayUnit: DisplayUnit) -> some View {
         HStack(spacing: 12) {
-            Image(systemName: item.symbolName)
+            PresetPresentation.image(for: item.symbolName)
                 .font(.title3)
-                .foregroundStyle(Color.teal)
+                .foregroundStyle(BrandColors.accent)
                 .frame(width: 28)
 
             VStack(alignment: .leading, spacing: 2) {

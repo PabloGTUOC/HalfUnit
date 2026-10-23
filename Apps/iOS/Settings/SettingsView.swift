@@ -60,6 +60,9 @@ struct SettingsView: View {
     @State private var statusBannerMessage: String?
     @State private var reminderStatusMessage: String?
     @State private var appLockStatusMessage: String?
+    #if DEBUG
+        @State private var isShowingDesignPreview = false
+    #endif
 
     var body: some View {
         NavigationStack {
@@ -137,6 +140,20 @@ struct SettingsView: View {
             ) { result in
                 handleRestoreImportResult(result)
             }
+            #if DEBUG
+                .sheet(isPresented: $isShowingDesignPreview) {
+                    NavigationStack {
+                        DesignPreviewView()
+                        .toolbar {
+                            ToolbarItem(placement: .confirmationAction) {
+                                Button("common.done") {
+                                    isShowingDesignPreview = false
+                                }
+                            }
+                        }
+                    }
+                }
+            #endif
             .task {
                 reloadState()
             }
@@ -151,9 +168,9 @@ struct SettingsView: View {
                         presetEditorSheet = .edit(item)
                     } label: {
                         HStack(spacing: 12) {
-                            Image(systemName: item.symbolName)
+                            PresetPresentation.image(for: item.symbolName)
                                 .font(.title3)
-                                .foregroundStyle(item.isHidden ? Color.secondary : Color.teal)
+                                .foregroundStyle(item.isHidden ? Color.secondary : BrandColors.accent)
                                 .frame(width: 28, alignment: .center)
 
                             VStack(alignment: .leading, spacing: 2) {
@@ -433,6 +450,12 @@ struct SettingsView: View {
                 Text(snapshot.appVersionText)
                     .foregroundStyle(.secondary)
             }
+            #if DEBUG
+                .contentShape(Rectangle())
+                .onLongPressGesture {
+                    isShowingDesignPreview = true
+                }
+            #endif
             .accessibilityElement(children: .combine)
 
             Text("settings.about.privacy")
@@ -842,16 +865,16 @@ private struct PresetEditorSheet: View {
                             Button {
                                 draft.symbolName = symbol.rawValue
                             } label: {
-                                Image(systemName: symbol.rawValue)
+                                PresetPresentation.image(for: symbol.rawValue)
                                     .font(.title3)
-                                    .foregroundStyle(isSelected ? Color.white : Color.teal)
+                                    .foregroundStyle(isSelected ? Color.white : BrandColors.accent)
                                     .frame(width: 44, height: 44)
                                     .background(
                                         RoundedRectangle(cornerRadius: 10, style: .continuous)
                                             .fill(
                                                 isSelected
-                                                    ? Color.teal
-                                                    : Color(.secondarySystemGroupedBackground)
+                                                    ? BrandColors.brandFill
+                                                    : BrandColors.presetTileBackground
                                             )
                                     )
                             }

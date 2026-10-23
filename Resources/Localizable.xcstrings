@@ -4882,6 +4882,108 @@
           }
         }
       }
+    },
+    "settings.preset.symbol.halfunit.beer.bottle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kleine Bierflasche"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Small beer bottle"
+          }
+        }
+      }
+    },
+    "settings.preset.symbol.halfunit.beer.mug" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bierkrug"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beer mug"
+          }
+        }
+      }
+    },
+    "settings.preset.symbol.halfunit.wine.small" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kleines Weinglas"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Small wine glass"
+          }
+        }
+      }
+    },
+    "settings.preset.symbol.halfunit.wine.glass" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weinglas"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wine glass"
+          }
+        }
+      }
+    },
+    "settings.preset.symbol.halfunit.shot" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schnapsglas"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shot glass"
+          }
+        }
+      }
+    },
+    "settings.preset.symbol.halfunit.longdrink" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Longdrinkglas"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Long drink glass"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

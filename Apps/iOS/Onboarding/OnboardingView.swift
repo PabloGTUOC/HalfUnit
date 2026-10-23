@@ -46,7 +46,7 @@ struct OnboardingView: View {
 
                 Image(systemName: "drop.fill")
                     .font(.system(size: 64))
-                    .foregroundStyle(Color.teal)
+                    .foregroundStyle(BrandColors.accent)
                     .accessibilityHidden(true)
 
                 Text("onboarding.screen1.title")
@@ -71,7 +71,7 @@ struct OnboardingView: View {
                 .padding()
                 .background(
                     RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .fill(Color(.secondarySystemGroupedBackground))
+                        .fill(BrandColors.presetTileBackground)
                 )
 
                 Spacer(minLength: 24)
@@ -86,7 +86,7 @@ struct OnboardingView: View {
                         .frame(maxWidth: .infinity, minHeight: 50)
                 }
                 .buttonStyle(.borderedProminent)
-                .tint(.teal)
+                .tint(BrandColors.brandFill)
             }
             .padding()
         }
@@ -96,7 +96,7 @@ struct OnboardingView: View {
         HStack(alignment: .top, spacing: 14) {
             Image(systemName: symbol)
                 .font(.title3)
-                .foregroundStyle(Color.teal)
+                .foregroundStyle(BrandColors.accent)
                 .frame(width: 28, alignment: .center)
                 .accessibilityHidden(true)
 
@@ -130,9 +130,9 @@ struct OnboardingView: View {
                             togglePreset(preset)
                         } label: {
                             HStack(spacing: 14) {
-                                Image(systemName: PresetPresentation.symbolName(for: preset))
+                                PresetPresentation.image(for: PresetPresentation.symbolName(for: preset))
                                     .font(.title2)
-                                    .foregroundStyle(preset.isHidden ? Color.secondary : Color.teal)
+                                    .foregroundStyle(preset.isHidden ? Color.secondary : BrandColors.accent)
                                     .frame(width: 32, alignment: .center)
 
                                 VStack(alignment: .leading, spacing: 2) {
@@ -149,17 +149,18 @@ struct OnboardingView: View {
 
                                 Image(systemName: preset.isHidden ? "eye.slash" : "checkmark.circle.fill")
                                     .font(.title3)
-                                    .foregroundStyle(preset.isHidden ? Color.secondary : Color.teal)
+                                    .foregroundStyle(preset.isHidden ? Color.secondary : BrandColors.accent)
                             }
                             .padding(14)
                             .frame(maxWidth: .infinity, minHeight: 56, alignment: .leading)
                             .background(
                                 RoundedRectangle(cornerRadius: 14, style: .continuous)
-                                    .fill(Color(.secondarySystemGroupedBackground))
+                                    .fill(BrandColors.presetTileBackground)
                             )
                             .overlay(
                                 RoundedRectangle(cornerRadius: 14, style: .continuous)
-                                    .strokeBorder(preset.isHidden ? Color.clear : Color.teal.opacity(0.3), lineWidth: 1)
+                                    .strokeBorder(
+                                        preset.isHidden ? Color.clear : BrandColors.accent.opacity(0.3), lineWidth: 1)
                             )
                         }
                         .buttonStyle(.plain)
@@ -184,7 +185,7 @@ struct OnboardingView: View {
                         .frame(maxWidth: .infinity, minHeight: 50)
                 }
                 .buttonStyle(.borderedProminent)
-                .tint(.teal)
+                .tint(BrandColors.brandFill)
             }
             .padding()
         }
@@ -225,7 +226,7 @@ struct OnboardingView: View {
 
                 Image(systemName: "heart.fill")
                     .font(.system(size: 64))
-                    .foregroundStyle(Color.pink)
+                    .foregroundStyle(BrandColors.accent)
                     .accessibilityHidden(true)
 
                 Text("onboarding.screen3.title")
@@ -249,7 +250,7 @@ struct OnboardingView: View {
                 .padding()
                 .background(
                     RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .fill(Color(.secondarySystemGroupedBackground))
+                        .fill(BrandColors.presetTileBackground)
                 )
 
                 Spacer(minLength: 24)
@@ -268,7 +269,7 @@ struct OnboardingView: View {
                         }
                     }
                     .buttonStyle(.borderedProminent)
-                    .tint(.pink)
+                    .tint(BrandColors.brandFill)
                     .disabled(isRequestingHealth)
 
                     Button {

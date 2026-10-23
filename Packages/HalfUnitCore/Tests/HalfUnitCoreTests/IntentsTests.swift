@@ -36,7 +36,7 @@ struct IntentsTests {
         #expect(beerEntity.localizedName(locale: Self.englishLocale) == "Beer")
         #expect(beerEntity.localizedName(locale: Self.germanLocale) == "Bier")
         #expect(beerEntity.formattedHU(locale: Self.englishLocale) == "1 HU")
-        #expect(beerEntity.resolvedSymbolName == "mug.fill")
+        #expect(beerEntity.resolvedSymbolName == "halfunit.beer.mug")
 
         let smallBeerEntity = try #require(allEntities.first(where: { $0.key == "smallBeer" }))
         #expect(smallBeerEntity.localizedName(locale: Self.englishLocale) == "Small beer")

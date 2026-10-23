@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="1000" height="1000" viewBox="0 0 1000 1000">
+  <g id="Notes">
+    <text id="template-version">Template v.4.0</text>
+  </g>
+  <g id="Guides">
+    <line id="Baseline-S" x1="0" y1="200.0" x2="300" y2="200.0" stroke="#000000" />
+    <line id="Capline-S" x1="0" y1="115.0" x2="300" y2="115.0" stroke="#000000" />
+    <line id="left-margin-Regular-S" x1="124.5" y1="50" x2="124.5" y2="250" stroke="#000000" />
+    <line id="right-margin-Regular-S" x1="175.5" y1="50" x2="175.5" y2="250" stroke="#000000" />
+
+    <line id="Baseline-M" x1="350" y1="200.0" x2="650" y2="200.0" stroke="#000000" />
+    <line id="Capline-M" x1="350" y1="100.0" x2="650" y2="100.0" stroke="#000000" />
+    <line id="left-margin-Regular-M" x1="470.0" y1="50" x2="470.0" y2="250" stroke="#000000" />
+    <line id="right-margin-Regular-M" x1="530.0" y1="50" x2="530.0" y2="250" stroke="#000000" />
+
+    <line id="Baseline-L" x1="700" y1="200.0" x2="1000" y2="200.0" stroke="#000000" />
+    <line id="Capline-L" x1="700" y1="80.0" x2="1000" y2="80.0" stroke="#000000" />
+    <line id="left-margin-Regular-L" x1="814.0" y1="50" x2="814.0" y2="250" stroke="#000000" />
+    <line id="right-margin-Regular-L" x1="886.0" y1="50" x2="886.0" y2="250" stroke="#000000" />
+  </g>
+  <g id="Symbols">
+    <g id="Regular-S" transform="translate(150.0, 200.0) scale(0.8500) translate(-500.0, -200.0)">
+      
+          <!-- Bottle Body & Neck -->
+          <path d="M 491 72 L 509 72 M 493 72 L 493 108 C 493 118 478 128 478 140 L 478 196 C 478 198.5 480 200 482.5 200 L 517.5 200 C 520 200 522 198.5 522 196 L 522 140 C 522 128 507 118 507 108 L 507 72" fill="none" stroke="#000000" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" />
+          <!-- Label Band -->
+          <line x1="480" y1="154" x2="520" y2="154" stroke="#000000" stroke-width="5.5" stroke-linecap="round" />
+          <line x1="480" y1="176" x2="520" y2="176" stroke="#000000" stroke-width="5.5" stroke-linecap="round" />
+        
+    </g>
+    <g id="Regular-M">
+      
+          <!-- Bottle Body & Neck -->
+          <path d="M 491 72 L 509 72 M 493 72 L 493 108 C 493 118 478 128 478 140 L 478 196 C 478 198.5 480 200 482.5 200 L 517.5 200 C 520 200 522 198.5 522 196 L 522 140 C 522 128 507 118 507 108 L 507 72" fill="none" stroke="#000000" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round" />
+          <!-- Label Band -->
+          <line x1="480" y1="154" x2="520" y2="154" stroke="#000000" stroke-width="6.5" stroke-linecap="round" />
+          <line x1="480" y1="176" x2="520" y2="176" stroke="#000000" stroke-width="6.5" stroke-linecap="round" />
+        
+    </g>
+    <g id="Regular-L" transform="translate(850.0, 200.0) scale(1.2000) translate(-500.0, -200.0)">
+      
+          <!-- Bottle Body & Neck -->
+          <path d="M 491 72 L 509 72 M 493 72 L 493 108 C 493 118 478 128 478 140 L 478 196 C 478 198.5 480 200 482.5 200 L 517.5 200 C 520 200 522 198.5 522 196 L 522 140 C 522 128 507 118 507 108 L 507 72" fill="none" stroke="#000000" stroke-width="7.8" stroke-linecap="round" stroke-linejoin="round" />
+          <!-- Label Band -->
+          <line x1="480" y1="154" x2="520" y2="154" stroke="#000000" stroke-width="7.8" stroke-linecap="round" />
+          <line x1="480" y1="176" x2="520" y2="176" stroke="#000000" stroke-width="7.8" stroke-linecap="round" />
+        
+    </g>
+  </g>
+</svg>

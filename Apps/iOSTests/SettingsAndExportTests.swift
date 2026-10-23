@@ -43,7 +43,11 @@ struct SettingsAndExportTests {
     func curatedSymbolsAndLocalizations() {
         #expect(!SettingsPresetSymbol.curatedSymbols.isEmpty)
         for symbol in SettingsPresetSymbol.allCases {
-            #expect(UIImage(systemName: symbol.rawValue) != nil)
+            let image: UIImage? =
+                PresetPresentation.isCustomSymbol(symbol.rawValue)
+                ? UIImage(named: symbol.rawValue)
+                : UIImage(systemName: symbol.rawValue)
+            #expect(image != nil)
             let enLabel = AppLocalization.string(symbol.accessibilityKey, locale: Self.englishLocale)
             let deLabel = AppLocalization.string(symbol.accessibilityKey, locale: Self.germanLocale)
             #expect(!enLabel.isEmpty)

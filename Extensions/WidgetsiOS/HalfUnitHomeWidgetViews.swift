@@ -35,7 +35,7 @@ private struct SmallHomeWidgetView: View {
     let renderingMode: WidgetRenderingMode
 
     private var accentColor: Color {
-        renderingMode == .accented ? .primary : .teal
+        renderingMode == .accented ? .primary : BrandColors.accent
     }
 
     var body: some View {
@@ -100,7 +100,7 @@ private struct MediumHomeWidgetView: View {
     let renderingMode: WidgetRenderingMode
 
     private var accentColor: Color {
-        renderingMode == .accented ? .primary : .teal
+        renderingMode == .accented ? .primary : BrandColors.accent
     }
 
     var body: some View {
@@ -152,7 +152,7 @@ private struct MediumHomeWidgetView: View {
                 ForEach(snapshot.presetButtons) { button in
                     Button(intent: WidgetLogDrinkIntent(preset: button.entity)) {
                         HStack(spacing: 6) {
-                            Image(systemName: button.symbolName)
+                            PresetPresentation.image(for: button.symbolName)
                                 .font(.caption.weight(.semibold))
                                 .foregroundStyle(accentColor)
                                 .widgetAccentable()
