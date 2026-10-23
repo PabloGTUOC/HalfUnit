@@ -11,6 +11,17 @@ import SwiftUI
             ("halfunit.longdrink", "Long Drink (Highball)"),
         ]
 
+        public static let baselineComparisonSymbols: [(key: String, name: String, isSystem: Bool)] = [
+            ("halfunit.beer.bottle", "Bottle", false),
+            ("halfunit.beer.mug", "Mug", false),
+            ("halfunit.wine.small", "Wine (S)", false),
+            ("halfunit.wine.glass", "Wine (L)", false),
+            ("halfunit.shot", "Shot", false),
+            ("halfunit.longdrink", "Highball", false),
+            ("wineglass", "SF wineglass", true),
+            ("mug", "SF mug", true),
+        ]
+
         public static let colorTokens: [(name: String, color: Color, hex: BrandColors.AppearanceHex)] = [
             ("AccentColor", BrandColors.accent, BrandColors.accentHex),
             ("BrandFill", BrandColors.brandFill, BrandColors.brandFillHex),
@@ -30,6 +41,12 @@ import SwiftUI
             ScrollView {
                 VStack(alignment: .leading, spacing: 28) {
                     headerSection
+
+                    // Baseline Alignment Row with "Aa" at body size + Apple comparison
+                    baselineAlignmentSection
+                        .padding()
+                        .background(Color(uiColor: .secondarySystemGroupedBackground))
+                        .clipShape(RoundedRectangle(cornerRadius: 16))
 
                     // Light Appearance
                     appearanceSection(isDark: false)
@@ -66,6 +83,44 @@ import SwiftUI
                 Text("Slate #34454C · Burnt Sienna #AE5224 · Pinkish Cinnamon #EEB480 · Turquoise Green #B5DECC")
                     .font(.caption)
                     .foregroundStyle(.secondary)
+            }
+        }
+
+        private var baselineAlignmentSection: some View {
+            VStack(alignment: .leading, spacing: 14) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Baseline Alignment & Apple Reference Comparison")
+                        .font(.headline)
+                        .foregroundStyle(BrandColors.brandInk)
+                    Text("Inline after 'Aa' at body size, comparing with Apple's wineglass and mug")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+
+                HStack(spacing: 8) {
+                    ForEach(Self.baselineComparisonSymbols, id: \.key) { item in
+                        VStack(spacing: 4) {
+                            HStack(alignment: .firstTextBaseline, spacing: 2) {
+                                Text("Aa")
+                                    .font(.body)
+                                    .foregroundStyle(BrandColors.brandInk)
+                                PresetPresentation.image(for: item.key)
+                                    .font(.body)
+                                    .foregroundStyle(item.isSystem ? Color.secondary : BrandColors.accent)
+                            }
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 4)
+                            .background(Color(uiColor: .tertiarySystemGroupedBackground))
+                            .clipShape(RoundedRectangle(cornerRadius: 6))
+
+                            Text(item.name)
+                                .font(.system(size: 8, weight: item.isSystem ? .bold : .regular))
+                                .foregroundStyle(item.isSystem ? BrandColors.brandInk : Color.secondary)
+                                .lineLimit(1)
+                        }
+                        .frame(maxWidth: .infinity)
+                    }
+                }
             }
         }
 

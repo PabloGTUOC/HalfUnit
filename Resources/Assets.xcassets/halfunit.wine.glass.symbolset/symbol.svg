@@ -6,52 +6,37 @@
   <g id="Guides">
     <line id="Baseline-S" x1="0" y1="200.0" x2="300" y2="200.0" stroke="#000000" />
     <line id="Capline-S" x1="0" y1="115.0" x2="300" y2="115.0" stroke="#000000" />
-    <line id="left-margin-Regular-S" x1="117.7" y1="50" x2="117.7" y2="250" stroke="#000000" />
-    <line id="right-margin-Regular-S" x1="182.3" y1="50" x2="182.3" y2="250" stroke="#000000" />
+    <line id="left-margin-Regular-S" x1="112.6" y1="50" x2="112.6" y2="250" stroke="#000000" />
+    <line id="right-margin-Regular-S" x1="187.4" y1="50" x2="187.4" y2="250" stroke="#000000" />
 
     <line id="Baseline-M" x1="350" y1="200.0" x2="650" y2="200.0" stroke="#000000" />
     <line id="Capline-M" x1="350" y1="100.0" x2="650" y2="100.0" stroke="#000000" />
-    <line id="left-margin-Regular-M" x1="462.0" y1="50" x2="462.0" y2="250" stroke="#000000" />
-    <line id="right-margin-Regular-M" x1="538.0" y1="50" x2="538.0" y2="250" stroke="#000000" />
+    <line id="left-margin-Regular-M" x1="456.0" y1="50" x2="456.0" y2="250" stroke="#000000" />
+    <line id="right-margin-Regular-M" x1="544.0" y1="50" x2="544.0" y2="250" stroke="#000000" />
 
     <line id="Baseline-L" x1="700" y1="200.0" x2="1000" y2="200.0" stroke="#000000" />
     <line id="Capline-L" x1="700" y1="80.0" x2="1000" y2="80.0" stroke="#000000" />
-    <line id="left-margin-Regular-L" x1="804.4" y1="50" x2="804.4" y2="250" stroke="#000000" />
-    <line id="right-margin-Regular-L" x1="895.6" y1="50" x2="895.6" y2="250" stroke="#000000" />
+    <line id="left-margin-Regular-L" x1="797.2" y1="50" x2="797.2" y2="250" stroke="#000000" />
+    <line id="right-margin-Regular-L" x1="902.8" y1="50" x2="902.8" y2="250" stroke="#000000" />
   </g>
   <g id="Symbols">
     <g id="Regular-S" transform="translate(150.0, 200.0) scale(0.8500) translate(-500.0, -200.0)">
-      
-          <!-- Foot & Stem -->
-          <line x1="475" y1="200" x2="525" y2="200" stroke="#000000" stroke-width="5.5" stroke-linecap="round" />
-          <line x1="500" y1="154" x2="500" y2="200" stroke="#000000" stroke-width="5.5" stroke-linecap="round" />
-          <!-- Full-size Bowl -->
-          <path d="M 477 100 C 470 128 472 154 500 154 C 528 154 530 128 523 100 Z" fill="none" stroke="#000000" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" />
-          <!-- Higher Liquid Line -->
-          <line x1="473" y1="130" x2="527" y2="130" stroke="#000000" stroke-width="5.5" stroke-linecap="round" />
-        
+      <path fill="#000000" d="M 474.75 200.00 L 525.25 200.00 A 2.75 2.75 0 0 1 525.25 194.50 L 474.75 194.50 A 2.75 2.75 0 0 1 474.75 200.00 Z" />
+      <path fill="#000000" d="M 497.25 152 L 502.75 152 L 502.75 198 L 497.25 198 Z" />
+      <path fill="#000000" fill-rule="evenodd" d="M 476 104 A 2.75 2.75 0 0 1 481.5 104 C 481.5 116 475.5 125 475.5 133 C 475.5 142 490 148.5 500 148.5 C 510 148.5 524.5 142 524.5 133 C 524.5 125 518.5 116 518.5 104 A 2.75 2.75 0 0 1 524 104 C 524 116 530 125 530 134 C 530 146 512 154 502.75 154 L 497.25 154 C 488 154 470 146 470 134 C 470 125 476 116 476 104 Z" />
+      <path fill="#000000" d="M 476.00 128.50 L 524.00 128.50 A 2.50 2.50 0 0 1 524.00 123.50 L 476.00 123.50 A 2.50 2.50 0 0 1 476.00 128.50 Z" />
     </g>
     <g id="Regular-M">
-      
-          <!-- Foot & Stem -->
-          <line x1="475" y1="200" x2="525" y2="200" stroke="#000000" stroke-width="6.5" stroke-linecap="round" />
-          <line x1="500" y1="154" x2="500" y2="200" stroke="#000000" stroke-width="6.5" stroke-linecap="round" />
-          <!-- Full-size Bowl -->
-          <path d="M 477 100 C 470 128 472 154 500 154 C 528 154 530 128 523 100 Z" fill="none" stroke="#000000" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round" />
-          <!-- Higher Liquid Line -->
-          <line x1="473" y1="130" x2="527" y2="130" stroke="#000000" stroke-width="6.5" stroke-linecap="round" />
-        
+      <path fill="#000000" d="M 474.75 200.00 L 525.25 200.00 A 2.75 2.75 0 0 1 525.25 194.50 L 474.75 194.50 A 2.75 2.75 0 0 1 474.75 200.00 Z" />
+      <path fill="#000000" d="M 497.25 152 L 502.75 152 L 502.75 198 L 497.25 198 Z" />
+      <path fill="#000000" fill-rule="evenodd" d="M 476 104 A 2.75 2.75 0 0 1 481.5 104 C 481.5 116 475.5 125 475.5 133 C 475.5 142 490 148.5 500 148.5 C 510 148.5 524.5 142 524.5 133 C 524.5 125 518.5 116 518.5 104 A 2.75 2.75 0 0 1 524 104 C 524 116 530 125 530 134 C 530 146 512 154 502.75 154 L 497.25 154 C 488 154 470 146 470 134 C 470 125 476 116 476 104 Z" />
+      <path fill="#000000" d="M 476.00 128.50 L 524.00 128.50 A 2.50 2.50 0 0 1 524.00 123.50 L 476.00 123.50 A 2.50 2.50 0 0 1 476.00 128.50 Z" />
     </g>
     <g id="Regular-L" transform="translate(850.0, 200.0) scale(1.2000) translate(-500.0, -200.0)">
-      
-          <!-- Foot & Stem -->
-          <line x1="475" y1="200" x2="525" y2="200" stroke="#000000" stroke-width="7.8" stroke-linecap="round" />
-          <line x1="500" y1="154" x2="500" y2="200" stroke="#000000" stroke-width="7.8" stroke-linecap="round" />
-          <!-- Full-size Bowl -->
-          <path d="M 477 100 C 470 128 472 154 500 154 C 528 154 530 128 523 100 Z" fill="none" stroke="#000000" stroke-width="7.8" stroke-linecap="round" stroke-linejoin="round" />
-          <!-- Higher Liquid Line -->
-          <line x1="473" y1="130" x2="527" y2="130" stroke="#000000" stroke-width="7.8" stroke-linecap="round" />
-        
+      <path fill="#000000" d="M 474.75 200.00 L 525.25 200.00 A 2.75 2.75 0 0 1 525.25 194.50 L 474.75 194.50 A 2.75 2.75 0 0 1 474.75 200.00 Z" />
+      <path fill="#000000" d="M 497.25 152 L 502.75 152 L 502.75 198 L 497.25 198 Z" />
+      <path fill="#000000" fill-rule="evenodd" d="M 476 104 A 2.75 2.75 0 0 1 481.5 104 C 481.5 116 475.5 125 475.5 133 C 475.5 142 490 148.5 500 148.5 C 510 148.5 524.5 142 524.5 133 C 524.5 125 518.5 116 518.5 104 A 2.75 2.75 0 0 1 524 104 C 524 116 530 125 530 134 C 530 146 512 154 502.75 154 L 497.25 154 C 488 154 470 146 470 134 C 470 125 476 116 476 104 Z" />
+      <path fill="#000000" d="M 476.00 128.50 L 524.00 128.50 A 2.50 2.50 0 0 1 524.00 123.50 L 476.00 123.50 A 2.50 2.50 0 0 1 476.00 128.50 Z" />
     </g>
   </g>
 </svg>

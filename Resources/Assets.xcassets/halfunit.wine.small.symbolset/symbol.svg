@@ -6,52 +6,37 @@
   <g id="Guides">
     <line id="Baseline-S" x1="0" y1="200.0" x2="300" y2="200.0" stroke="#000000" />
     <line id="Capline-S" x1="0" y1="115.0" x2="300" y2="115.0" stroke="#000000" />
-    <line id="left-margin-Regular-S" x1="122.8" y1="50" x2="122.8" y2="250" stroke="#000000" />
-    <line id="right-margin-Regular-S" x1="177.2" y1="50" x2="177.2" y2="250" stroke="#000000" />
+    <line id="left-margin-Regular-S" x1="117.7" y1="50" x2="117.7" y2="250" stroke="#000000" />
+    <line id="right-margin-Regular-S" x1="182.3" y1="50" x2="182.3" y2="250" stroke="#000000" />
 
     <line id="Baseline-M" x1="350" y1="200.0" x2="650" y2="200.0" stroke="#000000" />
     <line id="Capline-M" x1="350" y1="100.0" x2="650" y2="100.0" stroke="#000000" />
-    <line id="left-margin-Regular-M" x1="468.0" y1="50" x2="468.0" y2="250" stroke="#000000" />
-    <line id="right-margin-Regular-M" x1="532.0" y1="50" x2="532.0" y2="250" stroke="#000000" />
+    <line id="left-margin-Regular-M" x1="462.0" y1="50" x2="462.0" y2="250" stroke="#000000" />
+    <line id="right-margin-Regular-M" x1="538.0" y1="50" x2="538.0" y2="250" stroke="#000000" />
 
     <line id="Baseline-L" x1="700" y1="200.0" x2="1000" y2="200.0" stroke="#000000" />
     <line id="Capline-L" x1="700" y1="80.0" x2="1000" y2="80.0" stroke="#000000" />
-    <line id="left-margin-Regular-L" x1="811.6" y1="50" x2="811.6" y2="250" stroke="#000000" />
-    <line id="right-margin-Regular-L" x1="888.4" y1="50" x2="888.4" y2="250" stroke="#000000" />
+    <line id="left-margin-Regular-L" x1="804.4" y1="50" x2="804.4" y2="250" stroke="#000000" />
+    <line id="right-margin-Regular-L" x1="895.6" y1="50" x2="895.6" y2="250" stroke="#000000" />
   </g>
   <g id="Symbols">
     <g id="Regular-S" transform="translate(150.0, 200.0) scale(0.8500) translate(-500.0, -200.0)">
-      
-          <!-- Foot & Stem -->
-          <line x1="480" y1="200" x2="520" y2="200" stroke="#000000" stroke-width="5.5" stroke-linecap="round" />
-          <line x1="500" y1="162" x2="500" y2="200" stroke="#000000" stroke-width="5.5" stroke-linecap="round" />
-          <!-- Small Wine Bowl -->
-          <path d="M 478 122 C 478 152 488 162 500 162 C 512 162 522 152 522 122 Z" fill="none" stroke="#000000" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" />
-          <!-- Low Liquid Line -->
-          <line x1="485" y1="148" x2="515" y2="148" stroke="#000000" stroke-width="5.5" stroke-linecap="round" />
-        
+      <path fill="#000000" d="M 479.80 200.00 L 520.20 200.00 A 2.20 2.20 0 0 1 520.20 195.60 L 479.80 195.60 A 2.20 2.20 0 0 1 479.80 200.00 Z" />
+      <path fill="#000000" d="M 497.8 161.6 L 502.2 161.6 L 502.2 198 L 497.8 198 Z" />
+      <path fill="#000000" fill-rule="evenodd" d="M 480.8 123.2 A 2.2 2.2 0 0 1 485.2 123.2 C 485.2 132.8 480.4 140 480.4 146.4 C 480.4 153.6 492 158.8 500 158.8 C 508 158.8 519.6 153.6 519.6 146.4 C 519.6 140 514.8 132.8 514.8 123.2 A 2.2 2.2 0 0 1 519.2 123.2 C 519.2 132.8 524 140 524 147.2 C 524 156.8 509.6 163.2 502.2 163.2 L 497.8 163.2 C 490.4 163.2 476 156.8 476 147.2 C 476 140 480.8 132.8 480.8 123.2 Z" />
+      <path fill="#000000" d="M 481.50 152.00 L 518.50 152.00 A 2.00 2.00 0 0 1 518.50 148.00 L 481.50 148.00 A 2.00 2.00 0 0 1 481.50 152.00 Z" />
     </g>
     <g id="Regular-M">
-      
-          <!-- Foot & Stem -->
-          <line x1="480" y1="200" x2="520" y2="200" stroke="#000000" stroke-width="6.5" stroke-linecap="round" />
-          <line x1="500" y1="162" x2="500" y2="200" stroke="#000000" stroke-width="6.5" stroke-linecap="round" />
-          <!-- Small Wine Bowl -->
-          <path d="M 478 122 C 478 152 488 162 500 162 C 512 162 522 152 522 122 Z" fill="none" stroke="#000000" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round" />
-          <!-- Low Liquid Line -->
-          <line x1="485" y1="148" x2="515" y2="148" stroke="#000000" stroke-width="6.5" stroke-linecap="round" />
-        
+      <path fill="#000000" d="M 479.80 200.00 L 520.20 200.00 A 2.20 2.20 0 0 1 520.20 195.60 L 479.80 195.60 A 2.20 2.20 0 0 1 479.80 200.00 Z" />
+      <path fill="#000000" d="M 497.8 161.6 L 502.2 161.6 L 502.2 198 L 497.8 198 Z" />
+      <path fill="#000000" fill-rule="evenodd" d="M 480.8 123.2 A 2.2 2.2 0 0 1 485.2 123.2 C 485.2 132.8 480.4 140 480.4 146.4 C 480.4 153.6 492 158.8 500 158.8 C 508 158.8 519.6 153.6 519.6 146.4 C 519.6 140 514.8 132.8 514.8 123.2 A 2.2 2.2 0 0 1 519.2 123.2 C 519.2 132.8 524 140 524 147.2 C 524 156.8 509.6 163.2 502.2 163.2 L 497.8 163.2 C 490.4 163.2 476 156.8 476 147.2 C 476 140 480.8 132.8 480.8 123.2 Z" />
+      <path fill="#000000" d="M 481.50 152.00 L 518.50 152.00 A 2.00 2.00 0 0 1 518.50 148.00 L 481.50 148.00 A 2.00 2.00 0 0 1 481.50 152.00 Z" />
     </g>
     <g id="Regular-L" transform="translate(850.0, 200.0) scale(1.2000) translate(-500.0, -200.0)">
-      
-          <!-- Foot & Stem -->
-          <line x1="480" y1="200" x2="520" y2="200" stroke="#000000" stroke-width="7.8" stroke-linecap="round" />
-          <line x1="500" y1="162" x2="500" y2="200" stroke="#000000" stroke-width="7.8" stroke-linecap="round" />
-          <!-- Small Wine Bowl -->
-          <path d="M 478 122 C 478 152 488 162 500 162 C 512 162 522 152 522 122 Z" fill="none" stroke="#000000" stroke-width="7.8" stroke-linecap="round" stroke-linejoin="round" />
-          <!-- Low Liquid Line -->
-          <line x1="485" y1="148" x2="515" y2="148" stroke="#000000" stroke-width="7.8" stroke-linecap="round" />
-        
+      <path fill="#000000" d="M 479.80 200.00 L 520.20 200.00 A 2.20 2.20 0 0 1 520.20 195.60 L 479.80 195.60 A 2.20 2.20 0 0 1 479.80 200.00 Z" />
+      <path fill="#000000" d="M 497.8 161.6 L 502.2 161.6 L 502.2 198 L 497.8 198 Z" />
+      <path fill="#000000" fill-rule="evenodd" d="M 480.8 123.2 A 2.2 2.2 0 0 1 485.2 123.2 C 485.2 132.8 480.4 140 480.4 146.4 C 480.4 153.6 492 158.8 500 158.8 C 508 158.8 519.6 153.6 519.6 146.4 C 519.6 140 514.8 132.8 514.8 123.2 A 2.2 2.2 0 0 1 519.2 123.2 C 519.2 132.8 524 140 524 147.2 C 524 156.8 509.6 163.2 502.2 163.2 L 497.8 163.2 C 490.4 163.2 476 156.8 476 147.2 C 476 140 480.8 132.8 480.8 123.2 Z" />
+      <path fill="#000000" d="M 481.50 152.00 L 518.50 152.00 A 2.00 2.00 0 0 1 518.50 148.00 L 481.50 148.00 A 2.00 2.00 0 0 1 481.50 152.00 Z" />
     </g>
   </g>
 </svg>

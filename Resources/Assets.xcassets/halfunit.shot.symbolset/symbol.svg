@@ -6,49 +6,34 @@
   <g id="Guides">
     <line id="Baseline-S" x1="0" y1="200.0" x2="300" y2="200.0" stroke="#000000" />
     <line id="Capline-S" x1="0" y1="115.0" x2="300" y2="115.0" stroke="#000000" />
-    <line id="left-margin-Regular-S" x1="119.4" y1="50" x2="119.4" y2="250" stroke="#000000" />
-    <line id="right-margin-Regular-S" x1="180.6" y1="50" x2="180.6" y2="250" stroke="#000000" />
+    <line id="left-margin-Regular-S" x1="115.2" y1="50" x2="115.2" y2="250" stroke="#000000" />
+    <line id="right-margin-Regular-S" x1="184.8" y1="50" x2="184.8" y2="250" stroke="#000000" />
 
     <line id="Baseline-M" x1="350" y1="200.0" x2="650" y2="200.0" stroke="#000000" />
     <line id="Capline-M" x1="350" y1="100.0" x2="650" y2="100.0" stroke="#000000" />
-    <line id="left-margin-Regular-M" x1="464.0" y1="50" x2="464.0" y2="250" stroke="#000000" />
-    <line id="right-margin-Regular-M" x1="536.0" y1="50" x2="536.0" y2="250" stroke="#000000" />
+    <line id="left-margin-Regular-M" x1="459.0" y1="50" x2="459.0" y2="250" stroke="#000000" />
+    <line id="right-margin-Regular-M" x1="541.0" y1="50" x2="541.0" y2="250" stroke="#000000" />
 
     <line id="Baseline-L" x1="700" y1="200.0" x2="1000" y2="200.0" stroke="#000000" />
     <line id="Capline-L" x1="700" y1="80.0" x2="1000" y2="80.0" stroke="#000000" />
-    <line id="left-margin-Regular-L" x1="806.8" y1="50" x2="806.8" y2="250" stroke="#000000" />
-    <line id="right-margin-Regular-L" x1="893.2" y1="50" x2="893.2" y2="250" stroke="#000000" />
+    <line id="left-margin-Regular-L" x1="800.8" y1="50" x2="800.8" y2="250" stroke="#000000" />
+    <line id="right-margin-Regular-L" x1="899.2" y1="50" x2="899.2" y2="250" stroke="#000000" />
   </g>
   <g id="Symbols">
     <g id="Regular-S" transform="translate(150.0, 200.0) scale(0.8500) translate(-500.0, -200.0)">
-      
-          <!-- Shot Glass Outer Shape -->
-          <path d="M 473 135 L 480 196 C 480.5 198.5 482 200 484 200 L 516 200 C 518 200 519.5 198.5 520 196 L 527 135 Z" fill="none" stroke="#000000" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" />
-          <!-- Heavy Base Line -->
-          <line x1="481" y1="186" x2="519" y2="186" stroke="#000000" stroke-width="5.5" stroke-linecap="round" />
-          <!-- Liquid Line -->
-          <line x1="476" y1="154" x2="524" y2="154" stroke="#000000" stroke-width="5.5" stroke-linecap="round" />
-        
+      <path fill="#000000" fill-rule="evenodd" d="M 473 132 L 480 196 C 480.5 198.5 482 200 484 200 L 516 200 C 518 200 519.5 198.5 520 196 L 527 132 A 2.75 2.75 0 0 0 521.5 132 L 514.8 194.5 L 485.2 194.5 L 478.5 132 A 2.75 2.75 0 0 0 473 132 Z" />
+      <path fill="#000000" d="M 482.00 188.75 L 518.00 188.75 A 2.75 2.75 0 0 1 518.00 183.25 L 482.00 183.25 A 2.75 2.75 0 0 1 482.00 188.75 Z" />
+      <path fill="#000000" d="M 476.50 156.50 L 523.50 156.50 A 2.50 2.50 0 0 1 523.50 151.50 L 476.50 151.50 A 2.50 2.50 0 0 1 476.50 156.50 Z" />
     </g>
     <g id="Regular-M">
-      
-          <!-- Shot Glass Outer Shape -->
-          <path d="M 473 135 L 480 196 C 480.5 198.5 482 200 484 200 L 516 200 C 518 200 519.5 198.5 520 196 L 527 135 Z" fill="none" stroke="#000000" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round" />
-          <!-- Heavy Base Line -->
-          <line x1="481" y1="186" x2="519" y2="186" stroke="#000000" stroke-width="6.5" stroke-linecap="round" />
-          <!-- Liquid Line -->
-          <line x1="476" y1="154" x2="524" y2="154" stroke="#000000" stroke-width="6.5" stroke-linecap="round" />
-        
+      <path fill="#000000" fill-rule="evenodd" d="M 473 132 L 480 196 C 480.5 198.5 482 200 484 200 L 516 200 C 518 200 519.5 198.5 520 196 L 527 132 A 2.75 2.75 0 0 0 521.5 132 L 514.8 194.5 L 485.2 194.5 L 478.5 132 A 2.75 2.75 0 0 0 473 132 Z" />
+      <path fill="#000000" d="M 482.00 188.75 L 518.00 188.75 A 2.75 2.75 0 0 1 518.00 183.25 L 482.00 183.25 A 2.75 2.75 0 0 1 482.00 188.75 Z" />
+      <path fill="#000000" d="M 476.50 156.50 L 523.50 156.50 A 2.50 2.50 0 0 1 523.50 151.50 L 476.50 151.50 A 2.50 2.50 0 0 1 476.50 156.50 Z" />
     </g>
     <g id="Regular-L" transform="translate(850.0, 200.0) scale(1.2000) translate(-500.0, -200.0)">
-      
-          <!-- Shot Glass Outer Shape -->
-          <path d="M 473 135 L 480 196 C 480.5 198.5 482 200 484 200 L 516 200 C 518 200 519.5 198.5 520 196 L 527 135 Z" fill="none" stroke="#000000" stroke-width="7.8" stroke-linecap="round" stroke-linejoin="round" />
-          <!-- Heavy Base Line -->
-          <line x1="481" y1="186" x2="519" y2="186" stroke="#000000" stroke-width="7.8" stroke-linecap="round" />
-          <!-- Liquid Line -->
-          <line x1="476" y1="154" x2="524" y2="154" stroke="#000000" stroke-width="7.8" stroke-linecap="round" />
-        
+      <path fill="#000000" fill-rule="evenodd" d="M 473 132 L 480 196 C 480.5 198.5 482 200 484 200 L 516 200 C 518 200 519.5 198.5 520 196 L 527 132 A 2.75 2.75 0 0 0 521.5 132 L 514.8 194.5 L 485.2 194.5 L 478.5 132 A 2.75 2.75 0 0 0 473 132 Z" />
+      <path fill="#000000" d="M 482.00 188.75 L 518.00 188.75 A 2.75 2.75 0 0 1 518.00 183.25 L 482.00 183.25 A 2.75 2.75 0 0 1 482.00 188.75 Z" />
+      <path fill="#000000" d="M 476.50 156.50 L 523.50 156.50 A 2.50 2.50 0 0 1 523.50 151.50 L 476.50 151.50 A 2.50 2.50 0 0 1 476.50 156.50 Z" />
     </g>
   </g>
 </svg>

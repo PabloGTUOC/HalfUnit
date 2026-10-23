@@ -17,6 +17,17 @@ struct DesignPreviewTests {
         ("halfunit.longdrink", "Long Drink\nHighball"),
     ]
 
+    private static let baselineComparisonSymbols: [(key: String, label: String, isSystem: Bool)] = [
+        ("halfunit.beer.bottle", "Bottle", false),
+        ("halfunit.beer.mug", "Beer Mug", false),
+        ("halfunit.wine.small", "Small Wine", false),
+        ("halfunit.wine.glass", "Wine Glass", false),
+        ("halfunit.shot", "Shot", false),
+        ("halfunit.longdrink", "Highball", false),
+        ("wineglass", "SF wineglass", true),
+        ("mug", "SF mug", true),
+    ]
+
     private static let colorTokens: [(name: String, color: Color, lightHex: String, darkHex: String)] = [
         ("AccentColor", BrandColors.accent, BrandColors.accentHex.light, BrandColors.accentHex.dark),
         ("BrandFill", BrandColors.brandFill, BrandColors.brandFillHex.light, BrandColors.brandFillHex.dark),
@@ -48,7 +59,8 @@ struct DesignPreviewTests {
     @Test("Render design preview sheet to $(SRCROOT)/.build/design-preview.png")
     @MainActor
     func renderDesignPreviewSheet() throws {
-        let previewContent = makePreviewContent()
+        let previewContent =
+            makePreviewContent()
             .frame(width: 860)
             .background(Color(uiColor: .systemGroupedBackground))
 
@@ -83,7 +95,8 @@ struct DesignPreviewTests {
             print("Successfully rendered design preview sheet to: \(outputURL.path)")
         } catch {
             print("Could not write outside simulator container (\(error)). Writing to tmp as fallback.")
-            let fallbackURL = FileManager.default.temporaryDirectory.appendingPathComponent("design-preview.png")
+            let fallbackURL = FileManager.default.temporaryDirectory.appendingPathComponent(
+                "design-preview.png")
             try pngData.write(to: fallbackURL, options: .atomic)
             #expect(FileManager.default.fileExists(atPath: fallbackURL.path))
         }
@@ -98,11 +111,59 @@ struct DesignPreviewTests {
                     .font(.system(size: 28, weight: .bold))
                     .foregroundStyle(BrandColors.brandInk)
 
-                Text("Sanzo Wada #263 Palette · Burnt Sienna Main Accent · Six Custom SF Symbols")
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundStyle(.secondary)
+                Text(
+                    "Sanzo Wada #263 Palette · Burnt Sienna Main Accent · Six Custom SF Symbols (Filled Paths)"
+                )
+                .font(.system(size: 14, weight: .medium))
+                .foregroundStyle(.secondary)
             }
             .padding(.bottom, 8)
+
+            // Baseline Alignment Row (Inline after "Aa" at body size + Apple comparison)
+            VStack(alignment: .leading, spacing: 14) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Baseline Alignment & Reference Comparison (Body Size)")
+                        .font(.system(size: 18, weight: .bold))
+                        .foregroundStyle(Color(hex: BrandColors.slateHex))
+                    Text(
+                        "Each custom symbol standing on baseline inline after 'Aa' at body size, with Apple system symbols at the end for visual comparison"
+                    )
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundStyle(.secondary)
+                }
+
+                HStack(spacing: 12) {
+                    ForEach(Self.baselineComparisonSymbols, id: \.key) { item in
+                        VStack(spacing: 6) {
+                            HStack(alignment: .firstTextBaseline, spacing: 4) {
+                                Text("Aa")
+                                    .font(.body)
+                                    .foregroundStyle(Color(hex: BrandColors.slateHex))
+                                PresetPresentation.image(for: item.key)
+                                    .font(.body)
+                                    .foregroundStyle(
+                                        item.isSystem
+                                            ? Color.secondary
+                                            : Color(hex: BrandColors.burntSiennaHex)
+                                    )
+                            }
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 6)
+                            .background(Color(uiColor: .secondarySystemBackground))
+                            .clipShape(RoundedRectangle(cornerRadius: 6))
+
+                            Text(item.label)
+                                .font(.system(size: 9, weight: item.isSystem ? .bold : .medium))
+                                .foregroundStyle(item.isSystem ? Color(hex: BrandColors.slateHex) : .secondary)
+                        }
+                        .frame(maxWidth: .infinity)
+                    }
+                }
+            }
+            .padding(20)
+            .background(Color.white)
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.black.opacity(0.08), lineWidth: 1))
 
             // Light Appearance Card
             VStack(alignment: .leading, spacing: 18) {
@@ -117,7 +178,9 @@ struct DesignPreviewTests {
                 }
 
                 symbolSizesBlock(
-                    tintColor: Color(hex: BrandColors.burntSiennaHex), labelColor: Color(hex: BrandColors.slateHex))
+                    tintColor: Color(hex: BrandColors.burntSiennaHex),
+                    labelColor: Color(hex: BrandColors.slateHex)
+                )
             }
             .padding(20)
             .background(Color.white)
@@ -145,7 +208,10 @@ struct DesignPreviewTests {
             .padding(20)
             .background(Color(hex: BrandColors.darkBackgroundHex))
             .clipShape(RoundedRectangle(cornerRadius: 16))
-            .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.white.opacity(0.12), lineWidth: 1))
+            .overlay(
+                RoundedRectangle(cornerRadius: 16).stroke(
+                    Color.white.opacity(0.12), lineWidth: 1)
+            )
             .environment(\.colorScheme, .dark)
 
             // Color Swatches
@@ -154,7 +220,9 @@ struct DesignPreviewTests {
                     .font(.system(size: 18, weight: .bold))
                     .foregroundStyle(BrandColors.brandInk)
 
-                LazyVGrid(columns: [GridItem(.adaptive(minimum: 150), spacing: 12)], spacing: 12) {
+                LazyVGrid(
+                    columns: [GridItem(.adaptive(minimum: 150), spacing: 12)], spacing: 12
+                ) {
                     ForEach(Self.colorTokens, id: \.name) { token in
                         VStack(alignment: .leading, spacing: 6) {
                             RoundedRectangle(cornerRadius: 8)

@@ -29,17 +29,17 @@ enum SettingsPresetSymbol: String, CaseIterable, Identifiable, Sendable {
     var accessibilityKey: String {
         switch self {
         case .beerBottle:
-            return "settings.preset.symbol.beerBottle"
+            return "settings.preset.symbol.halfunit.beer.bottle"
         case .beerMug:
-            return "settings.preset.symbol.beerMug"
+            return "settings.preset.symbol.halfunit.beer.mug"
         case .wineSmall:
-            return "settings.preset.symbol.wineSmall"
+            return "settings.preset.symbol.halfunit.wine.small"
         case .wineGlass:
-            return "settings.preset.symbol.wineGlass"
+            return "settings.preset.symbol.halfunit.wine.glass"
         case .shot:
-            return "settings.preset.symbol.shot"
+            return "settings.preset.symbol.halfunit.shot"
         case .longDrink:
-            return "settings.preset.symbol.longDrink"
+            return "settings.preset.symbol.halfunit.longdrink"
         case .wineglass:
             return "settings.preset.symbol.wineglass"
         case .mug:
