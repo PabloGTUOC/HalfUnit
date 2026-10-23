@@ -4,7 +4,7 @@ import SwiftUI
 import Testing
 import UIKit
 
-@testable import HalfUnit
+@_exported @testable import HalfUnit
 
 @Suite("Design Preview Generation Tests")
 struct DesignPreviewTests {
@@ -508,6 +508,202 @@ struct DesignPreviewTests {
                 }
             }
         }
+    }
+
+    @Test("Render widget preview sheet to $(SRCROOT)/.build/widget-preview.png")
+    @MainActor
+    func renderWidgetPreviewSheet() throws {
+        let previewContent =
+            makeWidgetPreviewContent()
+            .frame(width: 860)
+            .background(Color(uiColor: .systemGroupedBackground))
+
+        let renderer = ImageRenderer(content: previewContent)
+        renderer.scale = 2.0
+
+        guard let uiImage = renderer.uiImage else {
+            Issue.record("Failed to render WidgetPreview to UIImage")
+            return
+        }
+
+        guard let pngData = uiImage.pngData() else {
+            Issue.record("Failed to generate PNG data from rendered widget image")
+            return
+        }
+
+        let currentFile = URL(fileURLWithPath: #filePath)
+        let repoRoot =
+            currentFile
+            .deletingLastPathComponent()  // Apps/iOSTests
+            .deletingLastPathComponent()  // Apps
+            .deletingLastPathComponent()  // repo root
+
+        let buildDir = repoRoot.appendingPathComponent(".build", isDirectory: true)
+        let outputURL = buildDir.appendingPathComponent("widget-preview.png")
+
+        do {
+            try FileManager.default.createDirectory(at: buildDir, withIntermediateDirectories: true)
+            try pngData.write(to: outputURL, options: .atomic)
+            #expect(FileManager.default.fileExists(atPath: outputURL.path))
+            print("Successfully rendered widget preview sheet to: \(outputURL.path)")
+        } catch {
+            print("Could not write outside simulator container (\(error)). Writing to tmp as fallback.")
+            let fallbackURL = FileManager.default.temporaryDirectory.appendingPathComponent(
+                "widget-preview.png")
+            try pngData.write(to: fallbackURL, options: .atomic)
+            #expect(FileManager.default.fileExists(atPath: fallbackURL.path))
+        }
+    }
+
+    @MainActor
+    private func makeWidgetPreviewContent() -> some View {
+        let streakSnapshot = Self.streakSnapshot
+        let drinkingTodaySnapshot = Self.drinkingTodaySnapshot
+
+        return VStack(alignment: .leading, spacing: 24) {
+            // Header
+            VStack(alignment: .leading, spacing: 6) {
+                Text("Half Unit — Home Screen Widgets")
+                    .font(.system(size: 28, weight: .bold))
+                    .foregroundStyle(BrandColors.brandInk)
+
+                Text(
+                    "Native iOS Widgets · Sanzo Wada #263 Palette · Small (170×170), Medium (364×170), Large (364×382)"
+                )
+                .font(.system(size: 14, weight: .medium))
+                .foregroundStyle(.secondary)
+            }
+            .padding(.bottom, 8)
+
+            // Section 1: Streak State
+            VStack(alignment: .leading, spacing: 14) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Streak State (24 Days Without Alcohol)")
+                        .font(.system(size: 18, weight: .bold))
+                        .foregroundStyle(BrandColors.brandInk)
+                    Text(
+                        "Small: streak card filling widget · Medium: 40% streak card + 3×2 grid · Large: top card with last drink + 2×3 grid"
+                    )
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundStyle(.secondary)
+                }
+
+                widgetGroup(title: "Light Appearance", snapshot: streakSnapshot, isDark: false)
+                widgetGroup(title: "Dark Appearance", snapshot: streakSnapshot, isDark: true)
+            }
+            .padding(20)
+            .background(Color.white)
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.black.opacity(0.08), lineWidth: 1))
+
+            // Section 2: Drinking Today State
+            VStack(alignment: .leading, spacing: 14) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Drinking Today State (Today: 1.5 HU · Previous: 4 Days)")
+                        .font(.system(size: 18, weight: .bold))
+                        .foregroundStyle(BrandColors.brandInk)
+                    Text(
+                        "Small: Today + 1.5 HU · Medium: Today + 1.5 HU + previous streak + 3×2 grid · Large: top card with last drink + 2×3 grid + today total"
+                    )
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundStyle(.secondary)
+                }
+
+                widgetGroup(title: "Light Appearance", snapshot: drinkingTodaySnapshot, isDark: false)
+                widgetGroup(title: "Dark Appearance", snapshot: drinkingTodaySnapshot, isDark: true)
+            }
+            .padding(20)
+            .background(Color.white)
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.black.opacity(0.08), lineWidth: 1))
+        }
+        .padding(24)
+    }
+
+    @MainActor
+    private func widgetGroup(
+        title: String,
+        snapshot: WidgetEntrySnapshot,
+        isDark: Bool
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text(title)
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundStyle(isDark ? Color.white.opacity(0.8) : Color(hex: BrandColors.slateHex))
+
+            HStack(alignment: .top, spacing: 20) {
+                VStack(spacing: 16) {
+                    SmallHomeWidgetView(snapshot: snapshot, renderingMode: .fullColor)
+                        .frame(width: 170, height: 170)
+                        .background(BrandColors.appBackground)
+                        .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                                .stroke(Color.primary.opacity(0.1), lineWidth: 1)
+                        )
+
+                    MediumHomeWidgetView(snapshot: snapshot, renderingMode: .fullColor)
+                        .frame(width: 364, height: 170)
+                        .background(BrandColors.appBackground)
+                        .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                                .stroke(Color.primary.opacity(0.1), lineWidth: 1)
+                        )
+                }
+
+                LargeHomeWidgetView(snapshot: snapshot, renderingMode: .fullColor)
+                    .frame(width: 364, height: 382)
+                    .background(BrandColors.appBackground)
+                    .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 24, style: .continuous)
+                            .stroke(Color.primary.opacity(0.1), lineWidth: 1)
+                    )
+            }
+        }
+        .padding(16)
+        .background(isDark ? Color(hex: BrandColors.darkBackgroundHex) : Color(uiColor: .secondarySystemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 14))
+        .overlay(
+            RoundedRectangle(cornerRadius: 14)
+                .stroke(isDark ? Color.white.opacity(0.1) : Color.black.opacity(0.06), lineWidth: 1)
+        )
+        .environment(\.colorScheme, isDark ? .dark : .light)
+    }
+
+    private static var streakSnapshot: WidgetEntrySnapshot {
+        WidgetEntrySnapshot.placeholder(locale: Locale(identifier: "en_US"))
+    }
+
+    private static var drinkingTodaySnapshot: WidgetEntrySnapshot {
+        let sundayDay = LogicalDay(year: 2026, month: 9, day: 27)
+        let lastDrink = DrinkSnapshot(
+            id: UUID(),
+            timestamp: Date(timeIntervalSince1970: 1_759_003_200),
+            logicalDay: sundayDay,
+            presetKey: "beer",
+            name: "beer",
+            hu: Decimal(1),
+            grams: Decimal(20)
+        )
+        let summary = StreakSummary(
+            lastDrinkingDay: LogicalDay(year: 2026, month: 9, day: 28),
+            lastDrink: lastDrink,
+            isDrinkingToday: true,
+            currentStreakDays: 0,
+            previousStreakDays: 4,
+            longestStreakEver: 14,
+            longestStreakThisYear: 8
+        )
+        return WidgetEntrySnapshot(
+            summary: summary,
+            todayTotalHU: Decimal(sign: .plus, exponent: -1, significand: 15),
+            todayTotalGrams: Decimal(30),
+            displayUnit: .hu,
+            presets: PresetEntity.fallbackDefaultEntities,
+            locale: Locale(identifier: "en_US")
+        )
     }
 }
 

@@ -42,7 +42,8 @@ struct WidgetPresetButtonModel: Identifiable, Equatable, Sendable {
 }
 
 struct WidgetEntrySnapshot: Equatable, Sendable {
-    static let maxMediumPresetButtons = 3
+    static let maxPresetButtons = 6
+    static let maxMediumPresetButtons = 6
 
     let currentStreakDays: Int
     let isDrinkingToday: Bool
@@ -99,11 +100,16 @@ struct WidgetEntrySnapshot: Equatable, Sendable {
             )
         }
 
-        self.streakAccessibilityLabel = AppLocalization.plural(
-            "streak.daysWithoutAlcohol",
-            count: summary.currentStreakDays,
-            locale: locale
-        )
+        if drinkingToday {
+            let todayFormat = AppLocalization.string("watch.header.todayHU", locale: locale)
+            self.streakAccessibilityLabel = String(format: todayFormat, locale: locale, formattedTodayHU)
+        } else {
+            self.streakAccessibilityLabel = AppLocalization.plural(
+                "streak.daysWithoutAlcohol",
+                count: summary.currentStreakDays,
+                locale: locale
+            )
+        }
 
         let shortDayFormat = AppLocalization.string("widget.watch.shortDays", locale: locale)
         self.watchShortDaysText = String(
@@ -147,7 +153,7 @@ struct WidgetEntrySnapshot: Equatable, Sendable {
             : presets
         self.presetButtons =
             effectivePresets
-            .prefix(Self.maxMediumPresetButtons)
+            .prefix(Self.maxPresetButtons)
             .map { WidgetPresetButtonModel(entity: $0, displayUnit: displayUnit, locale: locale) }
     }
 
