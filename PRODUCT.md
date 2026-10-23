@@ -130,7 +130,7 @@ The iPhone app has three tabs: Today, Insights and History, plus Settings behind
 **Design notes**
 
 - Native SwiftUI look, Dynamic Type, Dark Mode and VoiceOver labels on every button (e.g. "Log beer, 1 unit").
-- Colour palette: Sanzo Wada, *A Dictionary of Color Combinations*, combination 263 — Slate `#34454C`, Burnt Sienna `#AE5224`, Pinkish Cinnamon `#EEB480`, Turquoise Green `#B5DECC`. Burnt Sienna is the main accent (buttons, tint, charts and heatmap); in dark mode text/tint use Pinkish Cinnamon because Sienna is too dark for small text. Turquoise is the calm streak-card colour. No alarm red (`systemRed` or similar) anywhere; Burnt Sienna is the brand colour, not a warning signal.
+- Colour palette: Sanzo Wada, *A Dictionary of Color Combinations*, combination 263 — Slate `#34454C`, Burnt Sienna `#AE5224`, Pinkish Cinnamon `#EEB480`, Turquoise Green `#B5DECC`. Burnt Sienna is the main accent (buttons, tint, charts and heatmap); in dark mode text/tint use Pinkish Cinnamon because Sienna is too dark for small text. Turquoise is the calm streak-card colour. No alarm red (`systemRed` or similar) anywhere; Burnt Sienna is the brand colour, not a warning signal. Screen backgrounds are a faded Burnt Sienna (light `#F9F1ED`, 8 %; dark `#221814`), cards `#FDFAF9` / `#2B211F`; never stronger than 8 % in light mode so Sienna text stays ≥ 4.5:1.
 - Empty states: "No drinks logged yet. Your counter starts now."
 
 ## Apple Health integration
