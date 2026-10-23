@@ -43,7 +43,6 @@ struct WidgetPresetButtonModel: Identifiable, Equatable, Sendable {
 
 struct WidgetEntrySnapshot: Equatable, Sendable {
     static let maxPresetButtons = 6
-    static let maxMediumPresetButtons = 6
 
     let currentStreakDays: Int
     let isDrinkingToday: Bool
@@ -52,6 +51,7 @@ struct WidgetEntrySnapshot: Equatable, Sendable {
     let previousStreakDays: Int?
     let previousStreakText: String?
     let streakHeadline: String
+    let streakDaysLabel: String
     let streakAccessibilityLabel: String
     let watchShortDaysText: String
     let watchDaysHeadlineText: String
@@ -99,6 +99,12 @@ struct WidgetEntrySnapshot: Equatable, Sendable {
                 locale: locale
             )
         }
+
+        self.streakDaysLabel = AppLocalization.plural(
+            "widget.ios.daysWithoutAlcohol.label",
+            count: summary.currentStreakDays,
+            locale: locale
+        )
 
         if drinkingToday {
             let todayFormat = AppLocalization.string("watch.header.todayHU", locale: locale)

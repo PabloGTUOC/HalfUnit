@@ -70,7 +70,7 @@ struct SmallHomeWidgetView: View {
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
 
-                Text(snapshot.streakHeadline)
+                Text(snapshot.streakDaysLabel)
                     .font(.footnote.weight(.semibold))
                     .foregroundStyle(textColor.opacity(0.88))
                     .lineLimit(2)
@@ -155,7 +155,7 @@ struct MediumHomeWidgetView: View {
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
 
-                Text(snapshot.streakHeadline)
+                Text(snapshot.streakDaysLabel)
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(textColor.opacity(0.88))
                     .lineLimit(2)
@@ -225,14 +225,8 @@ struct MediumHomeWidgetView: View {
 // MARK: - Large Home Widget View
 
 struct LargeHomeWidgetView: View {
-    @Environment(\.locale) private var environmentLocale
-
     let snapshot: WidgetEntrySnapshot
     var renderingMode: WidgetRenderingMode = .fullColor
-
-    private var effectiveLocale: Locale {
-        environmentLocale
-    }
 
     private var textColor: Color {
         streakCardTextColor(for: renderingMode)
@@ -255,10 +249,6 @@ struct LargeHomeWidgetView: View {
             streakCardTop
 
             presetsGrid
-
-            if snapshot.todayTotalHU > Decimal(0) {
-                todayTotalLine
-            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
@@ -298,7 +288,7 @@ struct LargeHomeWidgetView: View {
                         .foregroundStyle(textColor)
                         .widgetAccentable()
 
-                    Text(snapshot.streakHeadline)
+                    Text(snapshot.streakDaysLabel)
                         .font(.subheadline.weight(.semibold))
                         .foregroundStyle(textColor)
                         .lineLimit(1)
@@ -358,18 +348,18 @@ struct LargeHomeWidgetView: View {
         Button(intent: WidgetLogDrinkIntent(preset: button.entity)) {
             VStack(spacing: 2) {
                 PresetPresentation.image(for: button.symbolName)
-                    .font(.title3)
+                    .font(.title2)
                     .foregroundStyle(accent)
                     .widgetAccentable()
-                    .frame(width: 28, height: 28, alignment: .center)
+                    .frame(width: 34, height: 34, alignment: .center)
 
                 Text(button.huText)
-                    .font(.footnote.weight(.bold))
+                    .font(.subheadline.weight(.bold))
                     .foregroundStyle(.primary)
                     .lineLimit(1)
 
                 Text(button.localizedName)
-                    .font(.caption2)
+                    .font(.caption)
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
                     .minimumScaleFactor(0.75)
@@ -384,16 +374,5 @@ struct LargeHomeWidgetView: View {
         }
         .buttonStyle(.plain)
         .accessibilityLabel(Text(button.accessibilityLabel))
-    }
-
-    private var todayTotalLine: some View {
-        let format = AppLocalization.string("watch.header.todayHU", locale: effectiveLocale)
-        let text = String(format: format, locale: effectiveLocale, snapshot.todayTotalHUText)
-        return Text(text)
-            .font(.footnote.weight(.semibold))
-            .foregroundStyle(accent)
-            .widgetAccentable()
-            .frame(maxWidth: .infinity, alignment: .center)
-            .lineLimit(1)
     }
 }

@@ -684,6 +684,7 @@ struct HalfUnitAppTests {
         #expect(!streakEn.isDrinkingToday)
         #expect(streakEn.currentStreakDays == 24)
         #expect(streakEn.streakHeadline == "24 days without alcohol")
+        #expect(streakEn.streakDaysLabel == "days without alcohol")
         #expect(streakEn.watchDaysHeadlineText == "24 days")
         #expect(streakEn.watchSubtitleText == "Without alcohol")
         #expect(streakEn.previousStreakText == nil)
@@ -698,9 +699,35 @@ struct HalfUnitAppTests {
         #expect(!streakDe.isDrinkingToday)
         #expect(streakDe.currentStreakDays == 24)
         #expect(streakDe.streakHeadline == "24 Tage ohne Alkohol")
+        #expect(streakDe.streakDaysLabel == "Tage ohne Alkohol")
         #expect(streakDe.watchDaysHeadlineText == "24 Tage")
         #expect(streakDe.watchSubtitleText == "Ohne Alkohol")
         #expect(streakDe.streakAccessibilityLabel == "24 Tage ohne Alkohol")
+
+        let singleDaySummary = StreakSummary(
+            lastDrinkingDay: LogicalDay(year: 2026, month: 10, day: 22),
+            lastDrink: nil,
+            isDrinkingToday: false,
+            currentStreakDays: 1,
+            previousStreakDays: nil,
+            longestStreakEver: 1,
+            longestStreakThisYear: 1
+        )
+        let singleDayEn = WidgetEntrySnapshot(
+            summary: singleDaySummary,
+            todayTotalHU: Decimal(0),
+            presets: watchPresets.map(PresetEntity.init(preset:)),
+            locale: Self.englishLocale
+        )
+        #expect(singleDayEn.streakDaysLabel == "day without alcohol")
+
+        let singleDayDe = WidgetEntrySnapshot(
+            summary: singleDaySummary,
+            todayTotalHU: Decimal(0),
+            presets: watchPresets.map(PresetEntity.init(preset:)),
+            locale: Self.germanLocale
+        )
+        #expect(singleDayDe.streakDaysLabel == "Tag ohne Alkohol")
 
         // 4. Drinking-today snapshot texts in English and German
         let drinkingTodaySummary = StreakSummary(
