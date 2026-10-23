@@ -46,6 +46,7 @@ targets:
         UIBackgroundModes:
           - remote-notification
         NSFaceIDUsageDescription: Half Unit uses Face ID to unlock the app.
+        NSHealthShareUsageDescription: Half Unit does not read your Apple Health data. It only saves the drinks you log there.
         NSHealthUpdateUsageDescription: Half Unit saves each drink you log to Apple Health as alcoholic beverages.
         HalfUnitAppGroup: group.$(BUNDLE_ID_PREFIX).halfunit
         HalfUnitCloudKitContainer: iCloud.$(BUNDLE_ID_PREFIX).halfunit

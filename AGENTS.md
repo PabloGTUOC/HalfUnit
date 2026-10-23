@@ -106,7 +106,7 @@ XcodeGen globs source folders, so **adding a file to an existing folder needs no
 - Type: `numberOfAlcoholicBeverages`, unit `.count()`, value = standard drinks, start = end = drink timestamp.
 - Metadata: `HKMetadataKeySyncIdentifier` = drink UUID string, `HKMetadataKeySyncVersion` = `healthSyncVersion`. Edit = save with same identifier and higher version. Delete = delete by sync identifier.
 - All HealthKit calls go through a `HealthStoreClient` protocol so tests use a fake. Never require Health permission for any other feature to work.
-- v1 only writes to Health: request share (write) authorization only, with `NSHealthUpdateUsageDescription`. Reading other apps' drinks is 1.1; add `NSHealthShareUsageDescription` then. Strings are plain, one line, localized.
+- v1 only writes to Health: request share (write) authorization only. Both purpose strings are present because App Store Connect requires `NSHealthShareUsageDescription` for any app with the HealthKit entitlement; in v1 it states that the app does not read Health data. Reading other apps' drinks is 1.1; reword that string then. Strings are plain, one line, localized.
 
 ### UI
 - Today screen: streak card first, then the 6 preset buttons, then today's list. One tap logs; show a 5 s Undo banner; haptic on success.

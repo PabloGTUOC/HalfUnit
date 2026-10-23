@@ -18,6 +18,23 @@
         }
       }
     },
+    "NSHealthShareUsageDescription" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Half Unit liest keine Daten aus Apple Health. Die App speichert dort nur die Getränke, die Sie protokollieren."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Half Unit does not read your Apple Health data. It only saves the drinks you log there."
+          }
+        }
+      }
+    },
     "NSHealthUpdateUsageDescription" : {
       "extractionState" : "manual",
       "localizations" : {

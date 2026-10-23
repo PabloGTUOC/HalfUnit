@@ -18,14 +18,16 @@
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
-	<key>ITSAppUsesNonExemptEncryption</key>
-	<false/>
 	<key>HalfUnitAppGroup</key>
 	<string>group.$(BUNDLE_ID_PREFIX).halfunit</string>
 	<key>HalfUnitCloudKitContainer</key>
 	<string>iCloud.$(BUNDLE_ID_PREFIX).halfunit</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Half Unit uses Face ID to unlock the app.</string>
+	<key>NSHealthShareUsageDescription</key>
+	<string>Half Unit does not read your Apple Health data. It only saves the drinks you log there.</string>
 	<key>NSHealthUpdateUsageDescription</key>
 	<string>Half Unit saves each drink you log to Apple Health as alcoholic beverages.</string>
 	<key>UIBackgroundModes</key>
