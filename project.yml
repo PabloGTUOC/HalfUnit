@@ -43,6 +43,12 @@ targets:
         UILaunchScreen: {}
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
+        # Never used (iPhone only); App Store validation requires all four for iPad.
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
         UIBackgroundModes:
           - remote-notification
         NSFaceIDUsageDescription: Half Unit uses Face ID to unlock the app.
