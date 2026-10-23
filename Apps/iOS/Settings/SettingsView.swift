@@ -45,12 +45,6 @@ struct SettingsView: View {
         self.healthSync = healthSync
         self.reminderScheduler = reminderScheduler
         self.appLockStateMachine = appLockStateMachine
-        let initialSnapshot = try? SettingsScreenSnapshot.load(
-            from: logService,
-            healthSync: healthSync,
-            locale: .current
-        )
-        self._snapshot = State(initialValue: initialSnapshot)
     }
 
     @Environment(\.dismiss) private var dismiss
@@ -74,22 +68,15 @@ struct SettingsView: View {
         NavigationStack {
             Form {
                 if let snapshot {
-                    if ProcessInfo.processInfo.arguments.contains("-showAboutOnly") {
-                        aboutSection(snapshot: snapshot)
-                    } else {
-                        presetsSection(snapshot: snapshot)
-                        dayBoundarySection(snapshot: snapshot)
-                        displayUnitSection(snapshot: snapshot)
-                        healthSection(snapshot: snapshot)
-                        remindersSection(snapshot: snapshot)
-                        appLockSection(snapshot: snapshot)
-                        dataSection(snapshot: snapshot)
-                        aboutSection(snapshot: snapshot)
-                    }
+                    presetsSection(snapshot: snapshot)
+                    dayBoundarySection(snapshot: snapshot)
+                    displayUnitSection(snapshot: snapshot)
+                    healthSection(snapshot: snapshot)
+                    remindersSection(snapshot: snapshot)
+                    appLockSection(snapshot: snapshot)
+                    dataSection(snapshot: snapshot)
+                    aboutSection(snapshot: snapshot)
                 }
-            }
-            .onAppear {
-                reloadState()
             }
             .scrollContentBackground(.hidden)
             .background(BrandColors.appBackground.ignoresSafeArea())
@@ -489,7 +476,6 @@ struct SettingsView: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
             .accessibilityElement(children: .combine)
-            .id("disclaimerRow")
 
             Text("settings.about.guidanceNote")
                 .font(.subheadline)
@@ -540,7 +526,6 @@ struct SettingsView: View {
                 }
             }
         } catch {
-            print("SETTINGS LOAD ERROR: \(error)")
             Self.logger.error("Failed to load Settings state: \(error.localizedDescription, privacy: .private)")
         }
     }
