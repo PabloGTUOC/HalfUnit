@@ -19,6 +19,8 @@ struct HalfUnitApp: App {
     private let healthSync: HealthSync
     private let dayBoundaryScheduler: DayBoundaryScheduler
     private let phoneSessionBridge: PhoneSessionBridge
+    private let reminderScheduler: ReminderScheduler
+    private let appLockStateMachine: AppLockStateMachine
 
     init() {
         let container = SharedStore.shared
@@ -51,11 +53,19 @@ struct HalfUnitApp: App {
             dayBoundaryScheduler: scheduler
         )
 
+        let initialSettings = try? service.settings()
+        let lockEnabled = initialSettings?.appLockEnabled ?? false
+        let machine = AppLockStateMachine.shared
+        machine.configure(isAppLockEnabled: lockEnabled)
+        let reminders = ReminderScheduler.shared
+
         self.modelContainer = container
         self.logService = service
         self.healthSync = health
         self.dayBoundaryScheduler = scheduler
         self.phoneSessionBridge = sessionBridge
+        self.reminderScheduler = reminders
+        self.appLockStateMachine = machine
 
         Task { @MainActor in
             await Self.reconcileAndPurgeTombstones(
@@ -63,21 +73,50 @@ struct HalfUnitApp: App {
                 healthSync: health,
                 phoneSessionBridge: sessionBridge
             )
+            if let settings = try? service.settings() {
+                _ = await reminders.syncFromSettings(
+                    enabled: settings.remindersEnabled,
+                    reminderMinutes: settings.reminderMinutes
+                )
+            }
         }
     }
 
     var body: some Scene {
         WindowGroup {
-            RootTabView(
-                logService: logService,
-                healthSync: healthSync,
-                dayBoundaryScheduler: dayBoundaryScheduler
-            )
+            AppLockShieldContainerView(stateMachine: appLockStateMachine) {
+                RootTabView(
+                    logService: logService,
+                    healthSync: healthSync,
+                    dayBoundaryScheduler: dayBoundaryScheduler
+                )
+            }
+            .task {
+                if appLockStateMachine.isAppLockEnabled && appLockStateMachine.isLocked {
+                    _ = await appLockStateMachine.unlock(
+                        reason: AppLocalization.string("appLock.authReason.unlock")
+                    )
+                }
+                if let settings = try? logService.settings() {
+                    _ = await reminderScheduler.syncFromSettings(
+                        enabled: settings.remindersEnabled,
+                        reminderMinutes: settings.reminderMinutes
+                    )
+                }
+            }
         }
         .modelContainer(modelContainer)
         .onChange(of: scenePhase) { _, newPhase in
+            appLockStateMachine.handleScenePhaseChange(to: newPhase)
             guard newPhase == .active else {
                 return
+            }
+            if appLockStateMachine.isAppLockEnabled && appLockStateMachine.isLocked {
+                Task { @MainActor in
+                    _ = await appLockStateMachine.unlock(
+                        reason: AppLocalization.string("appLock.authReason.unlock")
+                    )
+                }
             }
             Task { @MainActor in
                 await Self.reconcileAndPurgeTombstones(
@@ -85,6 +124,12 @@ struct HalfUnitApp: App {
                     healthSync: healthSync,
                     phoneSessionBridge: phoneSessionBridge
                 )
+                if let settings = try? logService.settings() {
+                    _ = await reminderScheduler.syncFromSettings(
+                        enabled: settings.remindersEnabled,
+                        reminderMinutes: settings.reminderMinutes
+                    )
+                }
             }
         }
     }

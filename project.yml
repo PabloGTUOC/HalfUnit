@@ -44,6 +44,7 @@ targets:
           - UIInterfaceOrientationPortrait
         UIBackgroundModes:
           - remote-notification
+        NSFaceIDUsageDescription: Half Unit uses Face ID to unlock the app.
         NSHealthUpdateUsageDescription: Half Unit saves each drink you log to Apple Health as alcoholic beverages.
         HalfUnitAppGroup: group.$(BUNDLE_ID_PREFIX).halfunit
         HalfUnitCloudKitContainer: iCloud.$(BUNDLE_ID_PREFIX).halfunit
@@ -202,4 +203,7 @@ schemes:
       targets:
         HalfUnitWatch: all
         HalfUnitWatchWidgets: all
-        HalfUnitWatchTests: all
+        HalfUnitWatchTests: [test]
+    test:
+      targets:
+        - HalfUnitWatchTests

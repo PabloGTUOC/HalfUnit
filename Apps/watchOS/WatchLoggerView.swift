@@ -298,7 +298,7 @@ struct WatchLoggerView: View {
         }
     }
 
-    private func logPresetEarlier(_ preset: Preset, offset: WatchEarlierOffset) {
+    private func logPresetEarlier(_ preset: Preset, offset: EarlierOffset) {
         do {
             let targetDate = offset.targetTimestamp(from: now())
             let drink = try logService.log(preset: preset, at: targetDate, source: .watch)
@@ -346,7 +346,7 @@ struct WatchLoggerView: View {
 private struct LogEarlierSheetView: View {
     let presets: [Preset]
     let locale: Locale
-    let onSelect: (Preset, WatchEarlierOffset) -> Void
+    let onSelect: (Preset, EarlierOffset) -> Void
 
     @State private var selectedPreset: Preset?
 
@@ -374,7 +374,7 @@ private struct LogEarlierSheetView: View {
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(.secondary)
 
-                    ForEach(WatchEarlierOffset.allCases) { offset in
+                    ForEach(EarlierOffset.allCases) { offset in
                         Button {
                             onSelect(preset, offset)
                         } label: {

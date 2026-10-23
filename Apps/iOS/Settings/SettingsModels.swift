@@ -275,12 +275,17 @@ struct SettingsScreenSnapshot: Equatable, Sendable {
     let isSyncingToHealth: Bool
     let todayDay: LogicalDay
     let appVersionText: String
+    let remindersEnabled: Bool
+    let reminderMinutes: Int
+    let appLockEnabled: Bool
+    let isAppLockAvailable: Bool
 
     @MainActor
     static func load(
         from logService: LogService,
         healthSync: HealthSync,
         userDefaults: UserDefaults = HealthPreferences.appGroupUserDefaults,
+        authenticator: any AppLockAuthenticator = SystemAppLockAuthenticator.shared,
         bundle: Bundle = .main,
         locale: Locale = .current
     ) throws -> SettingsScreenSnapshot {
@@ -299,6 +304,11 @@ struct SettingsScreenSnapshot: Equatable, Sendable {
             (bundle.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String)
             ?? "1.0"
 
+        let remindersEnabled = settings.remindersEnabled
+        let reminderMinutes = settings.reminderMinutes ?? ReminderScheduler.defaultReminderMinutes
+        let appLockEnabled = settings.appLockEnabled
+        let isAppLockAvailable = authenticator.canAuthenticate()
+
         return SettingsScreenSnapshot(
             presets: presetItems,
             dayBoundaryHour: settings.dayBoundaryHour,
@@ -308,7 +318,11 @@ struct SettingsScreenSnapshot: Equatable, Sendable {
             healthStatusText: statusText,
             isSyncingToHealth: isSyncing,
             todayDay: todayDay,
-            appVersionText: version
+            appVersionText: version,
+            remindersEnabled: remindersEnabled,
+            reminderMinutes: reminderMinutes,
+            appLockEnabled: appLockEnabled,
+            isAppLockAvailable: isAppLockAvailable
         )
     }
 
@@ -375,6 +389,91 @@ enum SettingsActions {
         _ = await healthSync.requestAuthorization()
         await HalfUnitApp.reconcileHealth(healthSync: healthSync)
         return healthSync.lastStatus
+    }
+
+    static func setRemindersEnabled(
+        _ isEnabled: Bool,
+        minutes: Int?,
+        logService: LogService,
+        reminderScheduler: ReminderScheduler,
+        locale: Locale = .current
+    ) async -> ReminderScheduleResult {
+        let result: ReminderScheduleResult
+        if isEnabled {
+            let targetMinutes = minutes ?? ReminderScheduler.defaultReminderMinutes
+            result = await reminderScheduler.enable(minutes: targetMinutes, locale: locale)
+            if result == .scheduled {
+                if let settings = try? logService.settings() {
+                    settings.remindersEnabled = true
+                    settings.reminderMinutes = targetMinutes
+                    settings.updatedAt = logService.currentDate()
+                    try? settings.modelContext?.save()
+                }
+            } else {
+                if let settings = try? logService.settings() {
+                    settings.remindersEnabled = false
+                    settings.updatedAt = logService.currentDate()
+                    try? settings.modelContext?.save()
+                }
+            }
+        } else {
+            await reminderScheduler.disable()
+            result = .scheduled
+            if let settings = try? logService.settings() {
+                settings.remindersEnabled = false
+                settings.updatedAt = logService.currentDate()
+                try? settings.modelContext?.save()
+            }
+        }
+        return result
+    }
+
+    static func setReminderTime(
+        minutes: Int,
+        logService: LogService,
+        reminderScheduler: ReminderScheduler,
+        locale: Locale = .current
+    ) async throws {
+        let settings = try logService.settings()
+        settings.reminderMinutes = minutes
+        settings.updatedAt = logService.currentDate()
+        try settings.modelContext?.save()
+        if settings.remindersEnabled {
+            try await reminderScheduler.scheduleNotification(minutes: minutes, locale: locale)
+        }
+    }
+
+    static func setAppLockEnabled(
+        _ isEnabled: Bool,
+        logService: LogService,
+        stateMachine: AppLockStateMachine,
+        authReason: String
+    ) async -> AppLockStateMachine.EnableResult {
+        if isEnabled {
+            let result = await stateMachine.requestEnable(reason: authReason)
+            if result == .enabled {
+                if let settings = try? logService.settings() {
+                    settings.appLockEnabled = true
+                    settings.updatedAt = logService.currentDate()
+                    try? settings.modelContext?.save()
+                }
+            } else {
+                if let settings = try? logService.settings() {
+                    settings.appLockEnabled = false
+                    settings.updatedAt = logService.currentDate()
+                    try? settings.modelContext?.save()
+                }
+            }
+            return result
+        } else {
+            stateMachine.disable()
+            if let settings = try? logService.settings() {
+                settings.appLockEnabled = false
+                settings.updatedAt = logService.currentDate()
+                try? settings.modelContext?.save()
+            }
+            return .enabled
+        }
     }
 
     static func restoreBackup(
