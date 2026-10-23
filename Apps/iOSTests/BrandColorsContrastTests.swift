@@ -203,6 +203,48 @@ struct BrandColorsContrastTests {
                 minRatio: 8.5,
                 description: "Pinkish Cinnamon on dark CardBackground (#2B211F)"
             ),
+
+            // 7. Watch Idiom Pairs (matches Dark appearance tones on watchOS)
+            ContrastPair(
+                name: "Watch Cinnamon on Black",
+                foregroundHex: BrandColors.pinkishCinnamonHex,
+                backgroundHex: "#000000",
+                appearance: "Watch",
+                minRatio: 4.5,
+                description: "Pinkish Cinnamon (#EEB480) on black (#000000) watch background"
+            ),
+            ContrastPair(
+                name: "Watch Cinnamon on Tile Background (#1C1C1E)",
+                foregroundHex: BrandColors.pinkishCinnamonHex,
+                backgroundHex: BrandColors.darkBackgroundHex,
+                appearance: "Watch",
+                minRatio: 4.5,
+                description: "Pinkish Cinnamon (#EEB480) on dark tile (#1C1C1E) background"
+            ),
+            ContrastPair(
+                name: "Watch Cinnamon on Preset Tile (#1F1F1F)",
+                foregroundHex: BrandColors.pinkishCinnamonHex,
+                backgroundHex: "#1F1F1F",
+                appearance: "Watch",
+                minRatio: 4.5,
+                description: "Pinkish Cinnamon (#EEB480) on 12% white preset tile (#1F1F1F)"
+            ),
+            ContrastPair(
+                name: "Watch Turquoise on Black",
+                foregroundHex: BrandColors.turquoiseGreenHex,
+                backgroundHex: "#000000",
+                appearance: "Watch",
+                minRatio: 4.5,
+                description: "Turquoise Green (#B5DECC) on black (#000000) watch background"
+            ),
+            ContrastPair(
+                name: "Watch White on BrandFill",
+                foregroundHex: BrandColors.whiteHex,
+                backgroundHex: BrandColors.brandFillHex.watch,
+                appearance: "Watch",
+                minRatio: 4.5,
+                description: "White (#FFFFFF) on Burnt Sienna (#AE5224) fill"
+            ),
         ]
 
         for pair in pairs {
@@ -210,6 +252,42 @@ struct BrandColorsContrastTests {
             #expect(
                 ratio >= pair.minRatio,
                 "\(pair.name) [\(pair.appearance)]: \(ratio) < expected minimum \(pair.minRatio) (\(pair.description))"
+            )
+        }
+    }
+
+    /// Asserts watch color pairs meet WCAG AA standards (>= 4.5:1 for text, >= 3.0:1 for icons).
+    @Test("Watch color pairs meet WCAG AA contrast standards for text and icons")
+    func watchContrastRequirements() {
+        let pairs: [(name: String, foreground: String, background: String, isText: Bool)] = [
+            ("Cinnamon on Black", BrandColors.pinkishCinnamonHex, "#000000", true),
+            (
+                "Cinnamon on Tile Background (#1C1C1E)",
+                BrandColors.pinkishCinnamonHex,
+                BrandColors.darkBackgroundHex,
+                true
+            ),
+            ("Cinnamon on Preset Tile (#1F1F1F)", BrandColors.pinkishCinnamonHex, "#1F1F1F", true),
+            ("Turquoise on Black", BrandColors.turquoiseGreenHex, "#000000", true),
+            ("White on BrandFill", BrandColors.whiteHex, BrandColors.burntSiennaHex, true),
+            ("Cinnamon Icon on Black", BrandColors.pinkishCinnamonHex, "#000000", false),
+            (
+                "Cinnamon Icon on Tile Background (#1C1C1E)",
+                BrandColors.pinkishCinnamonHex,
+                BrandColors.darkBackgroundHex,
+                false
+            ),
+            ("Cinnamon Icon on Preset Tile (#1F1F1F)", BrandColors.pinkishCinnamonHex, "#1F1F1F", false),
+            ("Turquoise Icon on Black", BrandColors.turquoiseGreenHex, "#000000", false),
+            ("White Icon on BrandFill", BrandColors.whiteHex, BrandColors.burntSiennaHex, false),
+        ]
+
+        for pair in pairs {
+            let ratio = BrandColors.contrastRatio(hex1: pair.foreground, hex2: pair.background)
+            let requiredMin = pair.isText ? 4.5 : 3.0
+            #expect(
+                ratio >= requiredMin,
+                "\(pair.name): ratio \(ratio) must be >= \(requiredMin)"
             )
         }
     }
