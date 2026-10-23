@@ -24,3 +24,23 @@ swift test --package-path Packages/HalfUnitCore
 # Swift format lint check
 ./scripts/lint.sh
 ```
+
+## Documentation & Release Preparation
+
+All launch documentation, App Store metadata, and release preparation materials are organized under `docs/`:
+
+- **Privacy Policy:**
+  - [English](docs/privacy-policy.en.md)
+  - [German](docs/privacy-policy.de.md)
+- **Support & FAQ:**
+  - [English](docs/support.en.md)
+  - [German](docs/support.de.md)
+- **App Store Materials:**
+  - [App Store Description & Metadata (English)](docs/app-store/description.en.md)
+  - [App Store Description & Metadata (German)](docs/app-store/description.de.md)
+  - [App Review Notes](docs/app-store/app-review-notes.md)
+  - [App Privacy Label Guide](docs/app-store/privacy-label.md)
+  - [Age Rating Guide](docs/app-store/age-rating.md)
+- **Testing & Release:**
+  - [TestFlight Beta Notes (EN & DE)](docs/testflight/beta-notes.md)
+  - [Release Checklist & Hardware Verification](docs/release-checklist.md)
