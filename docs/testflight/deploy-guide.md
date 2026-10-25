@@ -55,7 +55,7 @@ Xcode Cloud builds from GitHub instead of this Mac. `ci_scripts/ci_post_clone.sh
 
 1. App Store Connect → Half Unit → **Xcode Cloud** → **Manage Workflows** → workflow **Default** → **Edit Workflow**.
 2. **Environment** → Environment Variables → add `HALFUNIT_TEAM_ID` = `63CZCUTA77`.
-3. **Actions**: remove "Build" if present; add **Archive – iOS**, scheme **HalfUnit**, Deployment Preparation **TestFlight (Internal Testing Only)**.
+3. **Actions**: remove "Build" if present; add **Archive – iOS**, scheme **HalfUnit**, Deployment Preparation **TestFlight and App Store** (lets the same build go to external testers and the App Store).
 4. **Post-Actions** → **TestFlight Internal Testing** → choose your tester group.
 5. Save, then **Start Build** on branch `main`.
 
@@ -96,4 +96,4 @@ Each upload needs a higher build number. Ask the lead to bump `CURRENT_PROJECT_V
 | "The bundle version must be higher than the previously uploaded version" | Ask the lead to bump the build number. |
 | Upload works but the build shows "Missing Compliance" | Answer "None of the algorithms mentioned above" once; the app already declares it uses no custom encryption. |
 | iPhone and Watch don't sync in the TestFlight build | Step 3 was skipped or done before step 2 created all record types; redo steps 2 and 3. |
-| Anything else | Copy the exact error text and send it to the lead. |
+| Anything else | Check [upload-lessons.md](upload-lessons.md), then copy the exact error text and send it to the lead. |
