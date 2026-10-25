@@ -127,10 +127,10 @@ These were set before the first upload. Keep them.
 - **App IDs and capabilities.** Four App IDs (app, widgets, watch app, watch widgets) with App Groups and iCloud. HealthKit is on the iPhone app only. Push is on the iPhone and watch apps (CloudKit sync needs it).
 - **Team ID** lives only in `Config/Local.xcconfig` on the Mac and in `HALFUNIT_TEAM_ID` in Xcode Cloud. It is never committed.
 
-## Still to do after the first upload
+## After the first upload
 
-- **CloudKit schema → Production.** TestFlight builds use iCloud Production. Run a development build on the iPhone once, then deploy the schema in the CloudKit Console (deploy guide, steps 2–3). Until then, sync between iPhone and Watch does not work in TestFlight builds.
-- **For external testers.** Add test information (email, description, privacy policy URL), then submit the build for Beta App Review.
+- **CloudKit schema → Production: done** (October 2026). TestFlight builds use iCloud Production. If the schema is missing there, iPhone ↔ Watch sync does not work in TestFlight builds. Redeploy it (deploy guide, steps 2–3) whenever a version changes the data model.
+- **Still to do, for external testers.** Add test information (email, description, privacy policy URL), then submit the build for Beta App Review.
 
 ## Checklist for the next app
 
