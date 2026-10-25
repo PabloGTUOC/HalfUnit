@@ -1,3 +1,9 @@
+---
+title: Datenschutzerklärung
+permalink: /privacy/de/
+lang: de
+---
+
 # Datenschutzerklärung — Half Unit
 
 Stand: Oktober 2026
@@ -92,8 +98,8 @@ Half Unit ist ein Werkzeug zum Protokollieren, nur für Ihren persönlichen Gebr
 
 Bei Fragen zu dieser Datenschutzerklärung oder zu Half Unit wenden Sie sich bitte an:
 
-- **Verantwortlicher:** {{OWNER_NAME}}
-- **E-Mail:** {{CONTACT_EMAIL}}
-- **Postanschrift:** {{POSTAL_ADDRESS}}
-- **Support-Website:** {{SUPPORT_URL}}
-- **Datenschutz-URL:** {{PRIVACY_URL}}
+- **Verantwortlicher:** Pablo Gonzalez Torres
+- **E-Mail:** pbsitio@gmail.com
+- **Postanschrift:** 10557 Berlin, Deutschland
+- **Support-Website:** https://pablogtuoc.github.io/HalfUnit/support/de/
+- **Datenschutz-URL:** https://pablogtuoc.github.io/HalfUnit/privacy/de/

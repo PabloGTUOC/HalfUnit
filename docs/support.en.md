@@ -1,3 +1,9 @@
+---
+title: Support
+permalink: /support/
+lang: en
+---
+
 # Support & FAQ — Half Unit
 
 Welcome to the Half Unit support page. Half Unit is a native iPhone and Apple Watch app designed for quick, one-tap drink logging and honest awareness of your alcohol-free days.
@@ -8,11 +14,11 @@ If you have questions, encounter an issue, or want to share suggestions, we are 
 
 ## Contact & Support
 
-- **Developer:** {{OWNER_NAME}}
-- **Email Support:** [{{CONTACT_EMAIL}}](mailto:{{CONTACT_EMAIL}})
-- **Support Website:** {{SUPPORT_URL}}
-- **Privacy Policy:** [{{PRIVACY_URL}}]({{PRIVACY_URL}})
-- **Postal Address:** {{POSTAL_ADDRESS}}
+- **Developer:** Pablo Gonzalez Torres
+- **Email Support:** [pbsitio@gmail.com](mailto:pbsitio@gmail.com)
+- **Support Website:** https://pablogtuoc.github.io/HalfUnit/support/
+- **Privacy Policy:** [https://pablogtuoc.github.io/HalfUnit/privacy/](https://pablogtuoc.github.io/HalfUnit/privacy/)
+- **Postal Address:** 10557 Berlin, Germany
 
 When emailing for support, please include your device model, iOS/watchOS version, and the Half Unit version (found in Settings → About).
 

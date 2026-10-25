@@ -1,3 +1,9 @@
+---
+title: Privacy Policy
+permalink: /privacy/
+lang: en
+---
+
 # Privacy Policy — Half Unit
 
 Last updated: October 2026
@@ -92,8 +98,8 @@ Half Unit is a personal logging tool for your own use. It is an informational tr
 
 If you have questions about this Privacy Policy or Half Unit, please contact:
 
-- **Developer:** {{OWNER_NAME}}
-- **Email:** {{CONTACT_EMAIL}}
-- **Postal Address:** {{POSTAL_ADDRESS}}
-- **Website:** {{SUPPORT_URL}}
-- **Privacy Policy URL:** {{PRIVACY_URL}}
+- **Developer:** Pablo Gonzalez Torres
+- **Email:** pbsitio@gmail.com
+- **Postal Address:** 10557 Berlin, Germany
+- **Website:** https://pablogtuoc.github.io/HalfUnit/support/
+- **Privacy Policy URL:** https://pablogtuoc.github.io/HalfUnit/privacy/

@@ -1,0 +1,8 @@
+# GitHub Pages (Settings → Pages → Deploy from branch: main, folder /docs).
+# Only the privacy policy and support pages are published; internal notes stay in the repo.
+title: Half Unit
+description: Privacy policy and support for the Half Unit iPhone and Apple Watch app.
+exclude:
+  - app-store
+  - testflight
+  - release-checklist.md

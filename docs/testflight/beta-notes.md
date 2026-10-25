@@ -63,7 +63,7 @@ Please test the following key features and let us know if anything behaves unexp
 
 ## Submitting Beta Reports
 - Use the standard TestFlight beta reporting feature (take a screenshot and tap "Share Feedback").
-- Or email us directly at: [{{CONTACT_EMAIL}}](mailto:{{CONTACT_EMAIL}}) with your device model and iOS/watchOS version.
+- Or email us directly at: [pbsitio@gmail.com](mailto:pbsitio@gmail.com) with your device model and iOS/watchOS version.
 
 ---
 
@@ -124,4 +124,4 @@ Bitte testen Sie die folgenden Kernbereiche und teilen Sie uns Auffälligkeiten 
 
 ## Rückmeldungen einreichen
 - Nutzen Sie die TestFlight-Funktion für Beta-Berichte (Screenshot erstellen und auf „Beta-Feedback teilen“ tippen).
-- Oder schreiben Sie uns direkt per E-Mail an: [{{CONTACT_EMAIL}}](mailto:{{CONTACT_EMAIL}}) unter Angabe Ihres Gerätemodells und Ihrer Betriebssystemversion.
+- Oder schreiben Sie uns direkt per E-Mail an: [pbsitio@gmail.com](mailto:pbsitio@gmail.com) unter Angabe Ihres Gerätemodells und Ihrer Betriebssystemversion.

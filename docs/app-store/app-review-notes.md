@@ -75,5 +75,5 @@ Half Unit requests write access for `HKQuantityTypeIdentifier.numberOfAlcoholicB
 
 If you have any questions or require additional details during review, please contact:
 
-- **Contact Person:** {{OWNER_NAME}}
-- **Email:** [{{CONTACT_EMAIL}}](mailto:{{CONTACT_EMAIL}})
+- **Contact Person:** Pablo Gonzalez Torres
+- **Email:** [pbsitio@gmail.com](mailto:pbsitio@gmail.com)
